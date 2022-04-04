@@ -1,5 +1,4 @@
-# FRC-2022-Second-Iteration
-The 2022 Spartabots code for the second iteration: variable hood shooter
+The 2022 Spartabots Code for the Third Iteration: Chronos Unleashed
 
 (Download)
 Vendor Libraries:<br/>
