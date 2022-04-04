@@ -228,7 +228,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         // m_backLeftModule.set(states[2].speedMetersPerSecond / m_driveConstants.kMaxSpeedMetersPerSecond * MAX_VOLTAGE, states[2].angle.getRadians());
         // m_backRightModule.set(states[3].speedMetersPerSecond / m_driveConstants.kMaxSpeedMetersPerSecond * MAX_VOLTAGE, states[3].angle.getRadians());
 
-        if (DriverStation.isAutonomous()) {
+        //if (DriverStation.isAutonomous()) {
             m_odometry.update(getGyroscopeRotation(),
                     new SwerveModuleState(m_frontLeftModule.getDriveVelocity(), new Rotation2d(m_frontLeftModule.getSteerAngle())),
                     new SwerveModuleState(m_frontRightModule.getDriveVelocity(), new Rotation2d(m_frontRightModule.getSteerAngle())),
@@ -241,10 +241,28 @@ public class DrivetrainSubsystem extends SubsystemBase {
             SmartDashboard.putNumber("Y Position", pose.getTranslation().getY());
             
             m_field.setRobotPose(pose);
-        }
+        //}
     }
 
     public double getVoltageByVelocity(double targetVelocity) {
         return m_feedforward.calculate(targetVelocity * DriveConstants.kVelocityGain);
     }
+
+    
+  public static double distanceFromHub(){
+    return calculateDistance(
+      DrivetrainSubsystem.getInstance().getPose().getX(), DrivetrainSubsystem.getInstance().getPose().getY(), Constants.targetHudPosition.getX(),Constants.targetHudPosition.getY());
+  }
+  public static double calculateDistance(double x1, double y1, double x2, double y2){
+    return Math.sqrt(Math.pow(x1-x2,2) + Math.pow(y1-y2,2));
+  }
+
+  public static double findAngle(Pose2d currentPose, double toX, double toY, double offsetDeg){
+      double deltaY = (toY - currentPose.getY());
+      double deltaX = (toX - currentPose.getX());
+
+      double absolute = Math.toDegrees(Math.atan2(deltaY, deltaX));
+      return normalize(absolute + offsetDeg);
+  }
+  
 }

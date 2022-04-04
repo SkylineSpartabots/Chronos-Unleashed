@@ -6,7 +6,7 @@ package frc.robot;
 import frc.lib.util.Controller;
 import frc.lib.util.DeviceFinder;
 import frc.robot.commands.*;
-import frc.robot.commands.CAS.AimByLimelight;
+import frc.robot.commands.CAS.AimShoot;
 import frc.robot.commands.CAS.RobotIdle;
 import frc.robot.commands.CAS.RobotOff;
 import frc.robot.commands.CAS.ShootByLimelight;
@@ -146,21 +146,21 @@ public class RobotContainer {
     m_controller.getYButton().whenActive(new RobotOff());
 
     m_controller.getLeftBumper().whenHeld(new ShootByLimelight(false));
-    m_controller.getLeftBumper().whenHeld(new AimByLimelight("left"));
+    m_controller.getLeftBumper().whenHeld(new AimShoot());
     m_controller.getRightBumper().whenHeld(new ShootByLimelight(false));
-    m_controller.getRightBumper().whenHeld(new AimByLimelight("right"));
+    m_controller.getRightBumper().whenHeld(new AimShoot());
     
     m_controller.getRightStickButton().whenHeld(new ShootByLimelight(false));
-    m_controller.getLeftStickButton().whenHeld(new AimByLimelight());
+    m_controller.getLeftStickButton().whenHeld(new AimShoot());
     
     Trigger leftTriggerAxis = new Trigger(() -> { return m_controller.getLeftTriggerAxis() > triggerDeadzone;});
     Trigger rightTriggerAxis = new Trigger(() -> { return m_controller.getRightTriggerAxis() > triggerDeadzone;});
 
     leftTriggerAxis.whileActiveOnce(new ShootByLimelight(true));
-    leftTriggerAxis.whileActiveOnce(new AimByLimelight("left"));
+    leftTriggerAxis.whileActiveOnce(new AimShoot());
     leftTriggerAxis.whenInactive(new SequentialCommandGroup(new WaitCommand(0.6), new RobotIdle()));
     rightTriggerAxis.whileActiveOnce(new ShootByLimelight(true));
-    rightTriggerAxis.whileActiveOnce(new AimByLimelight("right"));
+    rightTriggerAxis.whileActiveOnce(new AimShoot());
     rightTriggerAxis.whenInactive(new SequentialCommandGroup(new WaitCommand(0.6), new RobotIdle()));
 
 

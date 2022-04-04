@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.*;
-import frc.robot.commands.CAS.AimByLimelight;
+import frc.robot.commands.CAS.AimShoot;
 import frc.robot.commands.CAS.RobotOff;
 import frc.robot.commands.CAS.ShootByLimelight;
 import frc.robot.commands.SetSubsystemCommand.*;
@@ -41,7 +41,7 @@ public class AutonomousCommandFactory {
             new SetIntakeCommand(0.0,false),
             new TrajectoryDriveCommand(getPose(5.59, 2.58, -142.65), List.of(new Translation2d(6.14, 2.05)), true, 0.7, 4,1.4),
             new ShootByLimelight(false),
-            new AimByLimelight(),
+            new AimShoot(),
             new WaitCommand(0.25),
             new SetIndexerCommand(indexerUp,false),
             new SetIntakeCommand(intakeOn,false),
@@ -53,7 +53,7 @@ public class AutonomousCommandFactory {
             new WaitCommand(0.6),
             new TrajectoryDriveCommand(getPose(5.18, 1.95, -141.57), List.of(), true, 0.5,5,2.0),
             new ShootByLimelight(false),
-            new AimByLimelight(),
+            new AimShoot(),
             new WaitCommand(0.25),
             new SetIndexerCommand(indexerUp,false),
             new SetIntakeCommand(intakeOn,false),
@@ -65,14 +65,14 @@ public class AutonomousCommandFactory {
         return new SequentialCommandGroup(
             new CalibrationCommand(getPose(7.57, 1.79, -89.18)),            
             new SetIntakeCommand(intakeOn,false),
-            new InstantCommand(() -> ShooterSubsystem.getInstance().setShooterVelocity(shooterFixed+250)),
+            new InstantCommand(() -> ShooterSubsystem.getInstance().setShooterVelocity(shooterFixed+300)),
             new TrajectoryDriveCommand(getPose(7.59, 0.80, -90.42), List.of(), false,0.3, 1.2 ,1),
             new WaitCommand(0.2),            
             new SetIntakeCommand(0.0,false),
-            new TrajectoryDriveCommand(getPose(5.79, 2.42, -147.52), List.of(new Translation2d(6.29, 2.23)), true, 1.3, 4,1.4),
+            new TrajectoryDriveCommand(getPose(5.79, 2.42, -147.52), List.of(new Translation2d(6.29, 2.23)), true, 1.4, 4,1.4),
             new SetIndexerCommand(indexerUp,false),
             new SetIntakeCommand(intakeOn,false),
-            new InstantCommand(() -> ShooterSubsystem.getInstance().setShooterVelocity(shooterFixed+370)),
+            new InstantCommand(() -> ShooterSubsystem.getInstance().setShooterVelocity(shooterFixed+400)),
             new TrajectoryDriveCommand(getPose(5.40, 2.16, -145.46), List.of(), false, 1.0, 0.45, 0.25),
             new WaitCommand(1.2),
             new SetIntakeCommand(intakeOn+0.15,true),

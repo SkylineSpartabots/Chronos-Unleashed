@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.*;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class LimelightSubsystem extends SubsystemBase {
@@ -66,6 +67,20 @@ public class LimelightSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("LimelightX", getXOffset());
     SmartDashboard.putNumber("LimelightY", getYOffset());
     SmartDashboard.putNumber("Limelight Distance", getDistance());
+    
+    if(DriverStation.isTeleop()){
+        
+        if(Math.abs(getXOffset()) < 20.0 && hasTarget()){      
+            double x = 8.23 - (getDistance() * 
+                Math.cos(Math.toRadians(DrivetrainSubsystem.getInstance().getGyroscopeRotation().getDegrees() + 180 
+                - getXOffset())));
+            double y = 4.165 - (getDistance() * 
+                Math.sin(Math.toRadians(DrivetrainSubsystem.getInstance().getGyroscopeRotation().getDegrees() + 180
+                - getXOffset())));//plus or minus xoffset???
+        
+            DrivetrainSubsystem.getInstance().resetOdometryFromPosition(x,y);
+        }
+    }
   }
 
     public double getDistance() {
