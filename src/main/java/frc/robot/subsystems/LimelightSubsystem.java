@@ -70,7 +70,7 @@ public class LimelightSubsystem extends SubsystemBase {
     
     if(DriverStation.isTeleop()){
         
-        if(Math.abs(getXOffset()) < 20.0 && hasTarget()){      
+        if(Math.abs(getXOffset()) < 20.0  && hasTarget()){      //&& Math.abs(getXOffset()) > 5.0
             double x = 8.23 - (getDistance() * 
                 Math.cos(Math.toRadians(DrivetrainSubsystem.getInstance().getGyroscopeRotation().getDegrees() + 180 
                 - getXOffset())));

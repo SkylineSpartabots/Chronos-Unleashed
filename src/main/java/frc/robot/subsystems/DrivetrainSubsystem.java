@@ -249,9 +249,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
     }
 
     
-  public static double distanceFromHub(){
+  public static double distanceFromHub(double targetX, double targetY){
     return calculateDistance(
-      DrivetrainSubsystem.getInstance().getPose().getX(), DrivetrainSubsystem.getInstance().getPose().getY(), Constants.targetHudPosition.getX(),Constants.targetHudPosition.getY());
+      DrivetrainSubsystem.getInstance().getPose().getX(), DrivetrainSubsystem.getInstance().getPose().getY(), targetX,targetY);
   }
   public static double calculateDistance(double x1, double y1, double x2, double y2){
     return Math.sqrt(Math.pow(x1-x2,2) + Math.pow(y1-y2,2));
@@ -264,5 +264,5 @@ public class DrivetrainSubsystem extends SubsystemBase {
       double absolute = Math.toDegrees(Math.atan2(deltaY, deltaX));
       return normalize(absolute + offsetDeg);
   }
-  
+
 }

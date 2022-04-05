@@ -53,7 +53,7 @@ public class ShootByLimelight extends CommandBase {
       double shooterSlope = 1099;
       double shooterIntercept = 6700.0;
 
-      double minVelocity = 9500;
+      double minVelocity = 7000;
       double maxVelocity = 12500;
 
       
@@ -90,15 +90,6 @@ public class ShootByLimelight extends CommandBase {
           new SetIntakeIndexerCommand(Constants.intakeOn, Constants.indexerUp)
         ).schedule();
       }   
-    }
-
-    class DistanceShooter{
-      public double distance;
-      public double shooter;
-      public DistanceShooter(double distance, double shooter){
-          this.distance = distance;
-          this.shooter = shooter;
-      }
     }
 }
 

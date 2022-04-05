@@ -159,9 +159,7 @@ public class RobotContainer {
     leftTriggerAxis.whileActiveOnce(new ShootByLimelight(true));
     leftTriggerAxis.whileActiveOnce(new AimShoot());
     leftTriggerAxis.whenInactive(new SequentialCommandGroup(new WaitCommand(0.6), new RobotIdle()));
-    rightTriggerAxis.whileActiveOnce(new ShootByLimelight(true));
     rightTriggerAxis.whileActiveOnce(new AimShoot());
-    rightTriggerAxis.whenInactive(new SequentialCommandGroup(new WaitCommand(0.6), new RobotIdle()));
 
 
     //SECOND CONTROLLER
