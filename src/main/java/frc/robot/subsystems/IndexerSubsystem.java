@@ -4,6 +4,7 @@ import java.time.Period;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.revrobotics.ColorSensorV3;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -51,6 +52,30 @@ public class IndexerSubsystem extends SubsystemBase{
         m_IntakeMotor.enableVoltageCompensation(true);        
         m_IntakeMotor.setNeutralMode(NeutralMode.Coast);
         m_intakeSensor = new TunedColorSensor(Constants.kColorSensorLoadingDistance, onboardI2C);
+        setMultipleStatuFramePeriod();
+    }
+    
+    private void setMultipleStatuFramePeriod(){
+        m_IndexerMotor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 255);//if rev, 4500
+        m_IntakeMotor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 255);
+        m_IndexerMotor.setStatusFramePeriod(StatusFrame.Status_4_AinTempVbat, 253);//4750
+        m_IntakeMotor.setStatusFramePeriod(StatusFrame.Status_4_AinTempVbat, 253);
+        m_IndexerMotor.setStatusFramePeriod(StatusFrame.Status_6_Misc, 251);//5000
+        m_IntakeMotor.setStatusFramePeriod(StatusFrame.Status_6_Misc, 251);
+        m_IndexerMotor.setStatusFramePeriod(StatusFrame.Status_7_CommStatus, 249);//5250
+        m_IntakeMotor.setStatusFramePeriod(StatusFrame.Status_7_CommStatus, 249);
+        m_IndexerMotor.setStatusFramePeriod(StatusFrame.Status_10_MotionMagic, 247);//5500
+        m_IntakeMotor.setStatusFramePeriod(StatusFrame.Status_10_MotionMagic, 247);
+        m_IndexerMotor.setStatusFramePeriod(StatusFrame.Status_12_Feedback1, 245);//5750
+        m_IntakeMotor.setStatusFramePeriod(StatusFrame.Status_12_Feedback1, 245);
+        m_IndexerMotor.setStatusFramePeriod(StatusFrame.Status_13_Base_PIDF0, 243);//5850
+        m_IntakeMotor.setStatusFramePeriod(StatusFrame.Status_13_Base_PIDF0, 243);
+        m_IndexerMotor.setStatusFramePeriod(StatusFrame.Status_14_Turn_PIDF1, 241);//5950
+        m_IntakeMotor.setStatusFramePeriod(StatusFrame.Status_14_Turn_PIDF1, 241);
+        m_IndexerMotor.setStatusFramePeriod(StatusFrame.Status_15_FirmwareApiStatus, 239);//6100
+        m_IntakeMotor.setStatusFramePeriod(StatusFrame.Status_15_FirmwareApiStatus, 239);
+        m_IndexerMotor.setStatusFramePeriod(StatusFrame.Status_17_Targets1, 237);//6250
+        m_IntakeMotor.setStatusFramePeriod(StatusFrame.Status_17_Targets1, 237);
     }
     
     private class TunedColorSensor{

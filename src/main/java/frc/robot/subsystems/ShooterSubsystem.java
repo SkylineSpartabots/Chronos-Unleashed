@@ -10,6 +10,7 @@ import frc.lib.drivers.LazyTalonFX;
 import frc.lib.drivers.TalonFXFactory;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatusFrame;
 
 import frc.robot.Constants;
 import frc.robot.Robot;
@@ -35,7 +36,20 @@ public class ShooterSubsystem extends SubsystemBase {
         mSlaveShooter = TalonFXFactory.createSlaveFalcon("Follower Shooter Motor", Ports.FOLLOW_SHOOTER_MOTOR, Ports.MASTER_SHOOTER_MOTOR);
         mSlaveShooter.setMaster(mMasterShooter);
         configureMotor(mSlaveShooter, false);
+        setMultipleStatuFramePeriod();
+    }
 
+    private void setMultipleStatuFramePeriod(){
+        mSlaveShooter.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 255);//if rev, 4500
+        mSlaveShooter.setStatusFramePeriod(StatusFrame.Status_4_AinTempVbat, 253);//4750
+        mSlaveShooter.setStatusFramePeriod(StatusFrame.Status_6_Misc, 251);//5000
+        mSlaveShooter.setStatusFramePeriod(StatusFrame.Status_7_CommStatus, 249);//5250
+        mSlaveShooter.setStatusFramePeriod(StatusFrame.Status_10_MotionMagic, 247);//5500
+        mSlaveShooter.setStatusFramePeriod(StatusFrame.Status_12_Feedback1, 245);//5750
+        mSlaveShooter.setStatusFramePeriod(StatusFrame.Status_13_Base_PIDF0, 243);//5850
+        mSlaveShooter.setStatusFramePeriod(StatusFrame.Status_14_Turn_PIDF1, 241);//5950
+        mSlaveShooter.setStatusFramePeriod(StatusFrame.Status_15_FirmwareApiStatus, 239);//6100
+        mSlaveShooter.setStatusFramePeriod(StatusFrame.Status_17_Targets1, 237);//6250
     }
 
     private void configureMotor(LazyTalonFX talon, boolean b){
