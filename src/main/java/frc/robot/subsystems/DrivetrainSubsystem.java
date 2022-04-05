@@ -52,6 +52,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     
     private ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
     private Field2d m_field = new Field2d();
+    private Field2d m_hub = new Field2d();
     
     public static DrivetrainSubsystem getInstance() {
       if (m_instance == null) {
@@ -64,6 +65,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         setDefaultCommand(new TeleopDriveCommand(this));
 
         SmartDashboard.putData(m_field);
+        SmartDashboard.putData(m_hub);
         //ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
 
         Mk4ModuleConfiguration driveConfiguration = new Mk4ModuleConfiguration();
@@ -115,6 +117,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     public Field2d getField() {
         return m_field;
+    }
+    public void setHubPosition(double hubX, double hubY){
+        m_hub.setRobotPose(hubX, hubY, new Rotation2d(0));
     }
 
     //sets Gyroscope to 0

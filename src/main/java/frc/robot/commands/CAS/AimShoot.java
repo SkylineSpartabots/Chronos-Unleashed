@@ -46,9 +46,11 @@ public class AimShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
     public void driveWithJoystick() {//called periodically
         var xSpeed = -modifyAxis(m_controller.getLeftY()) * DriveConstants.kMaxSpeedMetersPerSecond;
         var ySpeed = -modifyAxis(m_controller.getLeftX()) * DriveConstants.kMaxSpeedMetersPerSecond;
+        var xSpeedFiltered = driveXFilter.calculate(xSpeed);
+        var ySpeedFiltered = driveYFilter.calculate(ySpeed);
 
         double time = 0.5;
-        m_targetPosition = new Translation2d(Constants.targetHudPosition.getX() - xSpeed * time, Constants.targetHudPosition.getY() - ySpeed * time);
+        m_targetPosition = new Translation2d(Constants.targetHudPosition.getX() - xSpeedFiltered * time, Constants.targetHudPosition.getY() - ySpeedFiltered * time);
                 
         double targetAngle = Math.toRadians(DrivetrainSubsystem.findAngle(m_drivetrainSubsystem.getPose(), m_targetPosition.getX(), m_targetPosition.getY(), 180));
         double currentRotation = m_drivetrainSubsystem.getGyroscopeRotation().getRadians();
@@ -68,7 +70,7 @@ public class AimShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
         boolean isShooterAtSpeed = (currentVel >= shooterSpeed - threshold && currentVel <= shooterSpeed + threshold);
         boolean isReadyToShoot = isShooterAtSpeed && shooterWithinBounds && isFacingTarget; //&& isRobotNotMoving;
 
-        
+        DrivetrainSubsystem.getInstance().setHubPosition(m_targetPosition.getX(), m_targetPosition.getY());
         SmartDashboard.putNumber("hubX", m_targetPosition.getX());
         SmartDashboard.putNumber("hubY", m_targetPosition.getY());
         SmartDashboard.putNumber("xSpeed", xSpeed);
@@ -76,7 +78,7 @@ public class AimShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
         SmartDashboard.putNumber("rotSpeed", rot);
         SmartDashboard.putNumber("CAS Shooter Target", shooterSpeed);
         SmartDashboard.putNumber("CAS Shooter Speed", currentVel);
-        //SmartDashboard.putNumber("CAS Distance Away", DrivetrainSubsystem.distanceFromHub());
+        SmartDashboard.putNumber("CAS Distance Away", DrivetrainSubsystem.distanceFromHub(m_targetPosition.getX(), m_targetPosition.getY()));
         SmartDashboard.putNumber("CAS AngleDiff", angleDiff);
         SmartDashboard.putBoolean("?Facing Target", isFacingTarget);
         SmartDashboard.putBoolean("?Robot Not Moving", isRobotNotMoving);
@@ -106,13 +108,14 @@ public class AimShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
             //stop indexer if robot is moving and indexer is on
         }
         
-        m_drivetrainSubsystem.drive(ChassisSpeeds.fromFieldRelativeSpeeds(driveXFilter.calculate(xSpeed), driveYFilter.calculate(ySpeed), 
+        m_drivetrainSubsystem.drive(ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedFiltered, ySpeedFiltered, 
                 rotFilter.calculate(rot), m_drivetrainSubsystem.getGyroscopeRotation()));
                 //rot, m_drivetrainSubsystem.getGyroscopeRotation()));
     }
     
     @Override
     public void end(boolean interruptable){  
+        isIndexerOn = false;
         //if(hasRobertShotBall){
           //new RobotIdle().schedule();
       //}   
