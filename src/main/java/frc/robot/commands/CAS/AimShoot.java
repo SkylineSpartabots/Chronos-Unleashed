@@ -48,12 +48,13 @@ public class AimShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
         var ySpeed = -modifyAxis(m_controller.getLeftX()) * DriveConstants.kMaxSpeedMetersPerSecond;
         var xSpeedFiltered = driveXFilter.calculate(xSpeed);
         var ySpeedFiltered = driveYFilter.calculate(ySpeed);
-        double maxSpeed = 1.0;
+        
+        /*double maxSpeed = 1.0;
         if(Math.abs(xSpeedFiltered) > maxSpeed) xSpeedFiltered = Math.copySign(maxSpeed, xSpeedFiltered);
-        if(Math.abs(ySpeedFiltered) > maxSpeed) ySpeedFiltered = Math.copySign(maxSpeed, ySpeedFiltered);
+        if(Math.abs(ySpeedFiltered) > maxSpeed) ySpeedFiltered = Math.copySign(maxSpeed, ySpeedFiltered);*/
 
-        double time = 0.8;
-        m_targetPosition = new Translation2d(Constants.targetHudPosition.getX() - xSpeedFiltered * time, Constants.targetHudPosition.getY() - ySpeedFiltered * time);
+        //double time = 0.8;
+        //m_targetPosition = new Translation2d(Constants.targetHudPosition.getX() - xSpeedFiltered * time, Constants.targetHudPosition.getY() - ySpeedFiltered * time);
                 
         double targetAngle = Math.toRadians(DrivetrainSubsystem.findAngle(m_drivetrainSubsystem.getPose(), m_targetPosition.getX(), m_targetPosition.getY(), 180));
         double currentRotation = m_drivetrainSubsystem.getGyroscopeRotation().getRadians();
@@ -68,7 +69,7 @@ public class AimShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
         int threshold = 300; 
         double angleDiff = Math.toDegrees(currentRotation - targetAngle);
 
-        boolean isFacingTarget = Math.abs(angleDiff) < 5.0;
+        boolean isFacingTarget = Math.abs(angleDiff) < 3.0;
         boolean isRobotNotMoving = xSpeed == 0 && ySpeed == 0;
         boolean isShooterAtSpeed = (currentVel >= shooterSpeed - threshold && currentVel <= shooterSpeed + threshold);
         boolean isReadyToShoot = isShooterAtSpeed && shooterWithinBounds && isFacingTarget; //&& isRobotNotMoving;
