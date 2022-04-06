@@ -208,8 +208,8 @@ public class RobotContainer {
     m_controller2.getRightStickButton().whenActive(new InstantCommand(() -> ClimbSubsystem.getInstance().pivotPower(pivotUp)))
                               .whenInactive(new InstantCommand(() -> ClimbSubsystem.getInstance().pivotPower(0)));
     
-    m_controller2.getXButton().whenHeld(new SetIntakeCommand(intakeOn,true));
-    m_controller2.getBButton().whenHeld(new SetIndexerCommand(indexerUp,true));
+    m_controller2.getXButton().whenHeld(new SetIntakeCommand(intakeOn,false)).whenReleased(new SetIntakeCommand(0.0, false));
+    m_controller2.getBButton().whenHeld(new SetIntakeCommand(intakeReverse,false)).whenReleased(new SetIntakeCommand(0.0, false));
     m_controller2.getAButton().whenActive(new RobotIdle());
     m_controller2.getYButton().whenActive(new RobotOff());    
     m_controller2.getStartButton().whenPressed(m_drivetrainSubsystem::resetOdometry);
