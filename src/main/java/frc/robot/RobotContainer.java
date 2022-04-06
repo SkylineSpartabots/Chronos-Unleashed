@@ -9,7 +9,6 @@ import frc.robot.commands.*;
 import frc.robot.commands.CAS.AimShoot;
 import frc.robot.commands.CAS.RobotIdle;
 import frc.robot.commands.CAS.RobotOff;
-import frc.robot.commands.CAS.ShootByLimelight;
 import frc.robot.commands.SetSubsystemCommand.*;
 import frc.robot.factories.AutonomousCommandFactory;
 import frc.robot.subsystems.ClimbSubsystem;
@@ -145,18 +144,17 @@ public class RobotContainer {
     m_controller.getAButton().whenActive(new RobotIdle());
     m_controller.getYButton().whenActive(new RobotOff());
 
-    m_controller.getLeftBumper().whenHeld(new ShootByLimelight(false));
     m_controller.getLeftBumper().whenHeld(new AimShoot());
-    m_controller.getRightBumper().whenHeld(new ShootByLimelight(false));
+    //m_controller.getRightBumper().whenHeld(new ShootByLimelight(false));
     m_controller.getRightBumper().whenHeld(new AimShoot());
     
-    m_controller.getRightStickButton().whenHeld(new ShootByLimelight(false));
+    //m_controller.getRightStickButton().whenHeld(new ShootByLimelight(false));
     m_controller.getLeftStickButton().whenHeld(new AimShoot());
     
     Trigger leftTriggerAxis = new Trigger(() -> { return m_controller.getLeftTriggerAxis() > triggerDeadzone;});
     Trigger rightTriggerAxis = new Trigger(() -> { return m_controller.getRightTriggerAxis() > triggerDeadzone;});
 
-    leftTriggerAxis.whileActiveOnce(new ShootByLimelight(true));
+    //leftTriggerAxis.whileActiveOnce(new ShootByLimelight(true));
     leftTriggerAxis.whileActiveOnce(new AimShoot());
     leftTriggerAxis.whenInactive(new SequentialCommandGroup(new WaitCommand(0.6), new RobotIdle()));
     rightTriggerAxis.whileActiveOnce(new AimShoot());
