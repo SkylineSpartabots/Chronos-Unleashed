@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.lib.util.Controller;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
@@ -19,6 +20,7 @@ import frc.robot.commands.TeleopDriveCommand;
 import frc.robot.commands.SetSubsystemCommand.SetIndexerCommand;
 import frc.robot.commands.SetSubsystemCommand.SetIntakeCommand;
 import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.LimelightSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
@@ -72,7 +74,7 @@ public class AimShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
         boolean isFacingTarget = Math.abs(angleDiff) < 3.0;
         boolean isRobotNotMoving = xSpeed == 0 && ySpeed == 0;
         boolean isShooterAtSpeed = (currentVel >= shooterSpeed - threshold && currentVel <= shooterSpeed + threshold);
-        boolean isReadyToShoot = isShooterAtSpeed && shooterWithinBounds && isFacingTarget; //&& isRobotNotMoving;
+        boolean isReadyToShoot = isShooterAtSpeed && shooterWithinBounds && isFacingTarget && isRobotNotMoving;
 
         DrivetrainSubsystem.getInstance().setHubPosition(m_targetPosition.getX(), m_targetPosition.getY());
         SmartDashboard.putNumber("hubX", m_targetPosition.getX());
@@ -120,9 +122,12 @@ public class AimShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
     @Override
     public void end(boolean interruptable){  
         isIndexerOn = false;
-        //if(hasRobertShotBall){
-          //new RobotIdle().schedule();
-      //}   
+        if(hasRobertShotBall){
+            IndexerSubsystem.getInstance().setIndexerPercentPower(Constants.indexerUp, true);
+            IndexerSubsystem.getInstance().setIntakePercentPower(Constants.intakeOn, true);
+            ShooterSubsystem.getInstance().setShooterVelocity(Constants.shooterIdle);
+        }   
+        hasRobertShotBall = false;
     }
 
     private int calculateShooterSpeed(double distance){
