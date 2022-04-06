@@ -65,7 +65,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         setDefaultCommand(new TeleopDriveCommand(this));
 
         SmartDashboard.putData(m_field);
-        SmartDashboard.putData(m_hub);
+        //SmartDashboard.putData(m_hub);
         //ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
 
         Mk4ModuleConfiguration driveConfiguration = new Mk4ModuleConfiguration();
