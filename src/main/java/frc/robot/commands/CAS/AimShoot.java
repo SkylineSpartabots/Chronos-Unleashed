@@ -33,7 +33,7 @@ public class AimShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
         super(DrivetrainSubsystem.getInstance());
         m_shooter = ShooterSubsystem.getInstance();
         isIndexerOn = false;
-        addRequirements(m_shooter);
+        addRequirements(m_shooter, IndexerSubsystem.getInstance());
        
         m_thetaController = new PIDController(4,0,0);
         m_thetaController.enableContinuousInput(-Math.PI, Math.PI);
@@ -62,8 +62,6 @@ public class AimShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
         double currentRotation = m_drivetrainSubsystem.getGyroscopeRotation().getRadians();
         double rot = m_thetaController.calculate(currentRotation,targetAngle);
         
-        
-
         shooterSpeed = calculateShooterSpeed(DrivetrainSubsystem.distanceFromHub(m_targetPosition.getX(), m_targetPosition.getY()));
         m_shooter.setShooterVelocity(shooterSpeed);
         
@@ -98,18 +96,14 @@ public class AimShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
         }  
         if(isReadyToShoot && !isIndexerOn){
             //fire indexer if aimed, robot is not moving, shooter is at speed, and indexer is off              
-            new SequentialCommandGroup(
-                new SetIndexerCommand(Constants.indexerUp, false),
-                new SetIntakeCommand(Constants.intakeOn, false)
-            ).schedule();
+            IndexerSubsystem.getInstance().setIndexerPercentPower(Constants.indexerUp, false);
+            IndexerSubsystem.getInstance().setIntakePercentPower(Constants.intakeOn, false);
             isIndexerOn = true;
             hasRobertShotBall = true;
         }
         else if(!isReadyToShoot && isIndexerOn){
-            new SequentialCommandGroup(
-                new SetIndexerCommand(0.0, false),
-                new SetIntakeCommand(0.0, false)
-            ).schedule();
+            IndexerSubsystem.getInstance().setIndexerPercentPower(0.0, false);
+            IndexerSubsystem.getInstance().setIntakePercentPower(0.0, false);
             isIndexerOn = false;
             //stop indexer if robot is moving and indexer is on
         }

@@ -28,11 +28,6 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     m_robotContainer = new RobotContainer();
-    addPeriodic(
-      () -> {
-      },
-      0.02, // drive at higher frequency
-      0.000);
       RobotContainer.printDiagnostics();
   }
 
