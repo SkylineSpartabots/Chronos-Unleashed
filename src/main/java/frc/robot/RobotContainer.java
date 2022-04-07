@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -35,6 +36,7 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
@@ -63,12 +65,24 @@ public class RobotContainer {
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
+  public static SendableChooser<Command> m_chooser = new SendableChooser<Command>();
+
+  public static Command getChooser(){
+    return m_chooser.getSelected();
+  }
+
   public RobotContainer() {
     m_drivetrainSubsystem = DrivetrainSubsystem.getInstance();
     m_limelight = LimelightSubsystem.getInstance();
     m_indexerSubsystem = IndexerSubsystem.getInstance();
     m_shooterSubsystem = ShooterSubsystem.getInstance();
     m_climbSubsystem = ClimbSubsystem.getInstance();
+
+    m_chooser.addOption("5 ball auto", AutonomousCommandFactory.fiveBallAuto());
+    m_chooser.addOption("2 Ball Auto Bottom Bottom", AutonomousCommandFactory.twoBallAutoBottomBottom());
+    m_chooser.addOption("2 Ball Auto Bottom Top", AutonomousCommandFactory.twoBallAutoBottomTop());
+    m_chooser.addOption("2 Ball Auto Top Middle", AutonomousCommandFactory.twoBallAutoTopMiddle());
+    SmartDashboard.putData(m_chooser);
 
     // Set the scheduler to log Shuffleboard events for command initialize,
     // interrupt, finish
