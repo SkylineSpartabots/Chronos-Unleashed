@@ -55,7 +55,7 @@ public class AimShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
         if(Math.abs(xSpeedFiltered) > maxSpeed) xSpeedFiltered = Math.copySign(maxSpeed, xSpeedFiltered);
         if(Math.abs(ySpeedFiltered) > maxSpeed) ySpeedFiltered = Math.copySign(maxSpeed, ySpeedFiltered);*/
 
-        double time = 0.1;
+        double time = 0.04;
         m_targetPosition = new Translation2d(Constants.targetHudPosition.getX() - xSpeedFiltered * time, Constants.targetHudPosition.getY() - ySpeedFiltered * time);
         // this code is so amazing -atharv
         double targetAngle = Math.toRadians(DrivetrainSubsystem.findAngle(m_drivetrainSubsystem.getPose(), m_targetPosition.getX(), m_targetPosition.getY(), 180));
@@ -127,7 +127,7 @@ public class AimShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
     private int calculateShooterSpeed(double distance){
 
         double shooterSlope = 1099;
-        double shooterIntercept = 6600.0;
+        double shooterIntercept = 6500.0;
   
         double minVelocity = 8000;
         double maxVelocity = 12500;

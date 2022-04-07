@@ -46,11 +46,12 @@ public class EjectBall extends CommandBase{ //REPLACABLE BY AIM SEQUENCE
         m_shooter.setShooterVelocity(5000);
         m_indexer.setIndexerPercentPower(Constants.indexerUp, false);
     }
-
+/*
      @Override
      public boolean isFinished() {
-         return m_timer.hasElapsed(0.2);//CALIBRATE THIS VALUE
+         return m_timer.hasElapsed(0.3);//CALIBRATE THIS VALUE
      }
+     */
 
     
     @Override

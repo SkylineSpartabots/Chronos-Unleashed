@@ -85,6 +85,7 @@ public class IndexerSubsystem extends SubsystemBase{
         else {
             setIntakePercentPower(Constants.intakeOn, true);
             m_IndexerMotor.set(ControlMode.PercentOutput, 0.0);
+            waitForIndexer = true;
         }
     }
     
@@ -108,6 +109,8 @@ public class IndexerSubsystem extends SubsystemBase{
     public double getIndexerVelocity(){
         return m_IndexerMotor.getSelectedSensorVelocity();
     }
+
+    boolean waitForIndexer = false;
     @Override
     public void periodic() {
         SmartDashboard.putNumber("BALLS LOADED",numberOfBalls());
@@ -128,22 +131,24 @@ public class IndexerSubsystem extends SubsystemBase{
         //SmartDashboard.putNumber("Indexer current from PDP", RobotContainer.getPDP().getCurrent(16));
         //SmartDashboard.putNumber("Intake current from PDP", RobotContainer.getPDP().getCurrent(3));
 
-        if(autoIndexer && isIntakeBallLoaded()){   
-            autoIndexer = false;
+        if(waitForIndexer && autoIndexer && isIntakeBallLoaded()){   
+            waitForIndexer = false;
             new SequentialCommandGroup(
+                new WaitCommand(0.25),
                 new InstantCommand(() -> m_IndexerMotor.set(ControlMode.PercentOutput, Constants.indexerUp)),
-                new WaitCommand(0.2),
-                new InstantCommand(() -> m_IndexerMotor.set(ControlMode.PercentOutput, 0)));
+                new InstantCommand(() -> autoIndexer = false),
+                new InstantCommand(() -> moveIndexer())
+                ).schedule();            
         }
         else if(!autoIndexer && autoIntake && isIntakeBallLoaded()){
             autoIntake = false;
             new SequentialCommandGroup(
-                new WaitCommand(0.1),
+                new WaitCommand(0.25),
                 new InstantCommand(() -> m_IndexerMotor.set(ControlMode.PercentOutput, Constants.indexerUp)),
-                new WaitCommand(0.2),
+                new WaitCommand(0.25),
                 new InstantCommand(() -> m_IndexerMotor.set(ControlMode.PercentOutput, 0)),                
                 new InstantCommand(() -> m_IntakeMotor.set(ControlMode.PercentOutput, 0))
-                );
+                ).schedule();
         }        
     }
     private int numberOfBalls(){
@@ -157,4 +162,20 @@ public class IndexerSubsystem extends SubsystemBase{
         return m_intakeSensor.getProximity() >= Constants.kColorSensorLoadingDistance;
     }
     
+    public void moveIndexer(){
+        if(autoIntake && isIntakeBallLoaded()){
+            autoIntake = false;
+            new SequentialCommandGroup(
+                new WaitCommand(0.4),
+                new InstantCommand(() -> m_IndexerMotor.set(ControlMode.PercentOutput, 0)),             
+                new InstantCommand(() -> m_IntakeMotor.set(ControlMode.PercentOutput, 0))              
+                ).schedule();
+        }
+        else{
+            new SequentialCommandGroup(
+                new WaitCommand(0.25),
+                new InstantCommand(() -> m_IndexerMotor.set(ControlMode.PercentOutput, 0))                
+                ).schedule();
+        }
+    }
 }

@@ -21,9 +21,10 @@ import java.util.List;
 public class AutonomousCommandFactory {
 
     public static Command getAutonomousCommand() {
-        //return ejectionAuto();
+        //return ballStealAuto();
         //return twoBallAuto();
         return fiveBallAuto();
+        //return experimentationalFiveBallAuto();
     }
 
     public static Pose2d getPose(double x, double y, double rot){
@@ -33,23 +34,23 @@ public class AutonomousCommandFactory {
     public static Command experimentationalFiveBallAuto(){                
         return new SequentialCommandGroup(
             new CalibrationCommand(getPose(7.57, 1.79, -89.18)),            
-            new SetIntakeCommand(intakeOn, false),
-            new InstantCommand(() -> ShooterSubsystem.getInstance().setShooterVelocity(shooterFixed+400)),
+            new SetIntakeCommand(intakeOn, true),
+            new InstantCommand(() -> ShooterSubsystem.getInstance().setShooterVelocity(shooterFixed+200)),
             new TrajectoryDriveCommand(getPose(7.59, 0.80, -90.42), List.of(), false,0.3, 1.2 ,1),      
-            new SetIntakeCommand(intakeOn, true), //note: watch out for if ball gets in before sensor detects
+            //new SetIntakeCommand(intakeOn, true), //note: watch out for if ball gets in before sensor detects
             new ParallelCommandGroup
             (
                 new SequentialCommandGroup(new WaitCommand(1.5), new SetIntakeCommand(intakeOn, false)),
-                new TrajectoryDriveCommand(getPose(5.40, 2.16, -145.46), List.of(new Translation2d(5.87, 2.32)), true, 1.4, 4,1.4)
+                new TrajectoryDriveCommand(getPose(5.40, 2.16, -145.46), List.of(new Translation2d(5.87, 2.32)), true, 0.5, 4,1.4)
             ),
             new SetIndexerCommand(indexerUp,false),
             new WaitCommand(1),//wait to shoot three balls
             new SetIntakeCommand(intakeOn,true),
             new SetIndexerCommand(indexerUp,true),
-            new TrajectoryDriveCommand(getPose(1.50, 1.60, -137.29), List.of(), false, 0.5, 5, 2.0),//move to station
-            new TrajectoryDriveCommand(getPose(1.73, 1.82, -137.26), List.of(), true, 1.0, 0.7, 0.4),//back up
-            new TrajectoryDriveCommand(getPose(1.60, 1.72, -136.16), List.of(), true, 1.0, 0.7, 0.4),//move forward
-            new TrajectoryDriveCommand(getPose(5.40, 2.16, -145.46), List.of(), true, 0.5,5,2.0),//back to shoot
+            new TrajectoryDriveCommand(getPose(1.45, 1.57, -137.29), List.of(), false, 0.2, 5, 2.0),//move to station
+            new TrajectoryDriveCommand(getPose(1.73, 1.82, -137.26), List.of(), true, 2, 1, 0.5),//back up
+            new TrajectoryDriveCommand(getPose(1.60, 1.72, -136.16), List.of(), true, 2, 1, 0.5),//move forward
+            new TrajectoryDriveCommand(getPose(5.40, 2.16, -145.46), List.of(), true, 0.3,5,2.0),//back to shoot
             new SetIntakeCommand(intakeOn,false),
             new SetIndexerCommand(indexerUp,false),
             new WaitCommand(3),
@@ -61,7 +62,7 @@ public class AutonomousCommandFactory {
         return new SequentialCommandGroup(
             new CalibrationCommand(getPose(10.41, 3.06, 45.79)),       
             new SetIntakeCommand(intakeOn,false),
-            new InstantCommand(() -> ShooterSubsystem.getInstance().setShooterVelocity(shooterFixed+400)),
+            new InstantCommand(() -> ShooterSubsystem.getInstance().setShooterVelocity(shooterFixed+200)),
             new TrajectoryDriveCommand(getPose(11.95, 4.52, 91.50), List.of(new Translation2d(11.73, 2.95)), false,0.5, 3 ,1.2),
             new SequentialCommandGroup(
                 new ParallelCommandGroup(new WaitCommand(0.5), new SetIntakeCommand(0.0, false), new WaitCommand(4), new SetIntakeCommand(intakeReverse, false)),
@@ -106,14 +107,40 @@ public class AutonomousCommandFactory {
         return new SequentialCommandGroup(
             new CalibrationCommand(getPose(7.57, 1.79, -89.18)),            
             new SetIntakeCommand(intakeOn,false),
-            new InstantCommand(() -> ShooterSubsystem.getInstance().setShooterVelocity(shooterFixed+300)),
+            new InstantCommand(() -> ShooterSubsystem.getInstance().setShooterVelocity(shooterFixed+150)),
             new TrajectoryDriveCommand(getPose(7.59, 0.80, -90.42), List.of(), false,0.3, 1.2 ,1),
             new WaitCommand(0.2),            
             new SetIntakeCommand(0.0,false),
             new TrajectoryDriveCommand(getPose(5.79, 2.42, -147.52), List.of(new Translation2d(6.29, 2.23)), true, 1.4, 4,1.4),
             new SetIndexerCommand(indexerUp,false),
             new SetIntakeCommand(intakeOn,false),
-            new InstantCommand(() -> ShooterSubsystem.getInstance().setShooterVelocity(shooterFixed+400)),
+            new InstantCommand(() -> ShooterSubsystem.getInstance().setShooterVelocity(shooterFixed+200)),
+            new TrajectoryDriveCommand(getPose(5.40, 2.16, -145.46), List.of(), false, 1.0, 0.45, 0.25),
+            new WaitCommand(1.2),
+            new SetIntakeCommand(intakeOn+0.15,true),
+            new SetIndexerCommand(indexerUp,true),
+            new TrajectoryDriveCommand(getPose(1.42, 1.71, -137.29), List.of(), false, 0.2, 5, 2.0),
+            new WaitCommand(1.2),
+            new TrajectoryDriveCommand(getPose(5.40, 2.16, -145.46), List.of(), true, 0.5,5,2.0),
+            new SetIntakeCommand(intakeOn,false),
+            new SetIndexerCommand(indexerUp,false),
+            new WaitCommand(3),
+            new RobotOff()
+            );
+    }
+    //previous auto
+    public static Command fiveBallAutoOld(){                
+        return new SequentialCommandGroup(
+            new CalibrationCommand(getPose(7.57, 1.79, -89.18)),            
+            new SetIntakeCommand(intakeOn,false),
+            new InstantCommand(() -> ShooterSubsystem.getInstance().setShooterVelocity(shooterFixed+200)),
+            new TrajectoryDriveCommand(getPose(7.59, 0.80, -90.42), List.of(), false,0.3, 1.2 ,1),
+            new WaitCommand(0.2),            
+            new SetIntakeCommand(0.0,false),
+            new TrajectoryDriveCommand(getPose(5.79, 2.42, -147.52), List.of(new Translation2d(6.29, 2.23)), true, 1.4, 4,1.4),
+            new SetIndexerCommand(indexerUp,false),
+            new SetIntakeCommand(intakeOn,false),
+            new InstantCommand(() -> ShooterSubsystem.getInstance().setShooterVelocity(shooterFixed+300)),
             new TrajectoryDriveCommand(getPose(5.40, 2.16, -145.46), List.of(), false, 1.0, 0.45, 0.25),
             new WaitCommand(1.2),
             new SetIntakeCommand(intakeOn+0.15,true),

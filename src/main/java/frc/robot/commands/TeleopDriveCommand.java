@@ -35,9 +35,9 @@ public class TeleopDriveCommand extends CommandBase {
     
     public void driveWithJoystick() {
         // get joystick input for drive
-        var xSpeed = -modifyAxis(m_controller.getLeftY()*0.8) * DriveConstants.kMaxSpeedMetersPerSecond;
-        var ySpeed = -modifyAxis(m_controller.getLeftX() *0.8) * DriveConstants.kMaxSpeedMetersPerSecond;
-        var rot = -modifyAxis(m_controller.getRightX()*0.5) * DriveConstants.kMaxAngularSpeedRadiansPerSecond;
+        var xSpeed = -modifyAxis(m_controller.getLeftY()) * DriveConstants.kMaxSpeedMetersPerSecond;
+        var ySpeed = -modifyAxis(m_controller.getLeftX()) * DriveConstants.kMaxSpeedMetersPerSecond;
+        var rot = -modifyAxis(m_controller.getRightX()*0.6) * DriveConstants.kMaxAngularSpeedRadiansPerSecond;
 
         SmartDashboard.putNumber("xSpeed", xSpeed);
         SmartDashboard.putNumber("ySpeed", ySpeed);
