@@ -97,6 +97,7 @@ public class ClimbSubsystem extends SubsystemBase {
     private void configureMotor(TalonSRX talon, boolean b){
         talon.setInverted(b);
         talon.setNeutralMode(NeutralMode.Brake);
+        talon.neutralOutput();
     }
 
     public void setPercentPower(LazyTalonFX talon, double power){

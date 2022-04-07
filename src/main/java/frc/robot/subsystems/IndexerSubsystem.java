@@ -81,20 +81,17 @@ public class IndexerSubsystem extends SubsystemBase{
     boolean autoIndexer = false;
     public void setIndexerPercentPower(double power, boolean autoIndexer) {
         this.autoIndexer = autoIndexer;
-        if(!autoIndexer) m_IndexerMotor.set(ControlMode.PercentOutput, power);      
+        if(!autoIndexer) m_IndexerMotor.set(ControlMode.PercentOutput, power);    
+        else {
+            setIntakePercentPower(Constants.intakeOn, true);
+            m_IndexerMotor.set(ControlMode.PercentOutput, 0.0);
+        }
     }
     
     boolean autoIntake = false;
     public void setIntakePercentPower(double power, boolean autoIntake) {
         this.autoIntake = autoIntake;
-
-        if(autoIntake){
-            if(!isIntakeBallLoaded())
-                m_IntakeMotor.set(ControlMode.PercentOutput, power);
-        }
-        else{            
-            m_IntakeMotor.set(ControlMode.PercentOutput, power);
-        }
+        m_IntakeMotor.set(ControlMode.PercentOutput, power);        
     }
 
     public void startAutoIntaking(){
@@ -113,16 +110,16 @@ public class IndexerSubsystem extends SubsystemBase{
     }
     @Override
     public void periodic() {
-        
+        SmartDashboard.putNumber("BALLS LOADED",numberOfBalls());
         SmartDashboard.putNumber("intake proximity", m_intakeSensor.getProximity());
         SmartDashboard.putBoolean("intake loaded", isIntakeBallLoaded());
-        //SmartDashboard.putBoolean("intake autoIntake", autoIntake);
+        SmartDashboard.putBoolean("intake autoIntake", autoIntake);
         //SmartDashboard.putNumber("Intake speed", m_IntakeMotor.getSelectedSensorVelocity());
         //SmartDashboard.putNumber("Intake Voltage", m_IntakeMotor.getMotorOutputVoltage());
         //SmartDashboard.putNumber("Intake Output Current", m_IntakeMotor.getStatorCurrent());
         SmartDashboard.putNumber("Intake Input Current", m_IntakeMotor.getSupplyCurrent());
 
-        //SmartDashboard.putBoolean("indexer autoIntake", autoIndexer);
+        SmartDashboard.putBoolean("indexer autoIntake", autoIndexer);
         //SmartDashboard.putNumber("indexer speed", m_IndexerMotor.getSelectedSensorVelocity());
         //SmartDashboard.putNumber("indexer Voltage", m_IndexerMotor.getMotorOutputVoltage());
         //SmartDashboard.putNumber("indexer Output Current", m_IndexerMotor.getStatorCurrent());
@@ -148,6 +145,12 @@ public class IndexerSubsystem extends SubsystemBase{
                 new InstantCommand(() -> m_IntakeMotor.set(ControlMode.PercentOutput, 0))
                 );
         }        
+    }
+    private int numberOfBalls(){
+        int number = 0;
+        if(!autoIntake) number++;
+        if(!autoIndexer) number++;
+        return number;
     }
 
     public boolean isIntakeBallLoaded(){
