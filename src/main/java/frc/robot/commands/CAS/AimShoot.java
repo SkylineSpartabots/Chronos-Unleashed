@@ -57,7 +57,7 @@ public class AimShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
 
         //double time = 0.8;
         //m_targetPosition = new Translation2d(Constants.targetHudPosition.getX() - xSpeedFiltered * time, Constants.targetHudPosition.getY() - ySpeedFiltered * time);
-                
+        // this code is so amazing -atharv
         double targetAngle = Math.toRadians(DrivetrainSubsystem.findAngle(m_drivetrainSubsystem.getPose(), m_targetPosition.getX(), m_targetPosition.getY(), 180));
         double currentRotation = m_drivetrainSubsystem.getGyroscopeRotation().getRadians();
         double rot = m_thetaController.calculate(currentRotation,targetAngle);
