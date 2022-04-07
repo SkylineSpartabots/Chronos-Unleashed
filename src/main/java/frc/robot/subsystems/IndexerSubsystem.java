@@ -81,7 +81,7 @@ public class IndexerSubsystem extends SubsystemBase{
     boolean autoIndexer = false;
     public void setIndexerPercentPower(double power, boolean autoIndexer) {
         this.autoIndexer = autoIndexer;
-        m_IndexerMotor.set(ControlMode.PercentOutput, power);      
+        if(!autoIndexer) m_IndexerMotor.set(ControlMode.PercentOutput, power);      
     }
     
     boolean autoIntake = false;
