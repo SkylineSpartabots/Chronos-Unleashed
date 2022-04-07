@@ -33,9 +33,9 @@ public class AimShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
         super(DrivetrainSubsystem.getInstance());
         m_shooter = ShooterSubsystem.getInstance();
         isIndexerOn = false;
-        addRequirements(m_shooter);
+        addRequirements(m_shooter, IndexerSubsystem.getInstance());
        
-        m_thetaController = new PIDController(4,0,0);
+        m_thetaController = new PIDController(3,0,0);
         m_thetaController.enableContinuousInput(-Math.PI, Math.PI);
     }
 
@@ -62,17 +62,15 @@ public class AimShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
         double currentRotation = m_drivetrainSubsystem.getGyroscopeRotation().getRadians();
         double rot = m_thetaController.calculate(currentRotation,targetAngle);
         
-        
-
         shooterSpeed = calculateShooterSpeed(DrivetrainSubsystem.distanceFromHub(m_targetPosition.getX(), m_targetPosition.getY()));
         m_shooter.setShooterVelocity(shooterSpeed);
         
         int currentVel = m_shooter.getVelocity();
-        int threshold = 300; 
+        int threshold = 170; 
         double angleDiff = Math.toDegrees(currentRotation - targetAngle);
 
         boolean isFacingTarget = Math.abs(angleDiff) < 3.0;
-        boolean isRobotNotMoving = xSpeed == 0 && ySpeed == 0;
+        boolean isRobotNotMoving = xSpeedFiltered == 0 && ySpeedFiltered == 0;
         boolean isShooterAtSpeed = (currentVel >= shooterSpeed - threshold && currentVel <= shooterSpeed + threshold);
         boolean isReadyToShoot = isShooterAtSpeed && shooterWithinBounds && isFacingTarget && isRobotNotMoving;
 
@@ -98,21 +96,17 @@ public class AimShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
         }  
         if(isReadyToShoot && !isIndexerOn){
             //fire indexer if aimed, robot is not moving, shooter is at speed, and indexer is off              
-            new SequentialCommandGroup(
-                new SetIndexerCommand(Constants.indexerUp, false),
-                new SetIntakeCommand(Constants.intakeOn, false)
-            ).schedule();
+            IndexerSubsystem.getInstance().setIndexerPercentPower(Constants.indexerUp, false);
+            IndexerSubsystem.getInstance().setIntakePercentPower(Constants.intakeOn, false);
             isIndexerOn = true;
             hasRobertShotBall = true;
         }
-        else if(!isReadyToShoot && isIndexerOn){
-            new SequentialCommandGroup(
-                new SetIndexerCommand(0.0, false),
-                new SetIntakeCommand(0.0, false)
-            ).schedule();
+        /*else if(!isReadyToShoot && isIndexerOn){
+            IndexerSubsystem.getInstance().setIndexerPercentPower(0.0, false);
+            IndexerSubsystem.getInstance().setIntakePercentPower(0.0, false);
             isIndexerOn = false;
             //stop indexer if robot is moving and indexer is on
-        }
+        }*/
         
         m_drivetrainSubsystem.drive(ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedFiltered, ySpeedFiltered, 
                 rotFilter.calculate(rot), m_drivetrainSubsystem.getGyroscopeRotation()));
@@ -133,9 +127,9 @@ public class AimShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
     private int calculateShooterSpeed(double distance){
 
         double shooterSlope = 1099;
-        double shooterIntercept = 6700.0;
+        double shooterIntercept = 6600.0;
   
-        double minVelocity = 9500;
+        double minVelocity = 8000;
         double maxVelocity = 12500;
   
         
