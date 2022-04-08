@@ -22,8 +22,8 @@ public class AutonomousCommandFactory {
 
     public static Command getAutonomousCommand() {
         //return ballStealAuto();
-        return twoBallAuto();
-        //return fiveBallAuto();
+        //return twoBallAuto();
+        return fiveBallAuto();
         //return experimentationalFiveBallAuto();
     }
 
@@ -107,7 +107,7 @@ public class AutonomousCommandFactory {
         return new SequentialCommandGroup(
             new CalibrationCommand(getPose(7.57, 1.79, -89.18)),            
             new SetIntakeCommand(intakeOn,false),
-            new InstantCommand(() -> ShooterSubsystem.getInstance().setShooterVelocity(shooterFixed-150)),
+            new InstantCommand(() -> ShooterSubsystem.getInstance().setShooterVelocity(shooterFixed-300)),
             new TrajectoryDriveCommand(getPose(7.59, 0.80, -90.42), List.of(), false,0.3, 1.2 ,1),
             new WaitCommand(0.2),            
             new SetIntakeCommand(0.0,false),
@@ -119,7 +119,7 @@ public class AutonomousCommandFactory {
             new WaitCommand(1.2),
             new SetIntakeCommand(intakeOn+0.15,true),
             new SetIndexerCommand(indexerUp,true),
-            new TrajectoryDriveCommand(getPose(1.42, 1.71, -137.29), List.of(), false, 0.4, 5, 2.0),
+            new TrajectoryDriveCommand(getPose(1.42, 1.71, -137.29), List.of(), false, 0.42, 5, 2.0),
             new WaitCommand(1.0),
             new InstantCommand(() -> ShooterSubsystem.getInstance().setShooterVelocity(shooterFixed+230)),
             new TrajectoryDriveCommand(getPose(5.40, 2.16, -148.46), List.of(), true, 0.5,5,1.8),
