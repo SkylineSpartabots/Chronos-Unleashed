@@ -40,33 +40,103 @@ public class MemeShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
         m_thetaController.enableContinuousInput(-Math.PI, Math.PI);
         
     }
+    private final Timer m_timer = new Timer();
+    private double firstTurnTime = 0.6;
+    private double shootTime = 0.4;
+    private double finish = 0.8;
+
+
+    //on start: set turn target (projected to be 0.6 seconds into the future: lock velocity)
+    //on 0.4 seconds: start firing
+    //on 0.6 seconds: assume first ball has fired. set new target for second
+    //0.8: unlock wheels
     
+    double xSpeedFiltered;
+    double ySpeedFiltered;
+    double targetAngle;
     @Override
     public void initialize(){
         m_timer.reset();
         m_timer.start();
+
+        /*double maxSpeed = 1.0;
+        if(Math.abs(xSpeedFiltered) > maxSpeed) xSpeedFiltered = Math.copySign(maxSpeed, xSpeedFiltered);
+        if(Math.abs(ySpeedFiltered) > maxSpeed) ySpeedFiltered = Math.copySign(maxSpeed, ySpeedFiltered);*/
+
+        var xSpeed = -modifyAxis(m_controller.getLeftY()) * DriveConstants.kMaxSpeedMetersPerSecond;
+        var ySpeed = -modifyAxis(m_controller.getLeftX()) * DriveConstants.kMaxSpeedMetersPerSecond;
+        xSpeedFiltered = driveXFilter.calculate(xSpeed);
+        ySpeedFiltered = driveYFilter.calculate(ySpeed);
+        
+
+        double time = 0.9;
+        m_targetPosition = new Translation2d(
+            Constants.targetHudPosition.getX() - xSpeedFiltered * time, 
+            Constants.targetHudPosition.getY() - ySpeedFiltered * time);
+        
+        double xPosition = m_drivetrainSubsystem.getPose().getX() + firstTurnTime * xSpeedFiltered;
+        double yPosition = m_drivetrainSubsystem.getPose().getY() + firstTurnTime * ySpeedFiltered;
+
+        targetAngle = Math.toRadians(DrivetrainSubsystem.findAngle(
+            new Pose2d(
+            xPosition, 
+            yPosition, 
+            m_drivetrainSubsystem.getPose().getRotation()), 
+            m_targetPosition.getX(), 
+            m_targetPosition.getY(), 180));
+        
+
+        shooterSpeed = calculateShooterSpeed(DrivetrainSubsystem.calculateDistance(
+            xPosition, 
+            yPosition, 
+            m_targetPosition.getX(), 
+            m_targetPosition.getY()));
     }
-    private final Timer m_timer = new Timer();
-    private double firstTurnTime = 0.6;
-    private double turnTime = 0.4;
-    private double shootTime = 0.2;
-    private double elapsedIndex = turnTime + firstTurnTime;
+    
     @Override
     public void execute() {
+
         SmartDashboard.putNumber("Time", m_timer.get());
         driveWithJoystick();
 
+        if(m_timer.hasElapsed(shootTime)){
+            //fire indexer
+            shootTime = 1000000;
+            IndexerSubsystem.getInstance().setIndexerPercentPower(Constants.indexerUp, false);
+            IndexerSubsystem.getInstance().setIntakePercentPower(Constants.intakeOn, false);
+        }
+        
         if(m_timer.hasElapsed(firstTurnTime)){
+            //calculate second turn
             firstTurnTime = 1000000;
-        }
-        if(m_timer.hasElapsed(elapsedIndex - shootTime)){
+            double xPosition = m_drivetrainSubsystem.getPose().getX() + (finish - firstTurnTime) * xSpeedFiltered;
+            double yPosition = m_drivetrainSubsystem.getPose().getY() + (finish - firstTurnTime) * ySpeedFiltered;
 
-        }
-        if(m_timer.hasElapsed(elapsedIndex)){
-            elapsedIndex += turnTime;
-            //change aim
-        }
+            targetAngle = Math.toRadians(DrivetrainSubsystem.findAngle(
+            new Pose2d(
+                xPosition, 
+                yPosition, 
+                m_drivetrainSubsystem.getPose().getRotation()), 
+                m_targetPosition.getX(), 
+                m_targetPosition.getY(), 180));  
 
+            shooterSpeed = calculateShooterSpeed(DrivetrainSubsystem.calculateDistance(
+                xPosition, 
+                yPosition, 
+                m_targetPosition.getX(), 
+                m_targetPosition.getY()));
+        }
+    }
+    
+    @Override
+    public boolean isFinished() {
+        return m_timer.hasElapsed(finish);
+    }
+    @Override
+    public void end(boolean interruptable){  
+        IndexerSubsystem.getInstance().setIndexerPercentPower(Constants.indexerUp, true);
+        IndexerSubsystem.getInstance().setIntakePercentPower(Constants.intakeOn, true);
+        ShooterSubsystem.getInstance().setShooterVelocity(Constants.shooterIdle);        
     }
 
     boolean isIndexerOn = false;
@@ -76,23 +146,11 @@ public class MemeShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
 
     @Override
     public void driveWithJoystick() {//called periodically
-        var xSpeed = -modifyAxis(m_controller.getLeftY()) * DriveConstants.kMaxSpeedMetersPerSecond;
-        var ySpeed = -modifyAxis(m_controller.getLeftX()) * DriveConstants.kMaxSpeedMetersPerSecond;
-        var xSpeedFiltered = driveXFilter.calculate(xSpeed);
-        var ySpeedFiltered = driveYFilter.calculate(ySpeed);
         
-        /*double maxSpeed = 1.0;
-        if(Math.abs(xSpeedFiltered) > maxSpeed) xSpeedFiltered = Math.copySign(maxSpeed, xSpeedFiltered);
-        if(Math.abs(ySpeedFiltered) > maxSpeed) ySpeedFiltered = Math.copySign(maxSpeed, ySpeedFiltered);*/
-
-        double time = 0.04;
-        m_targetPosition = new Translation2d(Constants.targetHudPosition.getX() - xSpeedFiltered * time, Constants.targetHudPosition.getY() - ySpeedFiltered * time);
         // this code is so amazing -atharv
-        double targetAngle = Math.toRadians(DrivetrainSubsystem.findAngle(m_drivetrainSubsystem.getPose(), m_targetPosition.getX(), m_targetPosition.getY(), 180));
         double currentRotation = m_drivetrainSubsystem.getGyroscopeRotation().getRadians();
         double rot = m_thetaController.calculate(currentRotation,targetAngle);
         
-        shooterSpeed = calculateShooterSpeed(DrivetrainSubsystem.distanceFromHub(m_targetPosition.getX(), m_targetPosition.getY()));
         m_shooter.setShooterVelocity(shooterSpeed);
         
         int currentVel = m_shooter.getVelocity();
@@ -102,13 +160,11 @@ public class MemeShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
         boolean isFacingTarget = Math.abs(angleDiff) < 3.0;
         boolean isRobotNotMoving = xSpeedFiltered == 0 && ySpeedFiltered == 0;
         boolean isShooterAtSpeed = (currentVel >= shooterSpeed - threshold && currentVel <= shooterSpeed + threshold);
-        boolean isReadyToShoot = isShooterAtSpeed && shooterWithinBounds && isFacingTarget && isRobotNotMoving;
+        boolean isReadyToShoot = isShooterAtSpeed && shooterWithinBounds && isFacingTarget; //&& isRobotNotMoving;
 
         DrivetrainSubsystem.getInstance().setHubPosition(m_targetPosition.getX(), m_targetPosition.getY());
         SmartDashboard.putNumber("hubX", m_targetPosition.getX());
         SmartDashboard.putNumber("hubY", m_targetPosition.getY());
-        SmartDashboard.putNumber("xSpeed", xSpeed);
-        SmartDashboard.putNumber("ySpeed", ySpeed);
         SmartDashboard.putNumber("rotSpeed", rot);
         SmartDashboard.putNumber("CAS Shooter Target", shooterSpeed);
         SmartDashboard.putNumber("CAS Shooter Speed", currentVel);
@@ -121,38 +177,12 @@ public class MemeShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
         SmartDashboard.putBoolean("?shooter within bounds", shooterWithinBounds);
         SmartDashboard.putBoolean("?Ready To Shoot", isReadyToShoot);
 
-        if(Math.abs(angleDiff) < 3.0){
-            rot = 0;            
-        }  
-        if(isReadyToShoot && !isIndexerOn){
-            //fire indexer if aimed, robot is not moving, shooter is at speed, and indexer is off              
-            IndexerSubsystem.getInstance().setIndexerPercentPower(Constants.indexerUp, false);
-            IndexerSubsystem.getInstance().setIntakePercentPower(Constants.intakeOn, false);
-            isIndexerOn = true;
-            hasRobertShotBall = true;
-        }
-        /*else if(!isReadyToShoot && isIndexerOn){
-            IndexerSubsystem.getInstance().setIndexerPercentPower(0.0, false);
-            IndexerSubsystem.getInstance().setIntakePercentPower(0.0, false);
-            isIndexerOn = false;
-            //stop indexer if robot is moving and indexer is on
-        }*/
         
         m_drivetrainSubsystem.drive(ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedFiltered, ySpeedFiltered, 
                 rotFilter.calculate(rot), m_drivetrainSubsystem.getGyroscopeRotation()));
                 //rot, m_drivetrainSubsystem.getGyroscopeRotation()));
     }
     
-    @Override
-    public void end(boolean interruptable){  
-        isIndexerOn = false;
-        if(hasRobertShotBall){
-            IndexerSubsystem.getInstance().setIndexerPercentPower(Constants.indexerUp, true);
-            IndexerSubsystem.getInstance().setIntakePercentPower(Constants.intakeOn, true);
-            ShooterSubsystem.getInstance().setShooterVelocity(Constants.shooterIdle);
-        }   
-        hasRobertShotBall = false;
-    }
 
     private int calculateShooterSpeed(double distance){
 
