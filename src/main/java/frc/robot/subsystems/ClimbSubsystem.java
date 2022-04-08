@@ -44,6 +44,7 @@ public class ClimbSubsystem extends SubsystemBase {
         setMultipleStatuFramePeriod();
     }
     private void setMultipleStatuFramePeriod(){
+        //mLeftClimb.setStatusFramePeriod(StatusFrame.Status_1_General, 255);
         mLeftClimb.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 255);//if rev, 4500
         mRightClimb.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 255);
         mLeftClimb.setStatusFramePeriod(StatusFrame.Status_4_AinTempVbat, 253);//4750
