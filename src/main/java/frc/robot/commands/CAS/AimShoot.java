@@ -66,10 +66,10 @@ public class AimShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
         m_shooter.setShooterVelocity(shooterSpeed);
         
         int currentVel = m_shooter.getVelocity();
-        int threshold = 300; 
+        int threshold = 200; 
         double angleDiff = Math.toDegrees(currentRotation - targetAngle);
 
-        boolean isFacingTarget = Math.abs(angleDiff) < 8.0;
+        boolean isFacingTarget = Math.abs(angleDiff) < 3.0;
         boolean isRobotNotMoving = xSpeedFiltered == 0 && ySpeedFiltered == 0;
         boolean isShooterAtSpeed = (currentVel >= shooterSpeed - threshold && currentVel <= shooterSpeed + threshold);
         boolean isReadyToShoot = isShooterAtSpeed && shooterWithinBounds && isFacingTarget && isRobotNotMoving;
@@ -91,7 +91,7 @@ public class AimShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
         SmartDashboard.putBoolean("?shooter within bounds", shooterWithinBounds);
         SmartDashboard.putBoolean("?Ready To Shoot", isReadyToShoot);
 
-        if(Math.abs(angleDiff) < 5.0){
+        if(Math.abs(angleDiff) < 3.0){
             rot = 0;            
         }  
         if(isReadyToShoot && !isIndexerOn){
@@ -109,8 +109,8 @@ public class AimShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
         }*/
         
         m_drivetrainSubsystem.drive(ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedFiltered, ySpeedFiltered, 
-                //rotFilter.calculate(rot), m_drivetrainSubsystem.getGyroscopeRotation()));
-                rot, m_drivetrainSubsystem.getGyroscopeRotation()));
+                rotFilter.calculate(rot), m_drivetrainSubsystem.getGyroscopeRotation()));
+                //rot, m_drivetrainSubsystem.getGyroscopeRotation()));
     }
     
     @Override
