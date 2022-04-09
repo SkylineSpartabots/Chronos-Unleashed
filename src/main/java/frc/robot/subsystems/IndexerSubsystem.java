@@ -55,6 +55,9 @@ public class IndexerSubsystem extends SubsystemBase{
         setMultipleStatuFramePeriod();
     }
     private void setMultipleStatuFramePeriod(){
+        m_IntakeMotor.setStatusFramePeriod(StatusFrame.Status_1_General, 255);
+        m_IndexerMotor.setStatusFramePeriod(StatusFrame.Status_1_General, 255);
+        
         m_IndexerMotor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 255);//if rev, 4500
         m_IntakeMotor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 255);
         m_IndexerMotor.setStatusFramePeriod(StatusFrame.Status_4_AinTempVbat, 253);//4750

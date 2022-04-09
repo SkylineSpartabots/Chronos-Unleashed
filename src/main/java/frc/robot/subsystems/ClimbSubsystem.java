@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.io.ObjectInputFilter.Status;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrame;
@@ -44,7 +46,11 @@ public class ClimbSubsystem extends SubsystemBase {
         setMultipleStatuFramePeriod();
     }
     private void setMultipleStatuFramePeriod(){
-        //mLeftClimb.setStatusFramePeriod(StatusFrame.Status_1_General, 255);
+        mLeftClimb.setStatusFramePeriod(StatusFrame.Status_1_General, 255);
+        mRightClimb.setStatusFramePeriod(StatusFrame.Status_1_General, 255);
+        mRightPivot.setStatusFramePeriod(StatusFrame.Status_1_General, 255);
+        mLeftPivot.setStatusFramePeriod(StatusFrame.Status_1_General, 255);
+        
         mLeftClimb.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 255);//if rev, 4500
         mRightClimb.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 255);
         mLeftClimb.setStatusFramePeriod(StatusFrame.Status_4_AinTempVbat, 253);//4750
@@ -86,6 +92,7 @@ public class ClimbSubsystem extends SubsystemBase {
         mRightPivot.setStatusFramePeriod(StatusFrame.Status_15_FirmwareApiStatus, 239);
         mLeftPivot.setStatusFramePeriod(StatusFrame.Status_17_Targets1, 237);//6250
         mRightPivot.setStatusFramePeriod(StatusFrame.Status_17_Targets1, 237);
+        
     }
 
     private void configureMotor(LazyTalonFX talon, boolean b){
