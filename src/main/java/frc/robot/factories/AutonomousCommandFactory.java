@@ -115,7 +115,7 @@ public class AutonomousCommandFactory {
             new TrajectoryDriveCommand(getPose(5.79, 2.42, -147.52), List.of(new Translation2d(6.29, 2.23)), true, 1.4, 4,1.4),
             new SetIndexerCommand(indexerUp,false),
             new SetIntakeCommand(intakeOn,false),
-            new InstantCommand(() -> ShooterSubsystem.getInstance().setShooterVelocity(shooterFixed+180)),
+            new InstantCommand(() -> ShooterSubsystem.getInstance().setShooterVelocity(shooterFixed+0)),
             new TrajectoryDriveCommand(getPose(5.40, 2.16, -145.46), List.of(), false, 1.0, 0.45, 0.25),
             new WaitCommand(1.2),
             new SetIntakeCommand(intakeOn+0.15,true),
