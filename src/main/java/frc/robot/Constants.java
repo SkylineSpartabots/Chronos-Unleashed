@@ -48,7 +48,7 @@ public final class Constants {
     public static final Color kColorSensorRedIndexer = new Color(0.49, 0.36, 0.14);
     public static final Color allianceColorIntake = kColorSensorBlueIntake;
     public static final Color allianceColorIndexer = kColorSensorBlueIndexer;
-    public static final double kColorSensorLoadingDistance = 62;
+    public static final double kColorSensorLoadingDistance = 100;
 
     //Dummy values, need to find/calculate
     public static final List<Translation2d> kReferenceTranslations = List.of(
