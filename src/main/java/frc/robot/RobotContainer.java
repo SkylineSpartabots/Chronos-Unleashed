@@ -8,6 +8,7 @@ import frc.lib.util.DeviceFinder;
 import frc.robot.commands.*;
 import frc.robot.commands.CAS.AimShoot;
 import frc.robot.commands.CAS.EjectBall;
+import frc.robot.commands.CAS.MemeShoot;
 import frc.robot.commands.CAS.RobotIdle;
 import frc.robot.commands.CAS.RobotOff;
 import frc.robot.commands.SetSubsystemCommand.*;
@@ -148,7 +149,7 @@ public class RobotContainer {
     m_controller.getLeftBumper().whenHeld(new SetIntakeCommand(intakeReverse, false));
     m_controller.getLeftBumper().whenReleased(new SetIntakeCommand(intakeOn, true));
     //m_controller.getRightBumper().whenHeld(new ShootByLimelight(false));
-    m_controller.getRightBumper().whenHeld(new SetIntakeCommand(intakeOn, false));
+    m_controller.getRightBumper().whileActiveOnce(new MemeShoot());
     
     //m_controller.getRightStickButton().whenHeld(new ShootByLimelight(false));
     m_controller.getLeftStickButton().whenHeld(new AimShoot());

@@ -69,13 +69,19 @@ public class MemeShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
         ySpeedFiltered = driveYFilter.calculate(ySpeed);
         
 
-        double time = 0.9;
+        double time = 0.8;
         m_targetPosition = new Translation2d(
             Constants.targetHudPosition.getX() - xSpeedFiltered * time, 
             Constants.targetHudPosition.getY() - ySpeedFiltered * time);
         
         double xPosition = m_drivetrainSubsystem.getPose().getX() + firstTurnTime * xSpeedFiltered;
         double yPosition = m_drivetrainSubsystem.getPose().getY() + firstTurnTime * ySpeedFiltered;
+        SmartDashboard.putNumber("1 x projected X", xPosition);
+        SmartDashboard.putNumber("1 y projected Y", yPosition);
+        SmartDashboard.putNumber("1 projected X", xPosition);
+        SmartDashboard.putNumber("1 projected Y", yPosition);
+
+
 
         targetAngle = Math.toRadians(DrivetrainSubsystem.findAngle(
             new Pose2d(
@@ -107,6 +113,25 @@ public class MemeShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
         }
         
         if(m_timer.hasElapsed(firstTurnTime)){
+
+            
+        int currentVel = m_shooter.getVelocity();
+        int threshold = 170; 
+        double angleDiff = Math.toDegrees(m_drivetrainSubsystem.getGyroscopeRotation().getRadians() - targetAngle);
+
+        boolean isFacingTarget = Math.abs(angleDiff) < 3.0;
+        boolean isShooterAtSpeed = (currentVel >= shooterSpeed - threshold && currentVel <= shooterSpeed + threshold);
+        boolean isReadyToShoot = isShooterAtSpeed && shooterWithinBounds && isFacingTarget; //&& isRobotNotMoving;
+
+        DrivetrainSubsystem.getInstance().setHubPosition(m_targetPosition.getX(), m_targetPosition.getY());
+
+        SmartDashboard.putBoolean("1 ?Facing Target", isFacingTarget);
+        SmartDashboard.putBoolean("1 ?Shooter At Speed", isShooterAtSpeed);
+        SmartDashboard.putBoolean("1 ?Indexer Off", !isIndexerOn);
+        SmartDashboard.putBoolean("1 ?shooter within bounds", shooterWithinBounds);
+        SmartDashboard.putBoolean("1 ?Ready To Shoot", isReadyToShoot);
+
+
             //calculate second turn
             firstTurnTime = 1000000;
             double xPosition = m_drivetrainSubsystem.getPose().getX() + (finish - firstTurnTime) * xSpeedFiltered;
@@ -125,6 +150,8 @@ public class MemeShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
                 yPosition, 
                 m_targetPosition.getX(), 
                 m_targetPosition.getY()));
+
+            
         }
     }
     
@@ -134,6 +161,23 @@ public class MemeShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
     }
     @Override
     public void end(boolean interruptable){  
+        
+        int currentVel = m_shooter.getVelocity();
+        int threshold = 170; 
+        double angleDiff = Math.toDegrees(m_drivetrainSubsystem.getGyroscopeRotation().getRadians() - targetAngle);
+
+        boolean isFacingTarget = Math.abs(angleDiff) < 3.0;
+        boolean isShooterAtSpeed = (currentVel >= shooterSpeed - threshold && currentVel <= shooterSpeed + threshold);
+        boolean isReadyToShoot = isShooterAtSpeed && shooterWithinBounds && isFacingTarget; //&& isRobotNotMoving;
+
+        DrivetrainSubsystem.getInstance().setHubPosition(m_targetPosition.getX(), m_targetPosition.getY());
+
+        SmartDashboard.putBoolean("2 ?Facing Target", isFacingTarget);
+        SmartDashboard.putBoolean("2 ?Shooter At Speed", isShooterAtSpeed);
+        SmartDashboard.putBoolean("2 ?Indexer Off", !isIndexerOn);
+        SmartDashboard.putBoolean("2 ?shooter within bounds", shooterWithinBounds);
+        SmartDashboard.putBoolean("2 ?Ready To Shoot", isReadyToShoot);
+
         IndexerSubsystem.getInstance().setIndexerPercentPower(Constants.indexerUp, true);
         IndexerSubsystem.getInstance().setIntakePercentPower(Constants.intakeOn, true);
         ShooterSubsystem.getInstance().setShooterVelocity(Constants.shooterIdle);        
@@ -152,31 +196,6 @@ public class MemeShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
         double rot = m_thetaController.calculate(currentRotation,targetAngle);
         
         m_shooter.setShooterVelocity(shooterSpeed);
-        
-        int currentVel = m_shooter.getVelocity();
-        int threshold = 170; 
-        double angleDiff = Math.toDegrees(currentRotation - targetAngle);
-
-        boolean isFacingTarget = Math.abs(angleDiff) < 3.0;
-        boolean isRobotNotMoving = xSpeedFiltered == 0 && ySpeedFiltered == 0;
-        boolean isShooterAtSpeed = (currentVel >= shooterSpeed - threshold && currentVel <= shooterSpeed + threshold);
-        boolean isReadyToShoot = isShooterAtSpeed && shooterWithinBounds && isFacingTarget; //&& isRobotNotMoving;
-
-        DrivetrainSubsystem.getInstance().setHubPosition(m_targetPosition.getX(), m_targetPosition.getY());
-        SmartDashboard.putNumber("hubX", m_targetPosition.getX());
-        SmartDashboard.putNumber("hubY", m_targetPosition.getY());
-        SmartDashboard.putNumber("rotSpeed", rot);
-        SmartDashboard.putNumber("CAS Shooter Target", shooterSpeed);
-        SmartDashboard.putNumber("CAS Shooter Speed", currentVel);
-        SmartDashboard.putNumber("CAS Distance Away", DrivetrainSubsystem.distanceFromHub(m_targetPosition.getX(), m_targetPosition.getY()));
-        SmartDashboard.putNumber("CAS AngleDiff", angleDiff);
-        SmartDashboard.putBoolean("?Facing Target", isFacingTarget);
-        SmartDashboard.putBoolean("?Robot Not Moving", isRobotNotMoving);
-        SmartDashboard.putBoolean("?Shooter At Speed", isShooterAtSpeed);
-        SmartDashboard.putBoolean("?Indexer Off", !isIndexerOn);
-        SmartDashboard.putBoolean("?shooter within bounds", shooterWithinBounds);
-        SmartDashboard.putBoolean("?Ready To Shoot", isReadyToShoot);
-
         
         m_drivetrainSubsystem.drive(ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedFiltered, ySpeedFiltered, 
                 rotFilter.calculate(rot), m_drivetrainSubsystem.getGyroscopeRotation()));
