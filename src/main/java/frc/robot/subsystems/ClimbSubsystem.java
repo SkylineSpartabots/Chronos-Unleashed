@@ -1,7 +1,10 @@
 package frc.robot.subsystems;
 
+import java.io.ObjectInputFilter.Status;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
@@ -40,6 +43,56 @@ public class ClimbSubsystem extends SubsystemBase {
         configureMotor(mLeftPivot, true);
         mRightPivot = TalonSRXFactory.createDefaultTalon("Right Pivot Motor", Ports.RIGHT_PIVOT);
         configureMotor(mRightPivot, false);
+        setMultipleStatuFramePeriod();
+    }
+    private void setMultipleStatuFramePeriod(){
+        mLeftClimb.setStatusFramePeriod(StatusFrame.Status_1_General, 255);
+        mRightClimb.setStatusFramePeriod(StatusFrame.Status_1_General, 255);
+        mRightPivot.setStatusFramePeriod(StatusFrame.Status_1_General, 255);
+        mLeftPivot.setStatusFramePeriod(StatusFrame.Status_1_General, 255);
+        
+        mLeftClimb.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 255);//if rev, 4500
+        mRightClimb.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 255);
+        mLeftClimb.setStatusFramePeriod(StatusFrame.Status_4_AinTempVbat, 253);//4750
+        mRightClimb.setStatusFramePeriod(StatusFrame.Status_4_AinTempVbat, 253);
+        mLeftClimb.setStatusFramePeriod(StatusFrame.Status_6_Misc, 251);//5000
+        mRightClimb.setStatusFramePeriod(StatusFrame.Status_6_Misc, 251);
+        mLeftClimb.setStatusFramePeriod(StatusFrame.Status_7_CommStatus, 249);//5250
+        mRightClimb.setStatusFramePeriod(StatusFrame.Status_7_CommStatus, 249);
+        mLeftClimb.setStatusFramePeriod(StatusFrame.Status_10_MotionMagic, 247);//5500
+        mRightClimb.setStatusFramePeriod(StatusFrame.Status_10_MotionMagic, 247);
+        mLeftClimb.setStatusFramePeriod(StatusFrame.Status_12_Feedback1, 245);//5750
+        mRightClimb.setStatusFramePeriod(StatusFrame.Status_12_Feedback1, 245);
+        mLeftClimb.setStatusFramePeriod(StatusFrame.Status_13_Base_PIDF0, 243);//5850
+        mRightClimb.setStatusFramePeriod(StatusFrame.Status_13_Base_PIDF0, 243);
+        mLeftClimb.setStatusFramePeriod(StatusFrame.Status_14_Turn_PIDF1, 241);//5950
+        mRightClimb.setStatusFramePeriod(StatusFrame.Status_14_Turn_PIDF1, 241);
+        mLeftClimb.setStatusFramePeriod(StatusFrame.Status_15_FirmwareApiStatus, 239);//6100
+        mRightClimb.setStatusFramePeriod(StatusFrame.Status_15_FirmwareApiStatus, 239);
+        mLeftClimb.setStatusFramePeriod(StatusFrame.Status_17_Targets1, 237);//6250
+        mRightClimb.setStatusFramePeriod(StatusFrame.Status_17_Targets1, 237);
+        
+        mLeftPivot.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 255);//if rev, 4500
+        mRightPivot.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 255);
+        mLeftPivot.setStatusFramePeriod(StatusFrame.Status_4_AinTempVbat, 253);//4750
+        mRightPivot.setStatusFramePeriod(StatusFrame.Status_4_AinTempVbat, 253);
+        mLeftPivot.setStatusFramePeriod(StatusFrame.Status_6_Misc, 251);//5000
+        mRightPivot.setStatusFramePeriod(StatusFrame.Status_6_Misc, 251);
+        mLeftPivot.setStatusFramePeriod(StatusFrame.Status_7_CommStatus, 249);//5250
+        mRightPivot.setStatusFramePeriod(StatusFrame.Status_7_CommStatus, 249);
+        mLeftPivot.setStatusFramePeriod(StatusFrame.Status_10_MotionMagic, 247);//5500
+        mRightPivot.setStatusFramePeriod(StatusFrame.Status_10_MotionMagic, 247);
+        mLeftPivot.setStatusFramePeriod(StatusFrame.Status_12_Feedback1, 245);//5750
+        mRightPivot.setStatusFramePeriod(StatusFrame.Status_12_Feedback1, 245);
+        mLeftPivot.setStatusFramePeriod(StatusFrame.Status_13_Base_PIDF0, 243);//5850
+        mRightPivot.setStatusFramePeriod(StatusFrame.Status_13_Base_PIDF0, 243);
+        mLeftPivot.setStatusFramePeriod(StatusFrame.Status_14_Turn_PIDF1, 241);//5950
+        mRightPivot.setStatusFramePeriod(StatusFrame.Status_14_Turn_PIDF1, 241);
+        mLeftPivot.setStatusFramePeriod(StatusFrame.Status_15_FirmwareApiStatus, 239);//6100
+        mRightPivot.setStatusFramePeriod(StatusFrame.Status_15_FirmwareApiStatus, 239);
+        mLeftPivot.setStatusFramePeriod(StatusFrame.Status_17_Targets1, 237);//6250
+        mRightPivot.setStatusFramePeriod(StatusFrame.Status_17_Targets1, 237);
+        
     }
 
     private void configureMotor(LazyTalonFX talon, boolean b){
@@ -52,6 +105,7 @@ public class ClimbSubsystem extends SubsystemBase {
     private void configureMotor(TalonSRX talon, boolean b){
         talon.setInverted(b);
         talon.setNeutralMode(NeutralMode.Brake);
+        talon.neutralOutput();
     }
 
     public void setPercentPower(LazyTalonFX talon, double power){

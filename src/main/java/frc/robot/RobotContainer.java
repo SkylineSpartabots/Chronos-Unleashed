@@ -6,10 +6,10 @@ package frc.robot;
 import frc.lib.util.Controller;
 import frc.lib.util.DeviceFinder;
 import frc.robot.commands.*;
-import frc.robot.commands.CAS.AimByLimelight;
+import frc.robot.commands.CAS.AimShoot;
+import frc.robot.commands.CAS.EjectBall;
 import frc.robot.commands.CAS.RobotIdle;
 import frc.robot.commands.CAS.RobotOff;
-import frc.robot.commands.CAS.ShootByLimelight;
 import frc.robot.commands.SetSubsystemCommand.*;
 import frc.robot.factories.AutonomousCommandFactory;
 import frc.robot.subsystems.ClimbSubsystem;
@@ -145,23 +145,22 @@ public class RobotContainer {
     m_controller.getAButton().whenActive(new RobotIdle());
     m_controller.getYButton().whenActive(new RobotOff());
 
-    m_controller.getLeftBumper().whenHeld(new ShootByLimelight(false));
-    m_controller.getLeftBumper().whenHeld(new AimByLimelight("left"));
-    m_controller.getRightBumper().whenHeld(new ShootByLimelight(false));
-    m_controller.getRightBumper().whenHeld(new AimByLimelight("right"));
+    m_controller.getLeftBumper().whenHeld(new SetIntakeCommand(intakeReverse, false));
+    m_controller.getLeftBumper().whenReleased(new SetIntakeCommand(intakeOn, true));
+    //m_controller.getRightBumper().whenHeld(new ShootByLimelight(false));
+    m_controller.getRightBumper().whenHeld(new SetIntakeCommand(intakeOn, false));
     
-    m_controller.getRightStickButton().whenHeld(new ShootByLimelight(false));
-    m_controller.getLeftStickButton().whenHeld(new AimByLimelight());
+    //m_controller.getRightStickButton().whenHeld(new ShootByLimelight(false));
+    m_controller.getLeftStickButton().whenHeld(new AimShoot());
     
     Trigger leftTriggerAxis = new Trigger(() -> { return m_controller.getLeftTriggerAxis() > triggerDeadzone;});
     Trigger rightTriggerAxis = new Trigger(() -> { return m_controller.getRightTriggerAxis() > triggerDeadzone;});
 
-    leftTriggerAxis.whileActiveOnce(new ShootByLimelight(true));
-    leftTriggerAxis.whileActiveOnce(new AimByLimelight("left"));
-    leftTriggerAxis.whenInactive(new SequentialCommandGroup(new WaitCommand(0.6), new RobotIdle()));
-    rightTriggerAxis.whileActiveOnce(new ShootByLimelight(true));
-    rightTriggerAxis.whileActiveOnce(new AimByLimelight("right"));
-    rightTriggerAxis.whenInactive(new SequentialCommandGroup(new WaitCommand(0.6), new RobotIdle()));
+    //leftTriggerAxis.whileActiveOnce(new ShootByLimelight(true));
+    //leftTriggerAxis.whileActiveOnce(new AimShoot());
+    //leftTriggerAxis.whenInactive(new SequentialCommandGroup(new WaitCommand(0.6), new RobotIdle()));
+    leftTriggerAxis.whileActiveOnce(new EjectBall());
+    rightTriggerAxis.whileActiveOnce(new AimShoot());
 
 
     //SECOND CONTROLLER
@@ -175,7 +174,7 @@ public class RobotContainer {
     /*dpadUp2.whileActiveContinuous(new InstantCommand(() -> m_shooterSubsystem.increaseShooterVelocity(250)));  //works  
     dpadDown2.whileActiveContinuous(new InstantCommand(() -> m_shooterSubsystem.increaseShooterVelocity(-250)));*/   //works
     dpadRight2.whenActive(new InstantCommand(() -> m_shooterSubsystem.setShooterVelocity(shooterFixed)));
-    dpadLeft2.whenActive(new InstantCommand(() -> m_shooterSubsystem.setShooterVelocity(shooterFixed+250)));
+    dpadLeft2.whenActive(new InstantCommand(() -> m_shooterSubsystem.setShooterVelocity(3000)));
     dpadDown2.whenActive(new SetIndexerCommand(indexerDown,false))
         .whenInactive(new SetIndexerCommand(0.0, false));
     dpadUp2.whenActive(new SetIndexerCommand(indexerUp,false))
@@ -188,10 +187,8 @@ public class RobotContainer {
                     .whenInactive(new SetIndexerCommand(0.0, false));
     rightTriggerAxis2.whenActive(new SetIndexerCommand(indexerUp,false))
                      .whenInactive(new SetIndexerCommand(0.0, false));*/
-    m_controller2.getLeftBumper().whenPressed(new SetIntakeCommand(intakeReverse,false))
-                    .whenReleased(new SetIndexerCommand(0.0, false));
-    m_controller2.getRightBumper().whenPressed(new SetIntakeCommand(intakeOn,false))
-                     .whenReleased(new SetIntakeCommand(0.0, false));
+    m_controller2.getLeftBumper().whenPressed(new SetIntakeCommand(intakeOn,true));
+    m_controller2.getRightBumper().whenPressed(new SetIndexerCommand(indexerUp,true));
                      
     leftTriggerAxis2.whileActiveContinuous(new InstantCommand(() -> ClimbSubsystem.getInstance().leftPivotPower(pivotDown*m_controller2.getLeftTriggerAxis())))
       .whenInactive(new InstantCommand(() -> ClimbSubsystem.getInstance().leftPivotPower(0)));
@@ -205,13 +202,9 @@ public class RobotContainer {
     rightJoystick.whileActiveContinuous(new InstantCommand(() -> ClimbSubsystem.getInstance().rightClimbPower(-climbUp*m_controller2.getRightY())))
       .whenInactive(new InstantCommand(() -> ClimbSubsystem.getInstance().rightClimbPower(0)));
 
-    m_controller2.getLeftStickButton().whenActive(new InstantCommand(() -> ClimbSubsystem.getInstance().pivotPower(pivotUp)))
-                              .whenInactive(new InstantCommand(() -> ClimbSubsystem.getInstance().pivotPower(0)));
-    m_controller2.getRightStickButton().whenActive(new InstantCommand(() -> ClimbSubsystem.getInstance().pivotPower(pivotUp)))
-                              .whenInactive(new InstantCommand(() -> ClimbSubsystem.getInstance().pivotPower(0)));
     
-    m_controller2.getXButton().whenHeld(new SetIntakeCommand(intakeOn,true));
-    m_controller2.getBButton().whenHeld(new SetIndexerCommand(indexerUp,true));
+    m_controller2.getXButton().whenHeld(new SetIntakeCommand(intakeOn,false)).whenReleased(new SetIntakeCommand(0.0, false));
+    m_controller2.getBButton().whenHeld(new SetIntakeCommand(intakeReverse,false)).whenReleased(new SetIntakeCommand(0.0, false));
     m_controller2.getAButton().whenActive(new RobotIdle());
     m_controller2.getYButton().whenActive(new RobotOff());    
     m_controller2.getStartButton().whenPressed(m_drivetrainSubsystem::resetOdometry);
