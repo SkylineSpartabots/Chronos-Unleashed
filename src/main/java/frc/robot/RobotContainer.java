@@ -7,7 +7,7 @@ import frc.lib.util.Controller;
 import frc.lib.util.DeviceFinder;
 import frc.robot.commands.*;
 import frc.robot.commands.CAS.AimShoot;
-import frc.robot.commands.CAS.EjectBall;
+//mport frc.robot.commands.CAS.EjectBall;
 import frc.robot.commands.CAS.RobotIdle;
 import frc.robot.commands.CAS.RobotOff;
 import frc.robot.commands.SetSubsystemCommand.*;
@@ -159,7 +159,7 @@ public class RobotContainer {
     //leftTriggerAxis.whileActiveOnce(new ShootByLimelight(true));
     //leftTriggerAxis.whileActiveOnce(new AimShoot());
     //leftTriggerAxis.whenInactive(new SequentialCommandGroup(new WaitCommand(0.6), new RobotIdle()));
-    leftTriggerAxis.whileActiveOnce(new EjectBall());
+    //leftTriggerAxis.whileActiveOnce(new EjectBall());
     rightTriggerAxis.whileActiveOnce(new AimShoot());
 
 

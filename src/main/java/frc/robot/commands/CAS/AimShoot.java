@@ -6,6 +6,7 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -25,7 +26,7 @@ import frc.robot.subsystems.LimelightSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
 public class AimShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
-    private PIDController m_thetaController;
+    private ProfiledPIDController m_thetaController;
     private Translation2d m_targetPosition = Constants.targetHudPosition;
     private final ShooterSubsystem m_shooter;
 
@@ -35,7 +36,7 @@ public class AimShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
         isIndexerOn = false;
         addRequirements(m_shooter, IndexerSubsystem.getInstance());
        
-        m_thetaController = new PIDController(3,0,0);
+        m_thetaController = new ProfiledPIDController(2.0, 0, 0, new TrapezoidProfile.Constraints(Math.PI, Math.PI));
         m_thetaController.enableContinuousInput(-Math.PI, Math.PI);
     }
 
@@ -109,8 +110,8 @@ public class AimShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
         }*/
         
         m_drivetrainSubsystem.drive(ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedFiltered, ySpeedFiltered, 
-                rotFilter.calculate(rot), m_drivetrainSubsystem.getGyroscopeRotation()));
-                //rot, m_drivetrainSubsystem.getGyroscopeRotation()));
+                //rotFilter.calculate(rot), m_drivetrainSubsystem.getGyroscopeRotation()));
+                rot, m_drivetrainSubsystem.getGyroscopeRotation()));
     }
     
     @Override
