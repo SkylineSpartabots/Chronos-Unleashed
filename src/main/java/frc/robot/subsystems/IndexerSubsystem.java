@@ -46,6 +46,9 @@ public class IndexerSubsystem extends SubsystemBase{
         m_IndexerMotor.configVoltageCompSaturation(12.0, Constants.kTimeOutMs);
         m_IndexerMotor.enableVoltageCompensation(true);        
         m_IndexerMotor.setNeutralMode(NeutralMode.Brake);
+        m_IndexerMotor.config_kP(0, 1.0);
+        m_IndexerMotor.config_kI(0, 0);
+        m_IndexerMotor.config_kD(0, 0);
 
         m_IntakeMotor = TalonFXFactory.createDefaultFalcon("Intake Motor", Ports.INTAKE_MOTOR);//creates motor
         m_IntakeMotor.configVoltageCompSaturation(12.0, Constants.kTimeOutMs);
@@ -55,6 +58,9 @@ public class IndexerSubsystem extends SubsystemBase{
         setMultipleStatuFramePeriod();
     }
     private void setMultipleStatuFramePeriod(){
+        m_IntakeMotor.setStatusFramePeriod(StatusFrame.Status_1_General, 255);
+        m_IndexerMotor.setStatusFramePeriod(StatusFrame.Status_1_General, 255);
+        
         m_IndexerMotor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 255);//if rev, 4500
         m_IntakeMotor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 255);
         m_IndexerMotor.setStatusFramePeriod(StatusFrame.Status_4_AinTempVbat, 253);//4750
@@ -113,6 +119,8 @@ public class IndexerSubsystem extends SubsystemBase{
     boolean waitForIndexer = false;
     @Override
     public void periodic() {
+        SmartDashboard.putNumber("indexer position", m_IndexerMotor.getSelectedSensorPosition());
+
         SmartDashboard.putNumber("BALLS LOADED",numberOfBalls());
         SmartDashboard.putNumber("intake proximity", m_intakeSensor.getProximity());
         SmartDashboard.putBoolean("intake loaded", isIntakeBallLoaded());
