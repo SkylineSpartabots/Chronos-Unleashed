@@ -70,7 +70,7 @@ public class AimShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
         int threshold = 200; 
         double angleDiff = DrivetrainSubsystem.normalize(Math.toDegrees(currentRotation - targetAngle));
 
-        boolean isFacingTarget = Math.abs(angleDiff) < 5.0;
+        boolean isFacingTarget = Math.abs(angleDiff) < turnThreshold;
         boolean isRobotNotMoving = xSpeedFiltered == 0 && ySpeedFiltered == 0;
         boolean isShooterAtSpeed = (currentVel >= shooterSpeed - threshold && currentVel <= shooterSpeed + threshold);
         boolean isReadyToShoot = isShooterAtSpeed && shooterWithinBounds && isFacingTarget && isRobotNotMoving;
