@@ -35,7 +35,7 @@ public class AimShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
         isIndexerOn = false;
         addRequirements(m_shooter, IndexerSubsystem.getInstance());
        
-        m_thetaController = new PIDController(3,0,0);
+        m_thetaController = new PIDController(6,0,0);
         m_thetaController.enableContinuousInput(-Math.PI, Math.PI);
     }
 
@@ -55,21 +55,22 @@ public class AimShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
         if(Math.abs(xSpeedFiltered) > maxSpeed) xSpeedFiltered = Math.copySign(maxSpeed, xSpeedFiltered);
         if(Math.abs(ySpeedFiltered) > maxSpeed) ySpeedFiltered = Math.copySign(maxSpeed, ySpeedFiltered);*/
 
+        double turnThreshold = 6;
         double time = 0.02;
         m_targetPosition = new Translation2d(Constants.targetHudPosition.getX() - xSpeedFiltered * time, Constants.targetHudPosition.getY() - ySpeedFiltered * time);
         // this code is so amazing -atharv
         double targetAngle = Math.toRadians(DrivetrainSubsystem.findAngle(m_drivetrainSubsystem.getPose(), m_targetPosition.getX(), m_targetPosition.getY(), 180));
         double currentRotation = m_drivetrainSubsystem.getGyroscopeRotation().getRadians();
-        double rot = m_thetaController.calculate(currentRotation,targetAngle);
+        double rot = m_thetaController.calculate(currentRotation,targetAngle + (Math.toRadians(turnThreshold) * Math.copySign(1, DrivetrainSubsystem.normalize(currentRotation-targetAngle))));
         
         shooterSpeed = calculateShooterSpeed(DrivetrainSubsystem.distanceFromHub(m_targetPosition.getX(), m_targetPosition.getY()));
         m_shooter.setShooterVelocity(shooterSpeed);
         
         int currentVel = m_shooter.getVelocity();
         int threshold = 200; 
-        double angleDiff = Math.toDegrees(currentRotation - targetAngle);
+        double angleDiff = DrivetrainSubsystem.normalize(Math.toDegrees(currentRotation - targetAngle));
 
-        boolean isFacingTarget = Math.abs(angleDiff) < 3.0;
+        boolean isFacingTarget = Math.abs(angleDiff) < 5.0;
         boolean isRobotNotMoving = xSpeedFiltered == 0 && ySpeedFiltered == 0;
         boolean isShooterAtSpeed = (currentVel >= shooterSpeed - threshold && currentVel <= shooterSpeed + threshold);
         boolean isReadyToShoot = isShooterAtSpeed && shooterWithinBounds && isFacingTarget && isRobotNotMoving;
@@ -91,7 +92,7 @@ public class AimShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
         SmartDashboard.putBoolean("?shooter within bounds", shooterWithinBounds);
         SmartDashboard.putBoolean("?Ready To Shoot", isReadyToShoot);
 
-        if(Math.abs(angleDiff) < 3.0){
+        if(Math.abs(angleDiff) < turnThreshold){
             rot = 0;            
         }  
         if(isReadyToShoot && !isIndexerOn){
@@ -109,8 +110,8 @@ public class AimShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
         }*/
         
         m_drivetrainSubsystem.drive(ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedFiltered, ySpeedFiltered, 
-                rotFilter.calculate(rot), m_drivetrainSubsystem.getGyroscopeRotation()));
-                //rot, m_drivetrainSubsystem.getGyroscopeRotation()));
+                //rotFilter.calculate(rot), m_drivetrainSubsystem.getGyroscopeRotation()));
+                rot, m_drivetrainSubsystem.getGyroscopeRotation()));
     }
     
     @Override
