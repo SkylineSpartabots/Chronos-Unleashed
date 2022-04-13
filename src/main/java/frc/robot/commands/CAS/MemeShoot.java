@@ -36,7 +36,7 @@ public class MemeShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
         isIndexerOn = false;
         addRequirements(m_shooter, IndexerSubsystem.getInstance());
        
-        m_thetaController = new PIDController(3,0,0);
+        m_thetaController = new PIDController(6,0,0);
         m_thetaController.enableContinuousInput(-Math.PI, Math.PI);
         m_timer =  new Timer();
         
@@ -58,16 +58,16 @@ public class MemeShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
     @Override
     public void initialize(){
         m_timer =  new Timer();
-        firstTurnTime = 0.8;//can be calculated for change
-        shootTime = firstTurnTime - 0.4;
-        finish = firstTurnTime + 0.5;
+        firstTurnTime = 0.7;//can be calculated for change
+        shootTime = firstTurnTime - 0.6;
+        finish = firstTurnTime + 0.6;
 
         m_timer.reset();
         m_timer.start();
 
-        /*double maxSpeed = 1.0;
+        double maxSpeed = 1.2;
         if(Math.abs(xSpeedFiltered) > maxSpeed) xSpeedFiltered = Math.copySign(maxSpeed, xSpeedFiltered);
-        if(Math.abs(ySpeedFiltered) > maxSpeed) ySpeedFiltered = Math.copySign(maxSpeed, ySpeedFiltered);*/
+        if(Math.abs(ySpeedFiltered) > maxSpeed) ySpeedFiltered = Math.copySign(maxSpeed, ySpeedFiltered);
 
         var xSpeed = -modifyAxis(m_controller.getLeftY()) * DriveConstants.kMaxSpeedMetersPerSecond;
         var ySpeed = -modifyAxis(m_controller.getLeftX()) * DriveConstants.kMaxSpeedMetersPerSecond;
@@ -85,8 +85,17 @@ public class MemeShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
         SmartDashboard.putNumber("1 speed filtered", m_targetPosition.getX());
         SmartDashboard.putNumber("1 speed filtered", m_targetPosition.getY());
 
+        m_targetPosition = new Translation2d(
+            Constants.targetHudPosition.getX(), 
+            Constants.targetHudPosition.getY());
         
-        double time = 1.0;
+        double d = DrivetrainSubsystem.calculateDistance(
+            xPosition, 
+            yPosition, 
+            m_targetPosition.getX(), 
+            m_targetPosition.getY());
+
+        double time = 0.4 + 0.1875 * d;
         m_targetPosition = new Translation2d(
             Constants.targetHudPosition.getX() - xSpeedFiltered * time, 
             Constants.targetHudPosition.getY() - ySpeedFiltered * time);
@@ -123,8 +132,8 @@ public class MemeShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
         if(m_timer.hasElapsed(shootTime)){
             //fire indexer
             shootTime = 1000000;
-            IndexerSubsystem.getInstance().setIndexerPercentPower(0.3, false);
-            IndexerSubsystem.getInstance().setIntakePercentPower(Constants.intakeOn, false);
+            IndexerSubsystem.getInstance().setIndexerPercentPower(Constants.indexerUp, false);
+            //IndexerSubsystem.getInstance().setIntakePercentPower(Constants.intakeOn, false);
         }
         
         if(m_timer.hasElapsed(firstTurnTime)){
@@ -134,7 +143,7 @@ public class MemeShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
         int threshold = 170; 
         double angleDiff = Math.toDegrees(m_drivetrainSubsystem.getGyroscopeRotation().getRadians() - targetAngle);
 
-        boolean isFacingTarget = Math.abs(angleDiff) < 3.0;
+        boolean isFacingTarget = Math.abs(angleDiff) < 5.0;
         boolean isShooterAtSpeed = (currentVel >= shooterSpeed - threshold && currentVel <= shooterSpeed + threshold);
         boolean isReadyToShoot = isShooterAtSpeed && shooterWithinBounds && isFacingTarget; //&& isRobotNotMoving;
 
@@ -151,20 +160,39 @@ public class MemeShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
             //calculate second turn
             double xPosition = m_drivetrainSubsystem.getPose().getX() + (finish - firstTurnTime) * xSpeedFiltered;
             double yPosition = m_drivetrainSubsystem.getPose().getY() + (finish - firstTurnTime) * ySpeedFiltered;
+            
+        m_targetPosition = new Translation2d(
+            Constants.targetHudPosition.getX(), 
+            Constants.targetHudPosition.getY());
 
+            double d = DrivetrainSubsystem.calculateDistance(
+                xPosition, 
+                yPosition, 
+                m_targetPosition.getX(), 
+                m_targetPosition.getY());
+    
+            double time = 0.4 + 0.1875 * d;
+            m_targetPosition = new Translation2d(
+                Constants.targetHudPosition.getX() - xSpeedFiltered * time, 
+                Constants.targetHudPosition.getY() - ySpeedFiltered * time);
+    
+    
             targetAngle = Math.toRadians(DrivetrainSubsystem.findAngle(
-            new Pose2d(
+                new Pose2d(
                 xPosition, 
                 yPosition, 
                 m_drivetrainSubsystem.getPose().getRotation()), 
                 m_targetPosition.getX(), 
-                m_targetPosition.getY(), 180));  
-
-            shooterSpeed = calculateShooterSpeed(DrivetrainSubsystem.calculateDistance(
+                m_targetPosition.getY(), 180));
+            
+    
+            double distance = DrivetrainSubsystem.calculateDistance(
                 xPosition, 
                 yPosition, 
                 m_targetPosition.getX(), 
-                m_targetPosition.getY()));
+                m_targetPosition.getY());
+            shooterSpeed = calculateShooterSpeed(distance);
+            
 
             
                 firstTurnTime = 1000000;
@@ -209,8 +237,12 @@ public class MemeShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
         
         // this code is so amazing -atharv
         double currentRotation = m_drivetrainSubsystem.getGyroscopeRotation().getRadians();
-        double rot = m_thetaController.calculate(currentRotation,targetAngle);
+        double rot = m_thetaController.calculate(currentRotation,targetAngle + (Math.toRadians(6) * Math.copySign(1, DrivetrainSubsystem.normalize(currentRotation-targetAngle))));
         
+        double angleDiff = DrivetrainSubsystem.normalize(Math.toDegrees(currentRotation - targetAngle));
+        if(Math.abs(angleDiff) < 6){
+            rot = 0;            
+        }  
         if(m_timer.hasElapsed(firstTurnTime)){
             m_shooter.setShooterVelocity(shooterSpeed+200);
         }
@@ -219,8 +251,8 @@ public class MemeShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
         }
         
         m_drivetrainSubsystem.drive(ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedFiltered, ySpeedFiltered, 
-                rotFilter.calculate(rot), m_drivetrainSubsystem.getGyroscopeRotation()));
-                //rot, m_drivetrainSubsystem.getGyroscopeRotation()));
+                //rotFilter.calculate(rot), m_drivetrainSubsystem.getGyroscopeRotation()));
+                rot, m_drivetrainSubsystem.getGyroscopeRotation()));
     }
     
 
