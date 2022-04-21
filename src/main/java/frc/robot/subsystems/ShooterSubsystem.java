@@ -113,8 +113,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public static int calculateShooterSpeed(double distance){
 
-        double shooterSlope = 1661; //1800
-        double shooterIntercept = 3300.0; //2900
+        double shooterSlope = 1099; //1661
+        double shooterIntercept = 6500.0; //3300
   
         double minVelocity = 8500;
         double maxVelocity = 14000;
