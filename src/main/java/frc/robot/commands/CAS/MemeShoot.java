@@ -115,7 +115,7 @@ public class MemeShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
             yPosition, 
             m_targetPosition.getX(), 
             m_targetPosition.getY());
-        shooterSpeed = calculateShooterSpeed(distance);
+        shooterSpeed = ShooterSubsystem.calculateShooterSpeed(distance);
 
         SmartDashboard.putNumber("1 angle", Math.toDegrees(targetAngle));
         SmartDashboard.putNumber("1 distance", distance);
@@ -191,7 +191,7 @@ public class MemeShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
                 yPosition, 
                 m_targetPosition.getX(), 
                 m_targetPosition.getY());
-            shooterSpeed = calculateShooterSpeed(distance);
+            shooterSpeed = ShooterSubsystem.calculateShooterSpeed(distance);
             
 
             
@@ -255,27 +255,5 @@ public class MemeShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
     }
     
 
-    private int calculateShooterSpeed(double distance){
-
-        double shooterSlope = 1099;
-        double shooterIntercept = 6000.0;
-  
-        double minVelocity = 8000;
-        double maxVelocity = 14000;
-  
-        
-        double targetShooterVelocity = shooterSlope * distance + shooterIntercept;
-        shooterWithinBounds = true;
-        if(targetShooterVelocity > maxVelocity) {
-          targetShooterVelocity = maxVelocity;
-          shooterWithinBounds = false;
-        }
-        else if(targetShooterVelocity < minVelocity){
-          targetShooterVelocity = minVelocity;
-          shooterWithinBounds = false;
-        }
-          
-        return (int)targetShooterVelocity;
-      }
 
 }

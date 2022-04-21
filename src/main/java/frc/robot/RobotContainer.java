@@ -175,15 +175,15 @@ public class RobotContainer {
     Trigger dpadLeft2 = new Trigger(() -> {return m_controller2.getDpadLeft();});
     Trigger dpadRight2 = new Trigger(() -> {return m_controller2.getDpadRight();});
 
-    /*dpadUp2.whileActiveContinuous(new InstantCommand(() -> m_shooterSubsystem.increaseShooterVelocity(250)));  //works  
-    dpadDown2.whileActiveContinuous(new InstantCommand(() -> m_shooterSubsystem.increaseShooterVelocity(-250)));*/   //works
+    dpadUp2.whileActiveContinuous(new InstantCommand(() -> m_shooterSubsystem.increaseShooterVelocity(250)));  //works  
+    dpadDown2.whileActiveContinuous(new InstantCommand(() -> m_shooterSubsystem.increaseShooterVelocity(-250)));   //works
     dpadRight2.whenActive(new InstantCommand(() -> m_shooterSubsystem.setShooterVelocity(shooterFixed)));
     dpadLeft2.whenActive(new InstantCommand(() -> m_shooterSubsystem.setShooterVelocity(3000)));
-    dpadDown2.whenActive(new SetIndexerCommand(indexerDown))
+    /*dpadDown2.whenActive(new SetIndexerCommand(indexerDown))
         .whenInactive(new SetIndexerCommand(0.0));
     dpadUp2.whenActive(new SetIndexerCommand(indexerUp))
         .whenInactive(new SetIndexerCommand(0.0));
-    
+    */
     Trigger leftTriggerAxis2 = new Trigger(() -> { return m_controller2.getLeftTriggerAxis() > triggerDeadzone;});
     Trigger rightTriggerAxis2 = new Trigger(() -> { return m_controller2.getRightTriggerAxis() > triggerDeadzone;});
 

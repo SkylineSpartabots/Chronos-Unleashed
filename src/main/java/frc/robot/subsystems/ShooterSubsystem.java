@@ -110,4 +110,24 @@ public class ShooterSubsystem extends SubsystemBase {
         //SmartDashboard.putNumber("S2", RobotContainer.getPDP().getCurrent(10));
         //SmartDashboard.putNumber("S1", RobotContainer.getPDP().getCurrent(11));
     }
+
+    private static int calculateShooterSpeed(double distance){
+
+        double shooterSlope = 1099;
+        double shooterIntercept = 6000.0;
+  
+        double minVelocity = 8000;
+        double maxVelocity = 12500;
+  
+        
+        double targetShooterVelocity = shooterSlope * distance + shooterIntercept;
+        if(targetShooterVelocity > maxVelocity) {
+          targetShooterVelocity = maxVelocity;
+        }
+        else if(targetShooterVelocity < minVelocity){
+          targetShooterVelocity = minVelocity;
+        }
+          
+        return (int)targetShooterVelocity;
+      }
 }
