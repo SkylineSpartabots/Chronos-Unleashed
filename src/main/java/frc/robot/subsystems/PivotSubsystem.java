@@ -55,12 +55,21 @@ public class PivotSubsystem extends SubsystemBase {
         talon.enableVoltageCompensation(true);
         talon.setNeutralMode(NeutralMode.Brake);
 
-        talon.configMotionAcceleration(8000);
-        talon.configMotionCruiseVelocity(5000);
         talon.config_kF(0, 1.0, Constants.kTimeOutMs);
         talon.config_kP(0, 1.0, Constants.kTimeOutMs);
         talon.config_kI(0, 0, Constants.kTimeOutMs);
         talon.config_kD(0, 0, Constants.kTimeOutMs);
+    }
+
+    public void retractIntake(){
+        m_pivotMotor.configMotionAcceleration(15000);
+        m_pivotMotor.configMotionCruiseVelocity(15000);
+        moveToPosition(0);
+    }
+    public void deployIntake(){
+        m_pivotMotor.configMotionAcceleration(8000);
+        m_pivotMotor.configMotionCruiseVelocity(5000);
+        moveToPosition(34000);
     }
 
     public void moveToPosition(double target){
