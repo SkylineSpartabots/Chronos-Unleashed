@@ -126,7 +126,7 @@ public class AimShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
     private int calculateShooterSpeed(double distance){
 
         double shooterSlope = 1099;
-        double shooterIntercept = 6500.0;
+        double shooterIntercept = 6000.0;
   
         double minVelocity = 8000;
         double maxVelocity = 12500;
