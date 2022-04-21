@@ -43,7 +43,7 @@ public class IndexerSubsystem extends SubsystemBase{
         m_IndexerMotor.configVoltageCompSaturation(12.0, Constants.kTimeOutMs);
         m_IndexerMotor.enableVoltageCompensation(true);        
         m_IndexerMotor.setNeutralMode(NeutralMode.Brake);
-        m_IndexerMotor.config_kP(0, 1.0);
+        m_IndexerMotor.config_kP(0, 0.4);
         m_IndexerMotor.config_kI(0, 0);
         m_IndexerMotor.config_kD(0, 0);
 
@@ -67,36 +67,38 @@ public class IndexerSubsystem extends SubsystemBase{
     }
 
     public void setIntakePercentPower(double power) {
-        if(Math.abs(power)<0.001) automaticIndexing = true;
-        else automaticIndexing = false;
         m_IntakeMotor.set(ControlMode.PercentOutput, power);        
     }
     public void setIndexerPercentPower(double power){
+        if(Math.abs(power)<0.001 && DriverStation.isTeleop()) automaticIndexing = true;
+        else automaticIndexing = false;
         m_IndexerMotor.set(ControlMode.PercentOutput, power);
+        ballCount=0;
     }
 
     public void fire(){
-        indexerEmpty = true;
+        ballCount=0;
         bottomBallIsWrong = false;
-        setIntakePercentPower(Constants.indexerUp);
+        setIndexerPercentPower(Constants.indexerUp);
     }
 
-    private final int upAmount = 18000;
+    private final int upAmount = 8000;
     private final int ejectAmount = upAmount * 3;
     public void moveUpIndexer(int amount){
+        //m_IntakeMotor.set(ControlMode.PercentOutput, Constants.intakeOn); 
         m_IndexerMotor.set(ControlMode.Position, m_IndexerMotor.getSelectedSensorPosition() + amount);
     }
 
-    private boolean indexerEmpty = true;
+    private int ballCount = 0;
     private boolean bottomBallIsWrong = false;
     private boolean ready = true;
     private boolean automaticIndexing = true;
     @Override
     public void periodic() {
-        if(ready && automaticIndexing && isIntakeBallLoaded()){
+        if(ready && automaticIndexing && ballCount <=2&& isIntakeBallLoaded()){
             ready = false;
             new SequentialCommandGroup(
-                new WaitCommand(0.1),
+                new WaitCommand(0.2),
                 new InstantCommand(() -> ballIn())
                 ).schedule(); 
         }
@@ -117,7 +119,8 @@ public class IndexerSubsystem extends SubsystemBase{
         //SmartDashboard.putNumber("indexer Voltage", m_IndexerMotor.getMotorOutputVoltage());
         //SmartDashboard.putNumber("indexer Output Current", m_IndexerMotor.getStatorCurrent());
         SmartDashboard.putNumber("indexer Input Current", m_IndexerMotor.getSupplyCurrent());
-
+        SmartDashboard.putBoolean("Color correct", colorRight());
+        SmartDashboard.putString("Alliance Color", DriverStation.getAlliance().toString());
         //SmartDashboard.putNumber("Indexer current from PDP", RobotContainer.getPDP().getCurrent(16));
         //SmartDashboard.putNumber("Intake current from PDP", RobotContainer.getPDP().getCurrent(3));
 
@@ -127,11 +130,11 @@ public class IndexerSubsystem extends SubsystemBase{
     public void ballIn(){
         if(isCorrectColor()){
             moveUpIndexer(upAmount);
-            new SequentialCommandGroup(new WaitCommand(0.25), new InstantCommand(() -> ready = true));
-            indexerEmpty = false;
+            new SequentialCommandGroup(new WaitCommand(0.25), new InstantCommand(() -> ready = true)).schedule();
+            ballCount++;
         }
         else{
-            if(indexerEmpty){
+            if(ballCount==0){
                 moveUpIndexer(ejectAmount);
                 new SequentialCommandGroup(new WaitCommand(0.5), 
                 new InstantCommand(() -> moveUpIndexer(-upAmount)),
@@ -149,6 +152,12 @@ public class IndexerSubsystem extends SubsystemBase{
         return true;
         //Color c =  m_colorMatcherIntake.matchClosestColor(m_intakeSensor.getColor()).color;
         //return c.equals(DriverStation.getAlliance().equals(Alliance.Red)?Constants.kColorSensorRedIntake:Constants.kColorSensorBlueIntake);
+    }
+    
+    private boolean colorRight(){
+        //return true;
+        Color c =  m_colorMatcherIntake.matchClosestColor(m_intakeSensor.getColor()).color;
+        return c.equals(DriverStation.getAlliance().equals(Alliance.Red)?Constants.kColorSensorRedIntake:Constants.kColorSensorBlueIntake);
     }
     
     public boolean isIntakeBallLoaded(){

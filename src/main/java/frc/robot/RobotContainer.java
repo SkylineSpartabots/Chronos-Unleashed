@@ -9,7 +9,6 @@ import frc.robot.commands.*;
 import frc.robot.commands.CAS.AimShoot;
 import frc.robot.commands.CAS.EjectBall;
 import frc.robot.commands.CAS.MemeShoot;
-import frc.robot.commands.CAS.RobotIdle;
 import frc.robot.commands.CAS.RobotOff;
 import frc.robot.commands.SetSubsystemCommand.*;
 import frc.robot.factories.AutonomousCommandFactory;
@@ -146,9 +145,11 @@ public class RobotContainer {
     m_controller.getBButton().whenActive(new SetIntakeIndexerCommand(intakeReverse, indexerDown));//right bumper hold
     m_controller.getBButton().whenInactive(new SetIntakeIndexerCommand(0, 0));//right bumper release
 
-    m_controller.getAButton().whenActive(new RobotIdle());
+    //m_controller.getAButton().whenActive(new InstantCommand(() -> IndexerSubsystem.getInstance().automaticIntaking()));
+    m_controller.getAButton().whenActive(new InstantCommand(() -> ShooterSubsystem.getInstance().setShooterVelocity(shooterIdle)));
     m_controller.getYButton().whenActive(new RobotOff());
 
+    m_controller.getLeftBumper().whenHeld(new EjectBall());
     //m_controller.getLeftBumper().whenHeld(new SetIntakeCommand(intakeReverse, false));
     //m_controller.getLeftBumper().whenReleased(new SetIntakeCommand(intakeOn, true));
     //m_controller.getRightBumper().whenHeld(new ShootByLimelight(false));
@@ -163,7 +164,12 @@ public class RobotContainer {
     //leftTriggerAxis.whileActiveOnce(new ShootByLimelight(true));
     //leftTriggerAxis.whileActiveOnce(new AimShoot());
     //leftTriggerAxis.whenInactive(new SequentialCommandGroup(new WaitCommand(0.6), new RobotIdle()));
-    leftTriggerAxis.whileActiveOnce(new EjectBall());
+    //leftTriggerAxis.whileActiveOnce(new EjectBall());
+    
+   leftTriggerAxis.whenActive(new InstantCommand(() -> PivotSubsystem.getInstance().deployIntake()))
+   .whenActive(new InstantCommand(() -> IndexerSubsystem.getInstance().automaticIntaking()))
+   .whenInactive(new SetIntakeCommand(0))  
+   .whenInactive(new InstantCommand(() -> PivotSubsystem.getInstance().retractIntake()));
     rightTriggerAxis.whileActiveOnce(new AimShoot());
 
 
@@ -207,12 +213,11 @@ public class RobotContainer {
       .whenInactive(new InstantCommand(() -> ClimbSubsystem.getInstance().rightClimbPower(0)));
 
     
-    m_controller2.getXButton().whenHeld(new SetIntakeCommand(intakeOn)).whenReleased(new SetIntakeCommand(0.0));
-    m_controller2.getBButton().whenHeld(new SetIntakeCommand(intakeReverse)).whenReleased(new SetIntakeCommand(0.0));
-   // m_controller2.getAButton().whenActive(new RobotIdle());
+    //m_controller2.getXButton().whenHeld(new SetIntakeCommand(intakeOn)).whenReleased(new SetIntakeCommand(0.0));
+    m_controller2.getBButton().whenHeld(new SetIntakeCommand(0)).whenReleased(new InstantCommand(() -> IndexerSubsystem.getInstance().automaticIntaking()));
    m_controller2.getAButton().whenActive(new InstantCommand(() -> PivotSubsystem.getInstance().deployIntake()))
     .whenActive(new InstantCommand(() -> IndexerSubsystem.getInstance().automaticIntaking()))
-    .whenInactive(new SetIntakeCommand(0))  
+    //.whenInactive(new SetIntakeCommand(0))  
     .whenInactive(new InstantCommand(() -> PivotSubsystem.getInstance().retractIntake()));
     m_controller2.getYButton().whenActive(new RobotOff());    
     m_controller2.getStartButton().whenPressed(m_drivetrainSubsystem::resetOdometry);
@@ -225,4 +230,10 @@ public class RobotContainer {
     IndexerSubsystem.getInstance().setIndexerPercentPower(0.0);
     ShooterSubsystem.getInstance().setShooterVelocity(0);
   }
+
+  //right trigger shoot
+  //left trigger intake deploy and intake, release, fold back
+  //left bumper eject
+  //right bumper shooter while moving
+  
 }

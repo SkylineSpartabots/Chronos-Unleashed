@@ -62,13 +62,13 @@ public class PivotSubsystem extends SubsystemBase {
     }
 
     public void retractIntake(){
-        m_pivotMotor.configMotionAcceleration(15000);
-        m_pivotMotor.configMotionCruiseVelocity(15000);
+        m_pivotMotor.configMotionAcceleration(10000);
+        m_pivotMotor.configMotionCruiseVelocity(10000);
         moveToPosition(0);
     }
     public void deployIntake(){
-        m_pivotMotor.configMotionAcceleration(8000);
-        m_pivotMotor.configMotionCruiseVelocity(5000);
+        m_pivotMotor.configMotionAcceleration(7000);
+        m_pivotMotor.configMotionCruiseVelocity(4000);
         moveToPosition(34000);
     }
 

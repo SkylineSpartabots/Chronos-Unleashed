@@ -75,7 +75,7 @@ public class AimShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
         boolean isReadyToShoot = isShooterAtSpeed && isFacingTarget && isRobotNotMoving;
 
         DrivetrainSubsystem.getInstance().setHubPosition(m_targetPosition.getX(), m_targetPosition.getY());
-        SmartDashboard.putNumber("hubX", m_targetPosition.getX());
+        /*SmartDashboard.putNumber("hubX", m_targetPosition.getX());
         SmartDashboard.putNumber("hubY", m_targetPosition.getY());
         SmartDashboard.putNumber("xSpeed", xSpeed);
         SmartDashboard.putNumber("ySpeed", ySpeed);
@@ -89,13 +89,14 @@ public class AimShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
         SmartDashboard.putBoolean("?Shooter At Speed", isShooterAtSpeed);
         SmartDashboard.putBoolean("?Indexer Off", !isIndexerOn);
         SmartDashboard.putBoolean("?Ready To Shoot", isReadyToShoot);
-
+*/
         if(Math.abs(angleDiff) < turnThreshold){
             rot = 0;            
         }  
         if(isReadyToShoot && !isIndexerOn){
             //fire indexer if aimed, robot is not moving, shooter is at speed, and indexer is off              
-            IndexerSubsystem.getInstance().automaticIntaking();
+            IndexerSubsystem.getInstance().fire();
+            IndexerSubsystem.getInstance().setIntakePercentPower(Constants.intakeOn);
             isIndexerOn = true;
             hasRobertShotBall = true;
         }
@@ -115,8 +116,9 @@ public class AimShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
     public void end(boolean interruptable){  
         isIndexerOn = false;
         if(hasRobertShotBall){
-            IndexerSubsystem.getInstance().automaticIntaking();
             ShooterSubsystem.getInstance().setShooterVelocity(Constants.shooterIdle);
+            IndexerSubsystem.getInstance().setIndexerPercentPower(0);
+            //IndexerSubsystem.getInstance().setIntakePercentPower(0);
         }   
         hasRobertShotBall = false;
     }

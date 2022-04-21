@@ -29,8 +29,8 @@ public class TeleopDriveCommand extends CommandBase {
     protected final Controller m_controller;
 
     //limit accel/deccel
-    protected SlewRateLimiter driveXFilter = new SlewRateLimiter(5);
-    protected SlewRateLimiter driveYFilter = new SlewRateLimiter(5);
+    protected SlewRateLimiter driveXFilter = new SlewRateLimiter(10);
+    protected SlewRateLimiter driveYFilter = new SlewRateLimiter(10);
     protected SlewRateLimiter rotFilter = new SlewRateLimiter(30);
     
     public void driveWithJoystick() {

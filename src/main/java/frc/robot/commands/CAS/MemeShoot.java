@@ -243,7 +243,7 @@ public class MemeShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
             rot = 0;            
         }  
         if(m_timer.hasElapsed(firstTurnTime)){
-            m_shooter.setShooterVelocity(shooterSpeed+200);
+            m_shooter.setShooterVelocity(shooterSpeed+00);
         }
         else{
             m_shooter.setShooterVelocity(shooterSpeed+00);
