@@ -5,6 +5,7 @@ import java.time.Period;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrame;
+import com.revrobotics.ColorMatch;
 import com.revrobotics.ColorSensorV3;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -17,18 +18,18 @@ import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.Ports;
 import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class IndexerSubsystem extends SubsystemBase{   
-
+public class IndexerSubsystem extends SubsystemBase{
     private final LazyTalonFX m_IndexerMotor;
     
     private static final I2C.Port onboardI2C = I2C.Port.kOnboard;
     private static ColorSensorV3 m_intakeSensor;
     private final LazyTalonFX m_IntakeMotor;
-
-    //get instance of subsystem    
+ 
     private static IndexerSubsystem instance = null;
     public static IndexerSubsystem getInstance() {
         if (instance == null) {
@@ -36,13 +37,9 @@ public class IndexerSubsystem extends SubsystemBase{
         }
         return instance;
     }
-
-    //MERGE INDEXER SUBSYSTEM WITH INTAKE SUBSYSTEM???
-
     
-    public IndexerSubsystem() {//TODO: ADD CURRENT LIMITATIONS
+    public IndexerSubsystem() {
         m_IndexerMotor = TalonFXFactory.createDefaultFalcon("Indexer Motor", Ports.INDEXER_MOTOR);//creates motor
-        //configure motor
         m_IndexerMotor.configVoltageCompSaturation(12.0, Constants.kTimeOutMs);
         m_IndexerMotor.enableVoltageCompensation(true);        
         m_IndexerMotor.setNeutralMode(NeutralMode.Brake);
@@ -54,9 +51,122 @@ public class IndexerSubsystem extends SubsystemBase{
         m_IntakeMotor.configVoltageCompSaturation(12.0, Constants.kTimeOutMs);
         m_IntakeMotor.enableVoltageCompensation(true);        
         m_IntakeMotor.setNeutralMode(NeutralMode.Coast);
+
         m_intakeSensor = new ColorSensorV3(onboardI2C);
+        
+        m_colorMatcherIntake.addColorMatch(Constants.kColorSensorBlueIntake);
+        m_colorMatcherIntake.addColorMatch(Constants.kColorSensorRedIntake);
+
         setMultipleStatuFramePeriod();
     }
+
+    public void automaticIntaking(){
+        m_IntakeMotor.set(ControlMode.PercentOutput, Constants.intakeOn);  
+        automaticIndexing = true;
+        ready = true;
+    }
+
+    public void setIntakePercentPower(double power) {
+        if(Math.abs(power)<0.001) automaticIndexing = true;
+        else automaticIndexing = false;
+        m_IntakeMotor.set(ControlMode.PercentOutput, power);        
+    }
+    public void setIndexerPercentPower(double power){
+        m_IndexerMotor.set(ControlMode.PercentOutput, power);
+    }
+
+    public void fire(){
+        indexerEmpty = true;
+        bottomBallIsWrong = false;
+        setIntakePercentPower(Constants.indexerUp);
+    }
+
+    private final int upAmount = 18000;
+    private final int ejectAmount = upAmount * 3;
+    public void moveUpIndexer(int amount){
+        m_IndexerMotor.set(ControlMode.Position, m_IndexerMotor.getSelectedSensorPosition() + amount);
+    }
+
+    private boolean indexerEmpty = true;
+    private boolean bottomBallIsWrong = false;
+    private boolean ready = true;
+    private boolean automaticIndexing = true;
+    @Override
+    public void periodic() {
+        if(ready && automaticIndexing && isIntakeBallLoaded()){
+            ready = false;
+            new SequentialCommandGroup(
+                new WaitCommand(0.1),
+                new InstantCommand(() -> ballIn())
+                ).schedule(); 
+        }
+
+
+        SmartDashboard.putNumber("indexer position", m_IndexerMotor.getSelectedSensorPosition());
+
+        SmartDashboard.putNumber("intake proximity", m_intakeSensor.getProximity());
+        SmartDashboard.putBoolean("intake loaded", isIntakeBallLoaded());
+        //SmartDashboard.putNumber("Intake speed", m_IntakeMotor.getSelectedSensorVelocity());
+        //SmartDashboard.putNumber("Intake Voltage", m_IntakeMotor.getMotorOutputVoltage());
+        //SmartDashboard.putNumber("Intake Output Current", m_IntakeMotor.getStatorCurrent());
+        SmartDashboard.putNumber("Intake Input Current", m_IntakeMotor.getSupplyCurrent());
+
+        //SmartDashboard.putNumber("indexer speed", m_IndexerMotor.getSelectedSensorVelocity());
+        //SmartDashboard.putNumber("indexer Voltage", m_IndexerMotor.getMotorOutputVoltage());
+        //SmartDashboard.putNumber("indexer Output Current", m_IndexerMotor.getStatorCurrent());
+        SmartDashboard.putNumber("indexer Input Current", m_IndexerMotor.getSupplyCurrent());
+
+        //SmartDashboard.putNumber("Indexer current from PDP", RobotContainer.getPDP().getCurrent(16));
+        //SmartDashboard.putNumber("Intake current from PDP", RobotContainer.getPDP().getCurrent(3));
+
+
+
+    }
+    public void ballIn(){
+        if(isCorrectColor()){
+            moveUpIndexer(upAmount);
+            new SequentialCommandGroup(new WaitCommand(0.25), new InstantCommand(() -> ready = true));
+            indexerEmpty = false;
+        }
+        else{
+            if(indexerEmpty){
+                moveUpIndexer(ejectAmount);
+                new SequentialCommandGroup(new WaitCommand(0.5), 
+                new InstantCommand(() -> moveUpIndexer(-upAmount)),
+                new WaitCommand(0.25),
+                new InstantCommand(() -> ready = true));
+            }
+            else{
+                bottomBallIsWrong = true;
+            }
+        }
+    }
+    
+    private static final ColorMatch m_colorMatcherIntake = new ColorMatch();
+    private boolean isCorrectColor(){
+        return true;
+        //Color c =  m_colorMatcherIntake.matchClosestColor(m_intakeSensor.getColor()).color;
+        //return c.equals(DriverStation.getAlliance().equals(Alliance.Red)?Constants.kColorSensorRedIntake:Constants.kColorSensorBlueIntake);
+    }
+    
+    public boolean isIntakeBallLoaded(){
+        return m_intakeSensor.getProximity() >= Constants.kColorSensorLoadingDistance;
+    }
+
+    //first ball position
+    //second ball
+    //move second ball to first ball to shoot
+    //eject first ball
+    //eject second ball
+
+    //eject both balls
+
+    //start intaking
+
+    //manual overrides for both
+
+
+
     private void setMultipleStatuFramePeriod(){
         m_IntakeMotor.setStatusFramePeriod(StatusFrame.Status_1_General, 255);
         m_IndexerMotor.setStatusFramePeriod(StatusFrame.Status_1_General, 255);
@@ -82,108 +192,6 @@ public class IndexerSubsystem extends SubsystemBase{
         m_IndexerMotor.setStatusFramePeriod(StatusFrame.Status_17_Targets1, 237);//6250
         m_IntakeMotor.setStatusFramePeriod(StatusFrame.Status_17_Targets1, 237);
     }
-    
-    
-    boolean autoIndexer = false;
-    public void setIndexerPercentPower(double power, boolean autoIndexer) {
-        this.autoIndexer = autoIndexer;
-        if(!autoIndexer) m_IndexerMotor.set(ControlMode.PercentOutput, power);    
-        else {
-            setIntakePercentPower(Constants.intakeOn, true);
-            m_IndexerMotor.set(ControlMode.PercentOutput, 0.0);
-            waitForIndexer = true;
-        }
-    }
-    
-    boolean autoIntake = false;
-    public void setIntakePercentPower(double power, boolean autoIntake) {
-        this.autoIntake = autoIntake;
-        m_IntakeMotor.set(ControlMode.PercentOutput, power);        
-    }
 
-    public void startAutoIntaking(){
-        setIndexerPercentPower(Constants.indexerUp, true);
-        setIntakePercentPower(Constants.intakeOn, true);
-    }
-    public void startAutoShooting(){
-        setIndexerPercentPower(Constants.indexerUp, false);
-        setIntakePercentPower(Constants.intakeOn, false);
-    }
-    public double getIntakeVelocity(){
-        return m_IntakeMotor.getSelectedSensorVelocity();
-    }
-    public double getIndexerVelocity(){
-        return m_IndexerMotor.getSelectedSensorVelocity();
-    }
-
-    boolean waitForIndexer = false;
-    @Override
-    public void periodic() {
-        SmartDashboard.putNumber("indexer position", m_IndexerMotor.getSelectedSensorPosition());
-
-        SmartDashboard.putNumber("BALLS LOADED",numberOfBalls());
-        SmartDashboard.putNumber("intake proximity", m_intakeSensor.getProximity());
-        SmartDashboard.putBoolean("intake loaded", isIntakeBallLoaded());
-        SmartDashboard.putBoolean("intake autoIntake", autoIntake);
-        //SmartDashboard.putNumber("Intake speed", m_IntakeMotor.getSelectedSensorVelocity());
-        //SmartDashboard.putNumber("Intake Voltage", m_IntakeMotor.getMotorOutputVoltage());
-        //SmartDashboard.putNumber("Intake Output Current", m_IntakeMotor.getStatorCurrent());
-        SmartDashboard.putNumber("Intake Input Current", m_IntakeMotor.getSupplyCurrent());
-
-        SmartDashboard.putBoolean("indexer autoIntake", autoIndexer);
-        //SmartDashboard.putNumber("indexer speed", m_IndexerMotor.getSelectedSensorVelocity());
-        //SmartDashboard.putNumber("indexer Voltage", m_IndexerMotor.getMotorOutputVoltage());
-        //SmartDashboard.putNumber("indexer Output Current", m_IndexerMotor.getStatorCurrent());
-        SmartDashboard.putNumber("indexer Input Current", m_IndexerMotor.getSupplyCurrent());
-
-        //SmartDashboard.putNumber("Indexer current from PDP", RobotContainer.getPDP().getCurrent(16));
-        //SmartDashboard.putNumber("Intake current from PDP", RobotContainer.getPDP().getCurrent(3));
-
-        if(waitForIndexer && autoIndexer && isIntakeBallLoaded()){   
-            waitForIndexer = false;
-            new SequentialCommandGroup(
-                new WaitCommand(0.25),
-                new InstantCommand(() -> m_IndexerMotor.set(ControlMode.PercentOutput, Constants.indexerUp)),
-                new InstantCommand(() -> autoIndexer = false),
-                new InstantCommand(() -> moveIndexer())
-                ).schedule();            
-        }
-        else if(!autoIndexer && autoIntake && isIntakeBallLoaded()){
-            autoIntake = false;
-            new SequentialCommandGroup(
-                new WaitCommand(0.25),
-                new InstantCommand(() -> m_IndexerMotor.set(ControlMode.PercentOutput, Constants.indexerUp)),
-                new WaitCommand(0.25),
-                new InstantCommand(() -> m_IndexerMotor.set(ControlMode.PercentOutput, 0)),                
-                new InstantCommand(() -> m_IntakeMotor.set(ControlMode.PercentOutput, 0))
-                ).schedule();
-        }        
-    }
-    private int numberOfBalls(){
-        int number = 0;
-        if(!autoIntake) number++;
-        if(!autoIndexer) number++;
-        return number;
-    }
-
-    public boolean isIntakeBallLoaded(){
-        return m_intakeSensor.getProximity() >= Constants.kColorSensorLoadingDistance;
-    }
-    
-    public void moveIndexer(){
-        if(autoIntake && isIntakeBallLoaded()){
-            autoIntake = false;
-            new SequentialCommandGroup(
-                new WaitCommand(0.4),
-                new InstantCommand(() -> m_IndexerMotor.set(ControlMode.PercentOutput, 0)),             
-                new InstantCommand(() -> m_IntakeMotor.set(ControlMode.PercentOutput, 0))              
-                ).schedule();
-        }
-        else{
-            new SequentialCommandGroup(
-                new WaitCommand(0.25),
-                new InstantCommand(() -> m_IndexerMotor.set(ControlMode.PercentOutput, 0))                
-                ).schedule();
-        }
-    }
 }
+

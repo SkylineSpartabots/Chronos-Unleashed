@@ -6,18 +6,16 @@ import frc.robot.subsystems.IndexerSubsystem;
 public class SetIntakeCommand extends CommandBase {
     private final IndexerSubsystem m_subsystem;
     private double percentPower;
-    private boolean autoIntake;
 
-    public SetIntakeCommand(double percentPower, boolean autoIntake) {
+    public SetIntakeCommand(double percentPower) {
         m_subsystem = IndexerSubsystem.getInstance();
         addRequirements(m_subsystem);
         this.percentPower = percentPower;
-        this.autoIntake = autoIntake;
     }
 
     @Override
     public void initialize() {
-        m_subsystem.setIntakePercentPower(percentPower, autoIntake);
+        m_subsystem.setIntakePercentPower(percentPower);
     }
 
     @Override

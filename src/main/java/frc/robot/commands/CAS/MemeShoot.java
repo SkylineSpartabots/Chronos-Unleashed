@@ -132,7 +132,7 @@ public class MemeShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
         if(m_timer.hasElapsed(shootTime)){
             //fire indexer
             shootTime = 1000000;
-            IndexerSubsystem.getInstance().setIndexerPercentPower(Constants.indexerUp, false);
+            IndexerSubsystem.getInstance().setIndexerPercentPower(Constants.indexerUp);
             //IndexerSubsystem.getInstance().setIntakePercentPower(Constants.intakeOn, false);
         }
         
@@ -222,8 +222,7 @@ public class MemeShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
         SmartDashboard.putBoolean("2 ?shooter within bounds", shooterWithinBounds);
         SmartDashboard.putBoolean("2 ?Ready To Shoot", isReadyToShoot);*/
 
-        IndexerSubsystem.getInstance().setIndexerPercentPower(Constants.indexerUp, true);
-        IndexerSubsystem.getInstance().setIntakePercentPower(Constants.intakeOn, true);
+        IndexerSubsystem.getInstance().automaticIntaking();
         ShooterSubsystem.getInstance().setShooterVelocity(Constants.shooterIdle);        
     }
 
@@ -259,7 +258,7 @@ public class MemeShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
     private int calculateShooterSpeed(double distance){
 
         double shooterSlope = 1099;
-        double shooterIntercept = 6500.0;
+        double shooterIntercept = 6000.0;
   
         double minVelocity = 8000;
         double maxVelocity = 14000;

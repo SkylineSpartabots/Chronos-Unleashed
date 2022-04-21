@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.*;
 import frc.robot.commands.CAS.AimShoot;
+import frc.robot.commands.CAS.RobotIdle;
 import frc.robot.commands.CAS.RobotOff;
 import frc.robot.commands.SetSubsystemCommand.*;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -22,7 +23,8 @@ public class AutonomousCommandFactory {
 
     public static Command getAutonomousCommand() {
         //return ballStealAuto();
-         return twoBallAuto();
+        return new RobotIdle();
+        //return twoBallAuto();
         //return oneBallAuto();
         //return fiveBallAuto();
         //return experimentationalFiveBallAuto();
@@ -32,7 +34,7 @@ public class AutonomousCommandFactory {
             return new Pose2d(x, y, new Rotation2d(Math.toRadians(rot)));
     }
     //new five ball auto
-    public static Command experimentationalFiveBallAuto(){                
+    /*public static Command experimentationalFiveBallAuto(){                
         return new SequentialCommandGroup(
             new CalibrationCommand(getPose(7.57, 1.79, -89.18)),            
             new SetIntakeCommand(intakeOn, true),
@@ -280,6 +282,6 @@ public class AutonomousCommandFactory {
             resetOdo,
             driveToPosition2
             );
-    }
+    }*/
 
 }

@@ -97,8 +97,7 @@ public class AimShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
         }  
         if(isReadyToShoot && !isIndexerOn){
             //fire indexer if aimed, robot is not moving, shooter is at speed, and indexer is off              
-            IndexerSubsystem.getInstance().setIndexerPercentPower(Constants.indexerUp, false);
-            IndexerSubsystem.getInstance().setIntakePercentPower(Constants.intakeOn, false);
+            IndexerSubsystem.getInstance().automaticIntaking();
             isIndexerOn = true;
             hasRobertShotBall = true;
         }
@@ -118,8 +117,7 @@ public class AimShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
     public void end(boolean interruptable){  
         isIndexerOn = false;
         if(hasRobertShotBall){
-            IndexerSubsystem.getInstance().setIndexerPercentPower(Constants.indexerUp, true);
-            IndexerSubsystem.getInstance().setIntakePercentPower(Constants.intakeOn, true);
+            IndexerSubsystem.getInstance().automaticIntaking();
             ShooterSubsystem.getInstance().setShooterVelocity(Constants.shooterIdle);
         }   
         hasRobertShotBall = false;

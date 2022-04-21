@@ -69,7 +69,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         //ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
 
         Mk4ModuleConfiguration driveConfiguration = new Mk4ModuleConfiguration();
-        driveConfiguration.setDriveCurrentLimit(20);
+        driveConfiguration.setDriveCurrentLimit(40);
         m_frontLeftModule = Mk4SwerveModuleHelper.createFalcon500(
                 // This parameter is optional, but will allow you to see the current state of the module on the dashboard.
         //        tab.getLayout("Front Left Module", BuiltInLayouts.kList).withSize(2, 4).withPosition(0, 0),
