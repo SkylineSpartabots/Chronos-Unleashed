@@ -48,8 +48,8 @@ public class AimShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
     public void driveWithJoystick() {//called periodically
         var xSpeed = -modifyAxis(m_controller.getLeftY()) * DriveConstants.kMaxSpeedMetersPerSecond;
         var ySpeed = -modifyAxis(m_controller.getLeftX()) * DriveConstants.kMaxSpeedMetersPerSecond;
-        var xSpeedFiltered = driveXFilter.calculate(xSpeed);
-        var ySpeedFiltered = driveYFilter.calculate(ySpeed);
+        double xSpeedFiltered = driveXFilter.calculate(xSpeed);
+        double ySpeedFiltered = driveYFilter.calculate(ySpeed);
         
         /*double maxSpeed = 1.0;
         if(Math.abs(xSpeedFiltered) > maxSpeed) xSpeedFiltered = Math.copySign(maxSpeed, xSpeedFiltered);
@@ -128,7 +128,7 @@ public class AimShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
     private int calculateShooterSpeed(double distance){
 
         double shooterSlope = 1099;
-        double shooterIntercept = 6500.0;
+        double shooterIntercept = 6000.0;
   
         double minVelocity = 8000;
         double maxVelocity = 12500;

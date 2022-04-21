@@ -16,6 +16,7 @@ import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.LimelightSubsystem;
+import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import static frc.robot.Constants.*;
 
@@ -54,6 +55,7 @@ public class RobotContainer {
   private IndexerSubsystem m_indexerSubsystem;
   private ShooterSubsystem m_shooterSubsystem;
   private ClimbSubsystem m_climbSubsystem;
+  private PivotSubsystem m_pivotSubsystem;
   
   /*private static PowerDistribution powerModule = new PowerDistribution(1, ModuleType.kRev);
 
@@ -69,6 +71,7 @@ public class RobotContainer {
     m_indexerSubsystem = IndexerSubsystem.getInstance();
     m_shooterSubsystem = ShooterSubsystem.getInstance();
     m_climbSubsystem = ClimbSubsystem.getInstance();
+    m_pivotSubsystem = PivotSubsystem.getInstance();
 
     // Set the scheduler to log Shuffleboard events for command initialize,
     // interrupt, finish
@@ -92,10 +95,10 @@ public class RobotContainer {
   }
 
   public static void printDiagnostics(){
-    SmartDashboard.putBoolean("NavX Connected?", DrivetrainSubsystem.getInstance().getNavxConnected());
+    /*SmartDashboard.putBoolean("NavX Connected?", DrivetrainSubsystem.getInstance().getNavxConnected());
     SmartDashboard.putBoolean("Limelight Connected?", LimelightSubsystem.getInstance().isConnected());
     SmartDashboard.putBoolean("Can Bus Connected?", isCanConnected());
-    SmartDashboard.putBoolean("Battery Charged?", isBatteryCharged());
+    SmartDashboard.putBoolean("Battery Charged?", isBatteryCharged());*/
   }
 
   private static boolean isBatteryCharged(){
@@ -205,7 +208,13 @@ public class RobotContainer {
     
     m_controller2.getXButton().whenHeld(new SetIntakeCommand(intakeOn,false)).whenReleased(new SetIntakeCommand(0.0, false));
     m_controller2.getBButton().whenHeld(new SetIntakeCommand(intakeReverse,false)).whenReleased(new SetIntakeCommand(0.0, false));
-    m_controller2.getAButton().whenActive(new RobotIdle());
+   // m_controller2.getAButton().whenActive(new RobotIdle());
+   m_controller2.getAButton().whenActive(new InstantCommand(() -> PivotSubsystem.getInstance().moveToPosition(34000)))
+    .whenActive(new SetIntakeCommand(intakeOn, true))
+    .whenActive(new SetIndexerCommand(0, true))
+    .whenInactive(new SetIntakeCommand(0, false))  
+    .whenInactive(new SetIndexerCommand(0, false))
+    .whenInactive(new InstantCommand(() -> PivotSubsystem.getInstance().moveToPosition(0)));
     m_controller2.getYButton().whenActive(new RobotOff());    
     m_controller2.getStartButton().whenPressed(m_drivetrainSubsystem::resetOdometry);
     m_controller2.getBackButton().whenPressed(m_drivetrainSubsystem::resetOdometry);

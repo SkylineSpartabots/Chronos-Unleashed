@@ -53,13 +53,13 @@ public class DiagnosticTestCommand extends CommandBase{
     @Override
     public void end(boolean interrupted) {
         m_timer.stop();
-        SmartDashboard.putBoolean("Driving?", actualPeakDriveVelocity >= expectedPeakDriveVelocity);
+        /*SmartDashboard.putBoolean("Driving?", actualPeakDriveVelocity >= expectedPeakDriveVelocity);
         SmartDashboard.putBoolean("Indexing?", actualPeakIndexerVelocity >= expectedPeakIndexerVelocity);
         SmartDashboard.putBoolean("Intaking?", actualPeakIntakeVelocity >= expectedPeakIntakeVelocity);
         SmartDashboard.putBoolean("Shooting?", actualPeakShooterVelocity >= expectedPeakShooterVelocity);
         //SmartDashboard.putNumber("Total Voltage", m_pd.getVoltage());
         SmartDashboard.putNumber("Drivetrain Expected Velocity", m_drivetrainSubsystem.getExpectedVelocity());
-        SmartDashboard.putNumber("Drivetrain Actual Velocity", m_drivetrainSubsystem.getRealVelocity());
+        SmartDashboard.putNumber("Drivetrain Actual Velocity", m_drivetrainSubsystem.getRealVelocity());*/
     }
     @Override
     public boolean isFinished() {
