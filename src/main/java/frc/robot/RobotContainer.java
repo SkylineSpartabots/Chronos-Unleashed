@@ -207,15 +207,13 @@ public class RobotContainer {
       .whenInactive(new InstantCommand(() -> ClimbSubsystem.getInstance().rightClimbPower(0)));
 
     
-    m_controller2.getXButton().whenHeld(new SetIntakeCommand(intakeOn,false)).whenReleased(new SetIntakeCommand(0.0, false));
-    m_controller2.getBButton().whenHeld(new SetIntakeCommand(intakeReverse,false)).whenReleased(new SetIntakeCommand(0.0, false));
+    m_controller2.getXButton().whenHeld(new SetIntakeCommand(intakeOn)).whenReleased(new SetIntakeCommand(0.0));
+    m_controller2.getBButton().whenHeld(new SetIntakeCommand(intakeReverse)).whenReleased(new SetIntakeCommand(0.0));
    // m_controller2.getAButton().whenActive(new RobotIdle());
-   m_controller2.getAButton().whenActive(new InstantCommand(() -> PivotSubsystem.getInstance().moveToPosition(34000)))
-    .whenActive(new SetIntakeCommand(intakeOn, true))
-    .whenActive(new SetIndexerCommand(0, true))
-    .whenInactive(new SetIntakeCommand(0, false))  
-    .whenInactive(new SetIndexerCommand(0, false))
-    .whenInactive(new InstantCommand(() -> PivotSubsystem.getInstance().moveToPosition(0)));
+   m_controller2.getAButton().whenActive(new InstantCommand(() -> PivotSubsystem.getInstance().deployIntake()))
+    .whenActive(new InstantCommand(() -> IndexerSubsystem.getInstance().automaticIntaking()))
+    .whenInactive(new SetIntakeCommand(0))  
+    .whenInactive(new InstantCommand(() -> PivotSubsystem.getInstance().retractIntake()));
     m_controller2.getYButton().whenActive(new RobotOff());    
     m_controller2.getStartButton().whenPressed(m_drivetrainSubsystem::resetOdometry);
     m_controller2.getBackButton().whenPressed(m_drivetrainSubsystem::resetOdometry);
