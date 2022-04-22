@@ -25,9 +25,9 @@ public class AutonomousCommandFactory {
     public static Command getAutonomousCommand() {
         //return ballStealAuto();
 
-        return twoBallAuto();
+        //return twoBallAuto();
         //return oneBallAuto();
-        //return fiveBallAuto();
+        return fiveBallAuto();
         //return experimentationalFiveBallAuto();
     }
 
@@ -47,15 +47,15 @@ public class AutonomousCommandFactory {
             new TrajectoryDriveCommand(getPose(5.80, 2.42, -145.45), List.of(new Translation2d(6.29, 2.23)), true, 1.0, 4,1.2),
             new SetIndexerCommand(indexerUp),
             new SetIntakeCommand(intakeOn),
-            new InstantCommand(() -> ShooterSubsystem.getInstance().setShooterVelocity(10570)),
+            new InstantCommand(() -> ShooterSubsystem.getInstance().setShooterVelocity(10900)),
             new TrajectoryDriveCommand(getPose(5.32, 2.09, -145.45), List.of(), false, 1.0, 0.45, 0.25),
             new WaitCommand(1.0),
             new SetIndexerCommand(0.0),
             new InstantCommand(() -> IndexerSubsystem.getInstance().automaticIntaking()),
-            new TrajectoryDriveCommand(getPose(1.31, 1.62, -137.29), List.of(), false, 0.45, 5, 1.8),
-            new WaitCommand(1.0),
-            new InstantCommand(() -> ShooterSubsystem.getInstance().setShooterVelocity(10570)),
-            new TrajectoryDriveCommand(getPose(5.32, 2.09, -145.45), List.of(), true, 0.5,5,1.8),
+            new TrajectoryDriveCommand(getPose(1.31, 1.62, -137.29), List.of(), false, 0.5, 5, 2.2),
+            new WaitCommand(0.2),
+            new InstantCommand(() -> ShooterSubsystem.getInstance().setShooterVelocity(11111)),
+            new TrajectoryDriveCommand(getPose(5.32, 2.09, -145.45), List.of(), true, 0.5,5,2.0),
             new InstantCommand(() -> PivotSubsystem.getInstance().retractIntake()), 
             new SetIntakeCommand(intakeOn),
             new SetIndexerCommand(indexerUp),
@@ -67,9 +67,9 @@ public class AutonomousCommandFactory {
     public static Command oneBallAuto(){//no navx auto
         return new SequentialCommandGroup(  
             new CalibrationCommand(getPose(0, 0, 0)),    
-            new InstantCommand(() -> ShooterSubsystem.getInstance().setShooterVelocity(shooterFixed+230)),
-            new TrajectoryDriveCommand(getPose(1.2, 0, 0), List.of(), false,0.5, 1 ,0.5),
-            new WaitCommand(2),
+            new InstantCommand(() -> ShooterSubsystem.getInstance().setShooterVelocity(11000)),
+            new TrajectoryDriveCommand(getPose(1.3, 0, 0), List.of(), false,0.5, 1 ,0.5),
+            new WaitCommand(3),
             new SetIndexerCommand(indexerUp),
             new WaitCommand(3),
             new RobotOff()
@@ -81,7 +81,7 @@ public class AutonomousCommandFactory {
             new CalibrationCommand(getPose(0, 0, 0)),   
             new InstantCommand(() -> PivotSubsystem.getInstance().deployIntake()),
             new InstantCommand(() -> IndexerSubsystem.getInstance().automaticIntaking()),
-            new InstantCommand(() -> ShooterSubsystem.getInstance().setShooterVelocity(9700)),
+            new InstantCommand(() -> ShooterSubsystem.getInstance().setShooterVelocity(11000)),
             new TrajectoryDriveCommand(getPose(1.3, 0, 0), List.of(), false,0.5, 1 ,0.5),
             new WaitCommand(2.5),
             new SetIndexerCommand(indexerUp),

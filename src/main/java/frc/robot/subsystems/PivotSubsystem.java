@@ -76,7 +76,12 @@ public class PivotSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Target Position", target);
         m_pivotMotor.set(ControlMode.MotionMagic, target);
     }
-    
+    public void resetIntakeDown(){
+        m_pivotMotor.setSelectedSensorPosition(34000);
+    }
+    public void resetIntakeUp(){
+        m_pivotMotor.setSelectedSensorPosition(0);
+    }
     
 
     @Override

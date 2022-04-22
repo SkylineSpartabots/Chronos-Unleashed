@@ -82,7 +82,7 @@ public class IndexerSubsystem extends SubsystemBase{
         setIndexerPercentPower(Constants.indexerUp);
     }
 
-    private final int upAmount = 8000;
+    private final int upAmount = 9000;
     private final int ejectAmount = upAmount * 3;
     public void moveUpIndexer(int amount){
         //m_IntakeMotor.set(ControlMode.PercentOutput, Constants.intakeOn); 
@@ -97,13 +97,14 @@ public class IndexerSubsystem extends SubsystemBase{
     public void periodic() {
         if(ready && automaticIndexing && ballCount <=2&& isIntakeBallLoaded()){
             ready = false;
+            ballCount++;
             new SequentialCommandGroup(
-                new WaitCommand(0.2),
+                new WaitCommand(0.25),
                 new InstantCommand(() -> ballIn())
                 ).schedule(); 
         }
 
-
+        SmartDashboard.putNumber("Ball Count", ballCount);
         SmartDashboard.putNumber("indexer position", m_IndexerMotor.getSelectedSensorPosition());
 
         SmartDashboard.putNumber("intake proximity", m_intakeSensor.getProximity());
@@ -128,11 +129,12 @@ public class IndexerSubsystem extends SubsystemBase{
 
     }
     public void ballIn(){
-        if(isCorrectColor()){
+        //if(isCorrectColor()){
             moveUpIndexer(upAmount);
             new SequentialCommandGroup(new WaitCommand(0.25), new InstantCommand(() -> ready = true)).schedule();
-            ballCount++;
-        }
+            
+            if(ballCount >= 2) setIntakePercentPower(0);
+       /* }
         else{
             if(ballCount==0){
                 moveUpIndexer(ejectAmount);
@@ -144,7 +146,7 @@ public class IndexerSubsystem extends SubsystemBase{
             else{
                 bottomBallIsWrong = true;
             }
-        }
+        }*/
     }
     
     private static final ColorMatch m_colorMatcherIntake = new ColorMatch();

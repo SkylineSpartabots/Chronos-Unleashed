@@ -59,8 +59,8 @@ public class MemeShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
     public void initialize(){
         m_timer =  new Timer();
         firstTurnTime = 0.7;//can be calculated for change
-        shootTime = firstTurnTime - 0.6;
-        finish = firstTurnTime + 0.6;
+        shootTime = firstTurnTime - 0.4;
+        finish = firstTurnTime + 0.4;
 
         m_timer.reset();
         m_timer.start();

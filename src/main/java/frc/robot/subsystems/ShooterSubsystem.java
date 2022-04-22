@@ -105,17 +105,20 @@ public class ShooterSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("SVoltage", mSlaveShooter.getMotorOutputVoltage());
         //SmartDashboard.putNumber("Slave Shooter Output Current", mSlaveShooter.getStatorCurrent());
         SmartDashboard.putNumber("Slave Input", mSlaveShooter.getSupplyCurrent());
+        SmartDashboard.putBoolean("Use Lower Speed", useLowerSpeed);
+        
         //SmartDashboard.putBoolean("Is Shooter At Velocity?", isShooterAtVelocity(10000, 150));
 
         //SmartDashboard.putNumber("S2", RobotContainer.getPDP().getCurrent(10));
         //SmartDashboard.putNumber("S1", RobotContainer.getPDP().getCurrent(11));
     }
-
+    public static boolean useLowerSpeed = false;
     public static int calculateShooterSpeed(double distance){
 
         double shooterSlope = 1099; //1661
-        double shooterIntercept = 6500.0; //3300
-  
+        double shooterIntercept = 7200.0; //3300
+        if(!useLowerSpeed) shooterIntercept = 7100;
+        SmartDashboard.putNumber("Shooter Intercept", shooterIntercept);
         double minVelocity = 8500;
         double maxVelocity = 14000;
   

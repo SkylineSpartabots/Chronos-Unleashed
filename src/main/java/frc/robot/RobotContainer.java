@@ -183,12 +183,19 @@ public class RobotContainer {
 
     /*dpadUp2.whileActiveContinuous(new InstantCommand(() -> m_shooterSubsystem.increaseShooterVelocity(250)));  //works  
     dpadDown2.whileActiveContinuous(new InstantCommand(() -> m_shooterSubsystem.increaseShooterVelocity(-250)));   //works
-    */dpadRight2.whenActive(new InstantCommand(() -> m_shooterSubsystem.setShooterVelocity(shooterFixed)));
-    dpadLeft2.whenActive(new InstantCommand(() -> m_shooterSubsystem.setShooterVelocity(3000)));
-    dpadDown2.whenActive(new SetIndexerCommand(indexerDown))
+    */
+    //dpadRight2.whenActive(new InstantCommand(() -> m_shooterSubsystem.setShooterVelocity(shooterFixed)));
+    //dpadLeft2.whenActive(new InstantCommand(() -> m_shooterSubsystem.setShooterVelocity(3000)));
+    
+    dpadRight2.whenActive(new InstantCommand(() -> m_shooterSubsystem.useLowerSpeed = true));
+    dpadLeft2.whenActive(new InstantCommand(() -> m_shooterSubsystem.useLowerSpeed = false));
+
+    dpadDown2.whenActive(new InstantCommand(() ->m_pivotSubsystem.getInstance().resetIntakeDown()));
+    dpadUp2.whenActive(new InstantCommand(() ->m_pivotSubsystem.getInstance().resetIntakeUp()));
+    /*dpadDown2.whenActive(new SetIndexerCommand(indexerDown))
         .whenInactive(new SetIndexerCommand(0.0));
     dpadUp2.whenActive(new SetIndexerCommand(indexerUp))
-        .whenInactive(new SetIndexerCommand(0.0));
+        .whenInactive(new SetIndexerCommand(0.0));*/
     
     Trigger leftTriggerAxis2 = new Trigger(() -> { return m_controller2.getLeftTriggerAxis() > triggerDeadzone;});
     Trigger rightTriggerAxis2 = new Trigger(() -> { return m_controller2.getRightTriggerAxis() > triggerDeadzone;});
