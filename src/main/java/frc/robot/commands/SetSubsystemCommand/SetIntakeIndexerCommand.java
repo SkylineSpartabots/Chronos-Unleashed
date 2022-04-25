@@ -15,8 +15,8 @@ public class SetIntakeIndexerCommand extends CommandBase {
 
     @Override
     public void initialize() {
-        IndexerSubsystem.getInstance().setIndexerPercentPower(indexerPower, false);
-        IndexerSubsystem.getInstance().setIntakePercentPower(intakePower, false);
+        IndexerSubsystem.getInstance().setIndexerPercentPower(indexerPower);
+        IndexerSubsystem.getInstance().setIntakePercentPower(intakePower);
     }
 
     @Override

@@ -44,11 +44,10 @@ public final class Constants {
 
     public static final Color kColorSensorBlueIntake = new Color(0.19,0.43, 0.37);
     public static final Color kColorSensorRedIntake = new Color(0.44, 0.38, 0.16);
-    public static final Color kColorSensorBlueIndexer = new Color(0.13,0.48, 0.38);
-    public static final Color kColorSensorRedIndexer = new Color(0.49, 0.36, 0.14);
+
     public static final Color allianceColorIntake = kColorSensorBlueIntake;
-    public static final Color allianceColorIndexer = kColorSensorBlueIndexer;
-    public static final double kColorSensorLoadingDistance = 95;
+    
+    public static final double kColorSensorLoadingDistance = 70;
 
     //Dummy values, need to find/calculate
     public static final List<Translation2d> kReferenceTranslations = List.of(
@@ -126,7 +125,7 @@ public final class Constants {
         public static final int FOLLOW_SHOOTER_MOTOR = 22;
         public static final int INTAKE_MOTOR = 31;
         public static final int INDEXER_MOTOR = 32;
-        public static final int HOOD_MOTOR = 23;//CHANGE THIS TO CORRECT PORT
+        public static final int PIVOT_MOTOR = 23;
         
         public static final int LEFT_CLIMB = 41;
         public static final int RIGHT_CLIMB = 42;

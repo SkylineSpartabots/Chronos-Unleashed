@@ -41,15 +41,14 @@ public class AimShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
 
     boolean isIndexerOn = false;
     boolean hasRobertShotBall = false;
-    boolean shooterWithinBounds = false;
     int shooterSpeed;
 
     @Override
     public void driveWithJoystick() {//called periodically
         var xSpeed = -modifyAxis(m_controller.getLeftY()) * DriveConstants.kMaxSpeedMetersPerSecond;
         var ySpeed = -modifyAxis(m_controller.getLeftX()) * DriveConstants.kMaxSpeedMetersPerSecond;
-        var xSpeedFiltered = driveXFilter.calculate(xSpeed);
-        var ySpeedFiltered = driveYFilter.calculate(ySpeed);
+        double xSpeedFiltered = driveXFilter.calculate(xSpeed);
+        double ySpeedFiltered = driveYFilter.calculate(ySpeed);
         
         /*double maxSpeed = 1.0;
         if(Math.abs(xSpeedFiltered) > maxSpeed) xSpeedFiltered = Math.copySign(maxSpeed, xSpeedFiltered);
@@ -63,20 +62,20 @@ public class AimShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
         double currentRotation = m_drivetrainSubsystem.getGyroscopeRotation().getRadians();
         double rot = m_thetaController.calculate(currentRotation,targetAngle + (Math.toRadians(turnThreshold) * Math.copySign(1, DrivetrainSubsystem.normalize(currentRotation-targetAngle))));
         
-        shooterSpeed = calculateShooterSpeed(DrivetrainSubsystem.distanceFromHub(m_targetPosition.getX(), m_targetPosition.getY()));
+        shooterSpeed = ShooterSubsystem.calculateShooterSpeed(DrivetrainSubsystem.distanceFromHub(m_targetPosition.getX(), m_targetPosition.getY()));
         m_shooter.setShooterVelocity(shooterSpeed);
         
         int currentVel = m_shooter.getVelocity();
         int threshold = 200; 
         double angleDiff = DrivetrainSubsystem.normalize(Math.toDegrees(currentRotation - targetAngle));
 
-        boolean isFacingTarget = Math.abs(angleDiff) < 5.0;
+        boolean isFacingTarget = Math.abs(angleDiff) < turnThreshold;
         boolean isRobotNotMoving = xSpeedFiltered == 0 && ySpeedFiltered == 0;
         boolean isShooterAtSpeed = (currentVel >= shooterSpeed - threshold && currentVel <= shooterSpeed + threshold);
-        boolean isReadyToShoot = isShooterAtSpeed && shooterWithinBounds && isFacingTarget && isRobotNotMoving;
+        boolean isReadyToShoot = isShooterAtSpeed && isFacingTarget && isRobotNotMoving;
 
         DrivetrainSubsystem.getInstance().setHubPosition(m_targetPosition.getX(), m_targetPosition.getY());
-        SmartDashboard.putNumber("hubX", m_targetPosition.getX());
+        /*SmartDashboard.putNumber("hubX", m_targetPosition.getX());
         SmartDashboard.putNumber("hubY", m_targetPosition.getY());
         SmartDashboard.putNumber("xSpeed", xSpeed);
         SmartDashboard.putNumber("ySpeed", ySpeed);
@@ -89,16 +88,15 @@ public class AimShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
         SmartDashboard.putBoolean("?Robot Not Moving", isRobotNotMoving);
         SmartDashboard.putBoolean("?Shooter At Speed", isShooterAtSpeed);
         SmartDashboard.putBoolean("?Indexer Off", !isIndexerOn);
-        SmartDashboard.putBoolean("?shooter within bounds", shooterWithinBounds);
         SmartDashboard.putBoolean("?Ready To Shoot", isReadyToShoot);
-
+*/
         if(Math.abs(angleDiff) < turnThreshold){
             rot = 0;            
         }  
         if(isReadyToShoot && !isIndexerOn){
             //fire indexer if aimed, robot is not moving, shooter is at speed, and indexer is off              
-            IndexerSubsystem.getInstance().setIndexerPercentPower(Constants.indexerUp, false);
-            IndexerSubsystem.getInstance().setIntakePercentPower(Constants.intakeOn, false);
+            IndexerSubsystem.getInstance().fire();
+            IndexerSubsystem.getInstance().setIntakePercentPower(Constants.intakeOn);
             isIndexerOn = true;
             hasRobertShotBall = true;
         }
@@ -118,34 +116,12 @@ public class AimShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
     public void end(boolean interruptable){  
         isIndexerOn = false;
         if(hasRobertShotBall){
-            IndexerSubsystem.getInstance().setIndexerPercentPower(Constants.indexerUp, true);
-            IndexerSubsystem.getInstance().setIntakePercentPower(Constants.intakeOn, true);
             ShooterSubsystem.getInstance().setShooterVelocity(Constants.shooterIdle);
+            IndexerSubsystem.getInstance().setIndexerPercentPower(0);
+            //IndexerSubsystem.getInstance().setIntakePercentPower(0);
         }   
         hasRobertShotBall = false;
     }
 
-    private int calculateShooterSpeed(double distance){
-
-        double shooterSlope = 1099;
-        double shooterIntercept = 6500.0;
-  
-        double minVelocity = 8000;
-        double maxVelocity = 12500;
-  
-        
-        double targetShooterVelocity = shooterSlope * distance + shooterIntercept;
-        shooterWithinBounds = true;
-        if(targetShooterVelocity > maxVelocity) {
-          targetShooterVelocity = maxVelocity;
-          shooterWithinBounds = false;
-        }
-        else if(targetShooterVelocity < minVelocity){
-          targetShooterVelocity = minVelocity;
-          shooterWithinBounds = false;
-        }
-          
-        return (int)targetShooterVelocity;
-      }
 
 }

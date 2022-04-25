@@ -44,7 +44,7 @@ public class EjectBall extends CommandBase{ //REPLACABLE BY AIM SEQUENCE
         m_timer.reset();
         m_timer.start();
         m_shooter.setShooterVelocity(5000);
-        m_indexer.setIndexerPercentPower(Constants.indexerUp, false);
+        m_indexer.setIndexerPercentPower(Constants.indexerUp);
     }
 /*
      @Override
@@ -57,7 +57,7 @@ public class EjectBall extends CommandBase{ //REPLACABLE BY AIM SEQUENCE
     @Override
     public void end(boolean interruptable){  
         //stop intake, stop indexer
-        m_indexer.setIndexerPercentPower(0.0, false);
+        m_indexer.setIndexerPercentPower(0.0);
         m_shooter.setShooterVelocity(Constants.shooterIdle);
 
     }
