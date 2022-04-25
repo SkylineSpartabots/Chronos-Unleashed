@@ -187,8 +187,8 @@ public class RobotContainer {
     //dpadRight2.whenActive(new InstantCommand(() -> m_shooterSubsystem.setShooterVelocity(shooterFixed)));
     //dpadLeft2.whenActive(new InstantCommand(() -> m_shooterSubsystem.setShooterVelocity(3000)));
     
-    dpadRight2.whenActive(new InstantCommand(() -> m_shooterSubsystem.useLowerSpeed = true));
-    dpadLeft2.whenActive(new InstantCommand(() -> m_shooterSubsystem.useLowerSpeed = false));
+    dpadRight2.whenActive(new InstantCommand(() -> m_indexerSubsystem.useColorSort = true));
+    dpadLeft2.whenActive(new InstantCommand(() -> m_indexerSubsystem.useColorSort = false));
 
     dpadDown2.whenActive(new InstantCommand(() ->m_pivotSubsystem.getInstance().resetIntakeDown()));
     dpadUp2.whenActive(new InstantCommand(() ->m_pivotSubsystem.getInstance().resetIntakeUp()));

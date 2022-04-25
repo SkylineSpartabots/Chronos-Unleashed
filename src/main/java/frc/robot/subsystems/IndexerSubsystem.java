@@ -17,6 +17,7 @@ import frc.lib.drivers.TalonFXFactory;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.Ports;
+import frc.robot.commands.SetSubsystemCommand.SetShooterCommand;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
@@ -83,7 +84,7 @@ public class IndexerSubsystem extends SubsystemBase{
     }
 
     private final int upAmount = 9000;
-    private final int ejectAmount = upAmount * 3;
+    private final int ejectAmount = upAmount * 5;
     public void moveUpIndexer(int amount){
         //m_IntakeMotor.set(ControlMode.PercentOutput, Constants.intakeOn); 
         m_IndexerMotor.set(ControlMode.Position, m_IndexerMotor.getSelectedSensorPosition() + amount);
@@ -99,7 +100,7 @@ public class IndexerSubsystem extends SubsystemBase{
             ready = false;
             ballCount++;
             new SequentialCommandGroup(
-                new WaitCommand(0.25),
+                new WaitCommand(0.2),
                 new InstantCommand(() -> ballIn())
                 ).schedule(); 
         }
@@ -129,29 +130,34 @@ public class IndexerSubsystem extends SubsystemBase{
 
     }
     public void ballIn(){
-        //if(isCorrectColor()){
+        if(isCorrectColor()){
             moveUpIndexer(upAmount);
-            new SequentialCommandGroup(new WaitCommand(0.25), new InstantCommand(() -> ready = true)).schedule();
+            new SequentialCommandGroup(new WaitCommand(0.5), new InstantCommand(() -> ready = true)).schedule();
             
             if(ballCount >= 2) setIntakePercentPower(0);
-       /* }
+        }
         else{
-            if(ballCount==0){
-                moveUpIndexer(ejectAmount);
-                new SequentialCommandGroup(new WaitCommand(0.5), 
-                new InstantCommand(() -> moveUpIndexer(-upAmount)),
-                new WaitCommand(0.25),
-                new InstantCommand(() -> ready = true));
-            }
-            else{
-                bottomBallIsWrong = true;
-            }
-        }*/
+            ballCount = 0;
+            //if(ballCount==0){
+                new SequentialCommandGroup(  
+                    new InstantCommand(() -> setIndexerPercentPower(Constants.indexerUp)),            
+                    new SetShooterCommand(0.3),
+                    new WaitCommand(1.0), 
+                    new InstantCommand(() -> setIndexerPercentPower(0)),
+                    new InstantCommand(() -> ready = true),                              
+                    new InstantCommand(() -> ShooterSubsystem.getInstance().setShooterVelocity(Constants.shooterIdle))
+                    ).schedule();
+            //}
+            //else{
+                //bottomBallIsWrong = true;
+            //}
+        }
     }
-    
+    public boolean useColorSort = false;
     private static final ColorMatch m_colorMatcherIntake = new ColorMatch();
     private boolean isCorrectColor(){
         return true;
+        //if(!DriverStation.isTeleop() || !useColorSort) return true;
         //Color c =  m_colorMatcherIntake.matchClosestColor(m_intakeSensor.getColor()).color;
         //return c.equals(DriverStation.getAlliance().equals(Alliance.Red)?Constants.kColorSensorRedIntake:Constants.kColorSensorBlueIntake);
     }
