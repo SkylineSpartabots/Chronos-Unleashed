@@ -14,11 +14,15 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 
 public class TeleopDriveCommand extends CommandBase {
     protected DrivetrainSubsystem m_drivetrainSubsystem;
+    private PIDController m_thetaController;
+
 
     public TeleopDriveCommand(DrivetrainSubsystem m_drivetrainSubsystem) {
         this.m_drivetrainSubsystem = m_drivetrainSubsystem;
         addRequirements(m_drivetrainSubsystem);
         m_controller = RobotContainer.getController();
+        m_thetaController = new PIDController(6,0,0.7);
+        m_thetaController.enableContinuousInput(-Math.PI, Math.PI);
     }
 
     @Override
@@ -37,7 +41,17 @@ public class TeleopDriveCommand extends CommandBase {
         // get joystick input for drive
         var xSpeed = -modifyAxis(m_controller.getLeftY()) * DriveConstants.kMaxSpeedMetersPerSecond;
         var ySpeed = -modifyAxis(m_controller.getLeftX()) * DriveConstants.kMaxSpeedMetersPerSecond;
-        var rot = -modifyAxis(m_controller.getRightX()*0.7) * DriveConstants.kMaxAngularSpeedRadiansPerSecond;
+        // var rot = -modifyAxis(m_controller.getRightX()*0.7) * DriveConstants.kMaxAngularSpeedRadiansPerSecond;
+
+        // field-oriented turning test
+        var turnAngleX = m_controller.getRightX();
+        var turnAngleY = m_controller.getRightY();
+        double currentRotation = m_drivetrainSubsystem.getGyroscopeRotation().getRadians();
+        double targetAngle = calculateTurnAngle(-turnAngleY, -turnAngleX, currentRotation);
+        double rot = m_thetaController.calculate(currentRotation,targetAngle);
+        // variable turn speed control
+        rot *= Math.hypot(turnAngleX, turnAngleY);
+
 
         SmartDashboard.putNumber("xSpeed", xSpeed);
         SmartDashboard.putNumber("ySpeed", ySpeed);
@@ -50,6 +64,19 @@ public class TeleopDriveCommand extends CommandBase {
         /*m_drivetrainSubsystem.drive(new ChassisSpeeds(driveXFilter.calculate(xSpeed), driveYFilter.calculate(ySpeed), 
         rotFilter.calculate(rot)));*/
     }
+
+    private static double calculateTurnAngle(double xValue, double yValue, double currentRotation) {
+        if(modifyAxis(xValue) == 0 && modifyAxis(yValue) == 0) {
+            return currentRotation;
+        } else {
+            double calculatedAngle = Math.atan2(yValue, xValue);
+            if(Math.abs(calculatedAngle-currentRotation) < Math.toRadians(6)) {
+                return currentRotation;
+            } else {
+                return calculatedAngle;
+            }
+        }
+    } 
 
     public static double applyDeadband(double value, double deadband) {
         if (Math.abs(value) > deadband) {
