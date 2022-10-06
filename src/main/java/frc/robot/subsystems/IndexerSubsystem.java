@@ -93,7 +93,7 @@ public class IndexerSubsystem extends SubsystemBase{
         else {
             setIntakePercentPower(Constants.intakeOn, true);
             m_IndexerMotor.set(ControlMode.PercentOutput, 0.0);
-            waitForIndexer = true;
+            // waitForIndexer = true;
         }
     }
     
@@ -118,12 +118,12 @@ public class IndexerSubsystem extends SubsystemBase{
         return m_IndexerMotor.getSelectedSensorVelocity();
     }
 
-    boolean waitForIndexer = false;
+    // boolean waitForIndexer = false;
     @Override
     public void periodic() {
         SmartDashboard.putNumber("indexer position", m_IndexerMotor.getSelectedSensorPosition());
 
-        SmartDashboard.putNumber("BALLS LOADED",numberOfBalls());
+        SmartDashboard.putNumber("BALLS LOADED",numberOfBalls);
         SmartDashboard.putNumber("intake proximity", m_intakeSensor.getProximity());
         //SmartDashboard.putBoolean("intake loaded", isIntakeBallLoaded());
         //SmartDashboard.putBoolean("intake autoIntake", autoIntake);
@@ -141,32 +141,31 @@ public class IndexerSubsystem extends SubsystemBase{
         //SmartDashboard.putNumber("Indexer current from PDP", RobotContainer.getPDP().getCurrent(16));
         //SmartDashboard.putNumber("Intake current from PDP", RobotContainer.getPDP().getCurrent(3));
 
-        if(waitForIndexer && autoIndexer && isIntakeBallLoaded()){   
-            waitForIndexer = false;
+        if(autoIntake && autoIndexer && isIntakeBallLoaded()){   
             new SequentialCommandGroup(
                 new WaitCommand(0.25),
-                new InstantCommand(() -> m_IndexerMotor.set(ControlMode.PercentOutput, Constants.indexerUp)),
-                new InstantCommand(() -> autoIndexer = false),
+                // new InstantCommand(() -> m_IndexerMotor.set(ControlMode.PercentOutput, Constants.indexerUp)),
+                // new InstantCommand(() -> autoIndexer = false),
                 new InstantCommand(() -> moveIndexer())
                 ).schedule();            
         }
-        else if(!autoIndexer && autoIntake && isIntakeBallLoaded()){
-            autoIntake = false;
-            new SequentialCommandGroup(
-                new WaitCommand(0.25),
-                new InstantCommand(() -> m_IndexerMotor.set(ControlMode.PercentOutput, Constants.indexerUp)),
-                new WaitCommand(0.25),
-                new InstantCommand(() -> m_IndexerMotor.set(ControlMode.PercentOutput, 0)),                
-                new InstantCommand(() -> m_IntakeMotor.set(ControlMode.PercentOutput, 0))
-                ).schedule();
-        }        
+        // else if(!autoIndexer && autoIntake && isIntakeBallLoaded()){
+        //     autoIntake = false;
+        //     new SequentialCommandGroup(
+        //         new WaitCommand(0.25),
+        //         new InstantCommand(() -> m_IndexerMotor.set(ControlMode.PercentOutput, Constants.indexerUp)),
+        //         new WaitCommand(0.25),
+        //         new InstantCommand(() -> m_IndexerMotor.set(ControlMode.PercentOutput, 0)),                
+        //         new InstantCommand(() -> m_IntakeMotor.set(ControlMode.PercentOutput, 0))
+        //         ).schedule();
+        // }        
     }
-    private int numberOfBalls(){
-        int number = 0;
-        if(!autoIntake) number++;
-        if(!autoIndexer) number++;
-        return number;
-    }
+    // private int numberOfBalls(){
+    //     int number = 0;
+    //     if(!autoIntake) number++;
+    //     if(!autoIndexer) number++;
+    //     return number;
+    // }
 
     public boolean isIntakeBallLoaded(){
         return m_intakeSensor.getProximity() >= Constants.kColorSensorLoadingDistance;
@@ -174,26 +173,18 @@ public class IndexerSubsystem extends SubsystemBase{
     
     
     public void moveIndexer(){
-        if(autoIntake && isIntakeBallLoaded()){
-            numberOfBalls++;
-            if (numberOfBalls == 2) { // stop it from moving up
-                autoIntake = false;
-                new SequentialCommandGroup(
-                    new WaitCommand(0.4),
-                    new InstantCommand(() -> m_IndexerMotor.set(ControlMode.PercentOutput, 0)),             
-                    new InstantCommand(() -> m_IntakeMotor.set(ControlMode.PercentOutput, 0))              
-                    ).schedule();
-            } else { // push the first ball up more
-                new SequentialCommandGroup(
-                    new WaitCommand(0.25),
-                    new InstantCommand(() -> m_IndexerMotor.set(ControlMode.PercentOutput, Constants.indexerUp)),
-                    new WaitCommand(0.25),
-                    new InstantCommand(() -> m_IndexerMotor.set(ControlMode.PercentOutput, 0))                
-                    ).schedule();
-            }
-        }
-        else{
+        numberOfBalls++;
+        if (numberOfBalls == 2) { // stop it from moving up
+            autoIntake = false; autoIndexer = false;
             new SequentialCommandGroup(
+                new WaitCommand(0.4),
+                new InstantCommand(() -> m_IndexerMotor.set(ControlMode.PercentOutput, 0)),             
+                new InstantCommand(() -> m_IntakeMotor.set(ControlMode.PercentOutput, 0))              
+                ).schedule();
+        } else { // push the first ball up more
+            new SequentialCommandGroup(
+                new WaitCommand(0.25),
+                new InstantCommand(() -> m_IndexerMotor.set(ControlMode.PercentOutput, Constants.indexerUp)),
                 new WaitCommand(0.25),
                 new InstantCommand(() -> m_IndexerMotor.set(ControlMode.PercentOutput, 0))                
                 ).schedule();

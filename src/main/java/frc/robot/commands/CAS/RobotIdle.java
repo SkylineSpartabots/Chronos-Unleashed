@@ -23,7 +23,7 @@ public class RobotIdle extends CommandBase {
     public void initialize() {        
         ShooterSubsystem.getInstance().setShooterVelocity(shooterIdle);
         IndexerSubsystem.getInstance().setIndexerPercentPower(indexerUp, true);
-        IndexerSubsystem.getInstance().setIntakePercentPower(intakeOn, true);
+        // IndexerSubsystem.getInstance().setIntakePercentPower(intakeOn, true);
     }
 
     @Override
