@@ -142,6 +142,7 @@ public class IndexerSubsystem extends SubsystemBase{
         //SmartDashboard.putNumber("Intake current from PDP", RobotContainer.getPDP().getCurrent(3));
 
         if(autoIntake && autoIndexer && isIntakeBallLoaded()){   
+            autoIndexer = false;
             new SequentialCommandGroup(
                 new WaitCommand(0.25),
                 // new InstantCommand(() -> m_IndexerMotor.set(ControlMode.PercentOutput, Constants.indexerUp)),
@@ -186,7 +187,8 @@ public class IndexerSubsystem extends SubsystemBase{
                 new WaitCommand(0.25),
                 new InstantCommand(() -> m_IndexerMotor.set(ControlMode.PercentOutput, Constants.indexerUp)),
                 new WaitCommand(0.25),
-                new InstantCommand(() -> m_IndexerMotor.set(ControlMode.PercentOutput, 0))                
+                new InstantCommand(() -> m_IndexerMotor.set(ControlMode.PercentOutput, 0)), 
+                new InstantCommand(() -> autoIndexer = true)               
                 ).schedule();
         }
     }
