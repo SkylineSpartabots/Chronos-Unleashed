@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 
 
+import java.util.function.BooleanSupplier;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -28,6 +30,9 @@ public class PivotSubsystem extends SubsystemBase {
     }
 
     private final LazyTalonFX m_pivotMotor;  
+    private boolean intakeToggle = false;
+    public BooleanSupplier intakeState = () -> intakeToggle;
+
 
     PIDController shooterController;
     private PivotSubsystem() {
@@ -62,22 +67,28 @@ public class PivotSubsystem extends SubsystemBase {
     }
 
     public void retractIntake(){
-        m_pivotMotor.configMotionAcceleration(15000);
-        m_pivotMotor.configMotionCruiseVelocity(15000);
+        m_pivotMotor.configMotionAcceleration(10000);
+        m_pivotMotor.configMotionCruiseVelocity(10000);
         moveToPosition(0);
+        intakeToggle = false;
     }
     public void deployIntake(){
-        m_pivotMotor.configMotionAcceleration(8000);
-        m_pivotMotor.configMotionCruiseVelocity(5000);
+        m_pivotMotor.configMotionAcceleration(7000);
+        m_pivotMotor.configMotionCruiseVelocity(4000);
         moveToPosition(34000);
+        intakeToggle = true;
     }
 
     public void moveToPosition(double target){
         SmartDashboard.putNumber("Target Position", target);
         m_pivotMotor.set(ControlMode.MotionMagic, target);
     }
-    
-    
+    public void resetIntakeDown(){
+        m_pivotMotor.setSelectedSensorPosition(34000);
+    }
+    public void resetIntakeUp(){
+        m_pivotMotor.setSelectedSensorPosition(0);
+    }
 
     @Override
     public void periodic(){

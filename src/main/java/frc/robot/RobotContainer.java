@@ -20,6 +20,8 @@ import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import static frc.robot.Constants.*;
 
+import java.util.function.BooleanSupplier;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
 import edu.wpi.first.wpilibj.DriverStation;
@@ -27,7 +29,10 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -209,12 +214,25 @@ public class RobotContainer {
     m_controller2.getXButton().whenHeld(new SetIntakeCommand(intakeOn,false)).whenReleased(new SetIntakeCommand(0.0, false));
     m_controller2.getBButton().whenHeld(new SetIntakeCommand(intakeReverse,false)).whenReleased(new SetIntakeCommand(0.0, false));
    // m_controller2.getAButton().whenActive(new RobotIdle());
-   m_controller2.getAButton().whenActive(new InstantCommand(() -> PivotSubsystem.getInstance().moveToPosition(34000)))
-    .whenActive(new SetIntakeCommand(intakeOn, true))
-    .whenActive(new SetIndexerCommand(0, true))
-    .whenInactive(new SetIntakeCommand(0, false))  
-    .whenInactive(new SetIndexerCommand(0, false))
-    .whenInactive(new InstantCommand(() -> PivotSubsystem.getInstance().moveToPosition(0)));
+   Command deployIntake = new CommandBase() {
+     public void execute() {
+       PivotSubsystem.getInstance().deployIntake();
+      }
+      public boolean isFinished() {
+        return true;
+      }
+      
+    };
+    // m_controller2.getAButton().whenActive(new InstantCommand(() -> PivotSubsystem.getInstance().deployIntake()));
+    m_controller2.getAButton().whenActive(new ConditionalCommand(
+      new InstantCommand(() -> PivotSubsystem.getInstance().retractIntake()), 
+      new InstantCommand(() -> PivotSubsystem.getInstance().deployIntake()), 
+      PivotSubsystem.getInstance().intakeState));
+    // .whenActive(new SetIntakeCommand(intakeOn, true))
+    // .whenActive(new SetIndexerCommand(0, true))
+    // .whenInactive(new SetIntakeCommand(0, false))  
+    // .whenInactive(new SetIndexerCommand(0, false))
+    // .whenInactive(new InstantCommand(() -> PivotSubsystem.getInstance().moveToPosition(0)));
     m_controller2.getYButton().whenActive(new RobotOff());    
     m_controller2.getStartButton().whenPressed(m_drivetrainSubsystem::resetOdometry);
     m_controller2.getBackButton().whenPressed(m_drivetrainSubsystem::resetOdometry);
