@@ -214,15 +214,6 @@ public class RobotContainer {
     m_controller2.getXButton().whenHeld(new SetIntakeCommand(intakeOn,false)).whenReleased(new SetIntakeCommand(0.0, false));
     m_controller2.getBButton().whenHeld(new SetIntakeCommand(intakeReverse,false)).whenReleased(new SetIntakeCommand(0.0, false));
    // m_controller2.getAButton().whenActive(new RobotIdle());
-   Command deployIntake = new CommandBase() {
-     public void execute() {
-       PivotSubsystem.getInstance().deployIntake();
-      }
-      public boolean isFinished() {
-        return true;
-      }
-      
-    };
     // m_controller2.getAButton().whenActive(new InstantCommand(() -> PivotSubsystem.getInstance().deployIntake()));
     m_controller2.getAButton().whenActive(new ConditionalCommand(
       new InstantCommand(() -> PivotSubsystem.getInstance().retractIntake()), 
