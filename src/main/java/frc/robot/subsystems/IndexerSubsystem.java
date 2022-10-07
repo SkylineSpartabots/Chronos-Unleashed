@@ -23,7 +23,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class IndexerSubsystem extends SubsystemBase{   
 
     private final LazyTalonFX m_IndexerMotor;
-    private int numberOfBalls;
+    public static int numberOfBalls;
     
     private static final I2C.Port onboardI2C = I2C.Port.kOnboard;
     private static ColorSensorV3 m_intakeSensor;
@@ -144,7 +144,7 @@ public class IndexerSubsystem extends SubsystemBase{
         if(autoIntake && autoIndexer && isIntakeBallLoaded()){   
             autoIndexer = false;
             new SequentialCommandGroup(
-                new WaitCommand(0.25),
+                new WaitCommand(0.15),
                 // new InstantCommand(() -> m_IndexerMotor.set(ControlMode.PercentOutput, Constants.indexerUp)),
                 // new InstantCommand(() -> autoIndexer = false),
                 new InstantCommand(() -> moveIndexer())
@@ -175,18 +175,21 @@ public class IndexerSubsystem extends SubsystemBase{
     
     public void moveIndexer(){
         numberOfBalls++;
-        if (numberOfBalls == 2) { // stop it from moving up
+        System.out.println(numberOfBalls);
+        if (numberOfBalls >= 2) { // stop it from moving up
             autoIntake = false; autoIndexer = false;
             new SequentialCommandGroup(
                 new WaitCommand(0.4),
                 new InstantCommand(() -> m_IndexerMotor.set(ControlMode.PercentOutput, 0)),             
-                new InstantCommand(() -> m_IntakeMotor.set(ControlMode.PercentOutput, 0))              
+                new InstantCommand(() -> m_IntakeMotor.set(ControlMode.PercentOutput, 0)),   
+                new InstantCommand(() -> numberOfBalls = 0)               
                 ).schedule();
+            numberOfBalls = 0;
         } else { // push the first ball up more
             new SequentialCommandGroup(
                 new WaitCommand(0.25),
                 new InstantCommand(() -> m_IndexerMotor.set(ControlMode.PercentOutput, Constants.indexerUp)),
-                new WaitCommand(0.25),
+                new WaitCommand(0.3),
                 new InstantCommand(() -> m_IndexerMotor.set(ControlMode.PercentOutput, 0)), 
                 new InstantCommand(() -> autoIndexer = true)               
                 ).schedule();

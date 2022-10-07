@@ -119,7 +119,8 @@ public class AimShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
         isIndexerOn = false;
         if(hasRobertShotBall){
             IndexerSubsystem.getInstance().setIndexerPercentPower(Constants.indexerUp, true);
-            IndexerSubsystem.getInstance().setIntakePercentPower(Constants.intakeOn, true);
+            IndexerSubsystem.numberOfBalls = 0;
+            // IndexerSubsystem.getInstance().setIntakePercentPower(Constants.intakeOn, true);
             ShooterSubsystem.getInstance().setShooterVelocity(Constants.shooterIdle);
         }   
         hasRobertShotBall = false;
