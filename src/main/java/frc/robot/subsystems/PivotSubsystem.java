@@ -15,8 +15,6 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrame;
 
 import frc.robot.Constants;
-import frc.robot.Robot;
-import frc.robot.RobotContainer;
 import frc.robot.Constants.Ports;
 
 public class PivotSubsystem extends SubsystemBase {

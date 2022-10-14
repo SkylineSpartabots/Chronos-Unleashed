@@ -1,14 +1,11 @@
 package frc.robot.subsystems;
 
-import java.io.ObjectInputFilter.Status;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrame;
-import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
-import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.drivers.LazyTalonFX;
@@ -16,8 +13,6 @@ import frc.lib.drivers.LazyTalonSRX;
 import frc.lib.drivers.TalonFXFactory;
 import frc.lib.drivers.TalonSRXFactory;
 import frc.robot.Constants;
-import frc.robot.Robot;
-import frc.robot.RobotContainer;
 import frc.robot.Constants.Ports;
 
 public class ClimbSubsystem extends SubsystemBase {

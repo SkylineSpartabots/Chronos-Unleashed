@@ -14,7 +14,6 @@ import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 
 import frc.lib.util.TelemetryUtil;
 import frc.lib.util.TelemetryUtil.PrintStyle;
-import frc.robot.Constants;
 
 /**
  * Add your docs here.
