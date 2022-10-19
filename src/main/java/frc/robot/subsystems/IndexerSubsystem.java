@@ -24,6 +24,7 @@ public class IndexerSubsystem extends SubsystemBase{
 
     private final LazyTalonFX m_IndexerMotor;
     public static int numberOfBalls;
+    public IndexerControlState m_IndexerState = IndexerControlState.OFF;
     
     private static final I2C.Port onboardI2C = I2C.Port.kOnboard;
     private static ColorSensorV3 m_intakeSensor;
@@ -85,32 +86,50 @@ public class IndexerSubsystem extends SubsystemBase{
         m_IntakeMotor.setStatusFramePeriod(StatusFrame.Status_17_Targets1, 237);
     }
     
-    
-    boolean autoIndexer = false;
-    public void setIndexerPercentPower(double power, boolean autoIndexer) {
-        this.autoIndexer = autoIndexer;
-        if(!autoIndexer) m_IndexerMotor.set(ControlMode.PercentOutput, power);    
-        else {
-            setIntakePercentPower(Constants.intakeOn, true);
-            m_IndexerMotor.set(ControlMode.PercentOutput, 0.0);
-            // waitForIndexer = true;
+    public enum IndexerControlState {
+        OFF(0.0, 0.0, false),
+        ON(0.70, 0.75, false),
+        REVERSE(-0.5, -0.5, false),
+        AUTO(0.0, 0.75, true),
+        INTAKE(0.0, 0.75, false),
+        REVERSEINTAKE(0.0, -0.5, false),
+        INDEXER(0.7, 0.0, false);
+
+        double indexerPower = 0.0;
+        double intakePower = 0.0;
+        boolean autoIndexer = false;
+
+        private IndexerControlState(double indexerPower, double intakePower, boolean autoIndexer) {
+            this.indexerPower = indexerPower;
+            this.intakePower = intakePower;
+            this.autoIndexer = autoIndexer;
         }
     }
+
+    public void setState(IndexerControlState newState) {
+        m_IndexerState = newState;
+        setIndexerPercentPower(m_IndexerState);
+        setIntakePercentPower(m_IndexerState);
+    } 
     
-    boolean autoIntake = false;
-    public void setIntakePercentPower(double power, boolean autoIntake) {
-        this.autoIntake = autoIntake;
-        m_IntakeMotor.set(ControlMode.PercentOutput, power);        
+    public void setIndexerPercentPower(IndexerControlState state) {
+        m_IndexerState = state;
+        m_IndexerMotor.set(ControlMode.PercentOutput, m_IndexerState.indexerPower);    
+    }
+    
+    public void setIntakePercentPower(IndexerControlState state) {
+        m_IndexerState = state;
+        m_IntakeMotor.set(ControlMode.PercentOutput, m_IndexerState.intakePower);        
     }
 
-    public void startAutoIntaking(){
-        setIndexerPercentPower(Constants.indexerUp, true);
-        setIntakePercentPower(Constants.intakeOn, true);
-    }
-    public void startAutoShooting(){
-        setIndexerPercentPower(Constants.indexerUp, false);
-        setIntakePercentPower(Constants.intakeOn, false);
-    }
+    // public void startAutoIntaking(){
+    //     setIndexerPercentPower(Constants.indexerUp, true);
+    //     setIntakePercentPower(Constants.intakeOn, true);
+    // }
+    // public void startAutoShooting(){
+    //     setIndexerPercentPower(Constants.indexerUp, false);
+    //     setIntakePercentPower(Constants.intakeOn, false);
+    // }
     public double getIntakeVelocity(){
         return m_IntakeMotor.getSelectedSensorVelocity();
     }
@@ -141,8 +160,8 @@ public class IndexerSubsystem extends SubsystemBase{
         //SmartDashboard.putNumber("Indexer current from PDP", RobotContainer.getPDP().getCurrent(16));
         //SmartDashboard.putNumber("Intake current from PDP", RobotContainer.getPDP().getCurrent(3));
 
-        if(autoIntake && autoIndexer && isIntakeBallLoaded()){   
-            autoIndexer = false;
+        if(m_IndexerState.autoIndexer && isIntakeBallLoaded()){   
+            setState(IndexerControlState.INTAKE);
             new SequentialCommandGroup(
                 new WaitCommand(0.15),
                 // new InstantCommand(() -> m_IndexerMotor.set(ControlMode.PercentOutput, Constants.indexerUp)),
@@ -177,21 +196,19 @@ public class IndexerSubsystem extends SubsystemBase{
         numberOfBalls++;
         System.out.println(numberOfBalls);
         if (numberOfBalls >= 2) { // stop it from moving up
-            autoIntake = false; autoIndexer = false;
             new SequentialCommandGroup(
                 new WaitCommand(0.4),
-                new InstantCommand(() -> m_IndexerMotor.set(ControlMode.PercentOutput, 0)),             
-                new InstantCommand(() -> m_IntakeMotor.set(ControlMode.PercentOutput, 0)),   
+                new InstantCommand(() -> setState(IndexerControlState.OFF)),             
                 new InstantCommand(() -> numberOfBalls = 0)               
                 ).schedule();
             numberOfBalls = 0;
         } else { // push the first ball up more
             new SequentialCommandGroup(
                 new WaitCommand(0.25),
-                new InstantCommand(() -> m_IndexerMotor.set(ControlMode.PercentOutput, Constants.indexerUp)),
+                new InstantCommand(() -> setState(IndexerControlState.ON)),
                 new WaitCommand(0.3),
-                new InstantCommand(() -> m_IndexerMotor.set(ControlMode.PercentOutput, 0)), 
-                new InstantCommand(() -> autoIndexer = true)               
+                new InstantCommand(() -> setState(IndexerControlState.INTAKE)), 
+                new InstantCommand(() -> m_IndexerState = IndexerControlState.AUTO)               
                 ).schedule();
         }
     }

@@ -18,12 +18,11 @@ import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.commands.TeleopDriveCommand;
-import frc.robot.commands.SetSubsystemCommand.SetIndexerCommand;
-import frc.robot.commands.SetSubsystemCommand.SetIntakeCommand;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.LimelightSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.IndexerSubsystem.IndexerControlState;
 
 public class EjectBall extends CommandBase{ //REPLACABLE BY AIM SEQUENCE
     private PIDController m_thetaController;
@@ -44,7 +43,7 @@ public class EjectBall extends CommandBase{ //REPLACABLE BY AIM SEQUENCE
         m_timer.reset();
         m_timer.start();
         m_shooter.setShooterVelocity(5000);
-        m_indexer.setIndexerPercentPower(Constants.indexerUp, false);
+        m_indexer.setState(IndexerControlState.ON);
     }
 /*
      @Override
@@ -57,7 +56,7 @@ public class EjectBall extends CommandBase{ //REPLACABLE BY AIM SEQUENCE
     @Override
     public void end(boolean interruptable){  
         //stop intake, stop indexer
-        m_indexer.setIndexerPercentPower(0.0, false);
+        m_indexer.setState(IndexerControlState.OFF);
         m_shooter.setShooterVelocity(Constants.shooterIdle);
 
     }

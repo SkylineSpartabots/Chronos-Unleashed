@@ -18,6 +18,8 @@ import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.LimelightSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.IndexerSubsystem.IndexerControlState;
+
 import static frc.robot.Constants.*;
 
 import java.util.function.BooleanSupplier;
@@ -145,18 +147,18 @@ public class RobotContainer {
 
     m_controller.getStartButton().whenPressed(m_drivetrainSubsystem::resetOdometry);// resets to 0 -> for testing only
     m_controller.getBackButton().whenPressed(m_drivetrainSubsystem::resetOdometry);// resets to 0 -> for testing only
-    m_controller.getXButton().whenActive(new SetIntakeIndexerCommand(intakeOn, indexerUp));//right bumper hold
-    m_controller.getXButton().whenInactive(new SetIntakeIndexerCommand(0, 0));//right bumper release
-    m_controller.getBButton().whenActive(new SetIntakeIndexerCommand(intakeReverse, indexerDown));//right bumper hold
-    m_controller.getBButton().whenInactive(new SetIntakeIndexerCommand(0, 0));//right bumper release
+    m_controller.getXButton().whenActive(new SetIntakeIndexerCommand(IndexerControlState.ON));//right bumper hold
+    m_controller.getXButton().whenInactive(new SetIntakeIndexerCommand(IndexerControlState.OFF));//right bumper release
+    m_controller.getBButton().whenActive(new SetIntakeIndexerCommand(IndexerControlState.REVERSE));//right bumper hold
+    m_controller.getBButton().whenInactive(new SetIntakeIndexerCommand(IndexerControlState.OFF));//right bumper release
 
     m_controller.getAButton().whenActive(new RobotIdle());
     m_controller.getYButton().whenActive(new RobotOff());
 
-    m_controller.getLeftBumper().whenHeld(new SetIntakeCommand(intakeReverse, false));
-    m_controller.getLeftBumper().whenReleased(new SetIntakeCommand(intakeOn, true));
+    m_controller.getLeftBumper().whenHeld(new SetIntakeIndexerCommand(IndexerControlState.REVERSEINTAKE));
+    m_controller.getLeftBumper().whenReleased(new SetIntakeIndexerCommand(IndexerControlState.ON));
     //m_controller.getRightBumper().whenHeld(new ShootByLimelight(false));
-    m_controller.getRightBumper().whenHeld(new SetIntakeCommand(intakeOn, false));
+    m_controller.getRightBumper().whenHeld(new SetIntakeIndexerCommand(IndexerControlState.INTAKE));
     
     //m_controller.getRightStickButton().whenHeld(new ShootByLimelight(false));
     m_controller.getLeftStickButton().whenHeld(new AimShoot());
@@ -183,10 +185,10 @@ public class RobotContainer {
     dpadDown2.whileActiveContinuous(new InstantCommand(() -> m_shooterSubsystem.increaseShooterVelocity(-250)));*/   //works
     dpadRight2.whenActive(new InstantCommand(() -> m_shooterSubsystem.setShooterVelocity(shooterFixed)));
     dpadLeft2.whenActive(new InstantCommand(() -> m_shooterSubsystem.setShooterVelocity(3000)));
-    dpadDown2.whenActive(new SetIndexerCommand(indexerDown,false))
-        .whenInactive(new SetIndexerCommand(0.0, false));
-    dpadUp2.whenActive(new SetIndexerCommand(indexerUp,false))
-        .whenInactive(new SetIndexerCommand(0.0, false));
+    dpadDown2.whenActive(new SetIntakeIndexerCommand(IndexerControlState.REVERSE))
+        .whenInactive(new SetIntakeIndexerCommand(IndexerControlState.OFF));
+    dpadUp2.whenActive(new SetIntakeIndexerCommand(IndexerControlState.ON))
+        .whenInactive(new SetIntakeIndexerCommand(IndexerControlState.OFF));
     
     Trigger leftTriggerAxis2 = new Trigger(() -> { return m_controller2.getLeftTriggerAxis() > triggerDeadzone;});
     Trigger rightTriggerAxis2 = new Trigger(() -> { return m_controller2.getRightTriggerAxis() > triggerDeadzone;});
@@ -195,8 +197,8 @@ public class RobotContainer {
                     .whenInactive(new SetIndexerCommand(0.0, false));
     rightTriggerAxis2.whenActive(new SetIndexerCommand(indexerUp,false))
                      .whenInactive(new SetIndexerCommand(0.0, false));*/
-    m_controller2.getLeftBumper().whenPressed(new SetIntakeCommand(intakeOn,true));
-    m_controller2.getRightBumper().whenPressed(new SetIndexerCommand(indexerUp,true));
+    m_controller2.getLeftBumper().whenPressed(new SetIntakeIndexerCommand(IndexerControlState.INTAKE));
+    m_controller2.getRightBumper().whenPressed(new SetIntakeIndexerCommand(IndexerControlState.AUTO));
                      
     leftTriggerAxis2.whileActiveContinuous(new InstantCommand(() -> ClimbSubsystem.getInstance().leftPivotPower(pivotDown*m_controller2.getLeftTriggerAxis())))
       .whenInactive(new InstantCommand(() -> ClimbSubsystem.getInstance().leftPivotPower(0)));
@@ -211,8 +213,8 @@ public class RobotContainer {
       .whenInactive(new InstantCommand(() -> ClimbSubsystem.getInstance().rightClimbPower(0)));
 
     
-    m_controller2.getXButton().whenHeld(new SetIntakeCommand(intakeOn,false)).whenReleased(new SetIntakeCommand(0.0, false));
-    m_controller2.getBButton().whenHeld(new SetIntakeCommand(intakeReverse,false)).whenReleased(new SetIntakeCommand(0.0, false));
+    m_controller2.getXButton().whenHeld(new SetIntakeIndexerCommand(IndexerControlState.INTAKE)).whenReleased(new SetIntakeIndexerCommand(IndexerControlState.OFF));
+    m_controller2.getBButton().whenHeld(new SetIntakeIndexerCommand(IndexerControlState.REVERSEINTAKE)).whenReleased(new SetIntakeIndexerCommand(IndexerControlState.OFF));
    // m_controller2.getAButton().whenActive(new RobotIdle());
     // m_controller2.getAButton().whenActive(new InstantCommand(() -> PivotSubsystem.getInstance().deployIntake()));
     m_controller2.getAButton().whenActive(new ConditionalCommand(
@@ -231,8 +233,7 @@ public class RobotContainer {
 
   public void onRobotDisabled() {
     //called when robot is disabled. Set all subsytems to 0
-    IndexerSubsystem.getInstance().setIntakePercentPower(0.0, false);
-    IndexerSubsystem.getInstance().setIndexerPercentPower(0.0, false);
+    IndexerSubsystem.getInstance().setState(IndexerControlState.OFF);
     ShooterSubsystem.getInstance().setShooterVelocity(0);
   }
 }

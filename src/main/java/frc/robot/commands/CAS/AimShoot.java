@@ -17,12 +17,11 @@ import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.commands.TeleopDriveCommand;
-import frc.robot.commands.SetSubsystemCommand.SetIndexerCommand;
-import frc.robot.commands.SetSubsystemCommand.SetIntakeCommand;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.LimelightSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.IndexerSubsystem.IndexerControlState;
 
 public class AimShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
     private PIDController m_thetaController;
@@ -97,8 +96,7 @@ public class AimShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
         }  
         if(isReadyToShoot && !isIndexerOn){
             //fire indexer if aimed, robot is not moving, shooter is at speed, and indexer is off              
-            IndexerSubsystem.getInstance().setIndexerPercentPower(Constants.indexerUp, false);
-            IndexerSubsystem.getInstance().setIntakePercentPower(Constants.intakeOn, false);
+            IndexerSubsystem.getInstance().setState(IndexerControlState.ON);
             isIndexerOn = true;
             hasRobertShotBall = true;
         }
@@ -118,7 +116,7 @@ public class AimShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
     public void end(boolean interruptable){  
         isIndexerOn = false;
         if(hasRobertShotBall){
-            IndexerSubsystem.getInstance().setIndexerPercentPower(Constants.indexerUp, true);
+            IndexerSubsystem.getInstance().setState(IndexerControlState.AUTO);
             IndexerSubsystem.numberOfBalls = 0;
             // IndexerSubsystem.getInstance().setIntakePercentPower(Constants.intakeOn, true);
             ShooterSubsystem.getInstance().setShooterVelocity(Constants.shooterIdle);

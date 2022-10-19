@@ -40,7 +40,7 @@ public class DiagnosticTestCommand extends CommandBase{
     public void initialize() {
         m_timer.reset();
         m_timer.start();
-        AutonomousCommandFactory.fiveBallAutoDiagnostics().schedule();
+        // AutonomousCommandFactory.fiveBallAutoDiagnostics().schedule();
     }
     @Override
     public void execute() {

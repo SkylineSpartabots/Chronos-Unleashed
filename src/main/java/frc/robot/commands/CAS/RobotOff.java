@@ -8,6 +8,7 @@ import frc.robot.Constants;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.IndexerSubsystem.IndexerControlState;
 
 public class RobotOff extends CommandBase {
     public RobotOff() {
@@ -20,8 +21,7 @@ public class RobotOff extends CommandBase {
     @Override
     public void initialize() {
         ShooterSubsystem.getInstance().setShooterPercentPower(0);
-        IndexerSubsystem.getInstance().setIndexerPercentPower(0, false);
-        IndexerSubsystem.getInstance().setIntakePercentPower(0, false);
+        IndexerSubsystem.getInstance().setState(IndexerControlState.OFF);
     }
 
     @Override
