@@ -4,44 +4,21 @@
 package frc.robot;
 
 import frc.lib.util.Controller;
-import frc.lib.util.DeviceFinder;
-import frc.robot.commands.*;
 import frc.robot.commands.CAS.AimShoot;
 import frc.robot.commands.CAS.EjectBall;
 import frc.robot.commands.CAS.RobotIdle;
 import frc.robot.commands.CAS.RobotOff;
 import frc.robot.commands.SetSubsystemCommand.*;
-import frc.robot.factories.AutonomousCommandFactory;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
-import frc.robot.subsystems.LimelightSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import static frc.robot.Constants.*;
-
-import java.util.function.BooleanSupplier;
-
-import com.ctre.phoenix.motorcontrol.ControlMode;
-
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -56,11 +33,7 @@ public class RobotContainer {
 
   // The robot's subsystems and commands are defined here...
   private DrivetrainSubsystem m_drivetrainSubsystem;
-  private LimelightSubsystem m_limelight;
-  private IndexerSubsystem m_indexerSubsystem;
   private ShooterSubsystem m_shooterSubsystem;
-  private ClimbSubsystem m_climbSubsystem;
-  private PivotSubsystem m_pivotSubsystem;
   
   /*private static PowerDistribution powerModule = new PowerDistribution(1, ModuleType.kRev);
 
@@ -71,12 +44,8 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    m_drivetrainSubsystem = DrivetrainSubsystem.getInstance();
-    m_limelight = LimelightSubsystem.getInstance();
-    m_indexerSubsystem = IndexerSubsystem.getInstance();
-    m_shooterSubsystem = ShooterSubsystem.getInstance();
-    m_climbSubsystem = ClimbSubsystem.getInstance();
-    m_pivotSubsystem = PivotSubsystem.getInstance();
+    this.m_drivetrainSubsystem = DrivetrainSubsystem.getInstance();
+    this.m_shooterSubsystem = ShooterSubsystem.getInstance();
 
     // Set the scheduler to log Shuffleboard events for command initialize,
     // interrupt, finish
@@ -104,14 +73,6 @@ public class RobotContainer {
     SmartDashboard.putBoolean("Limelight Connected?", LimelightSubsystem.getInstance().isConnected());
     SmartDashboard.putBoolean("Can Bus Connected?", isCanConnected());
     SmartDashboard.putBoolean("Battery Charged?", isBatteryCharged());*/
-  }
-
-  private static boolean isBatteryCharged(){
-    return RobotController.getBatteryVoltage() >= Constants.kMinimumBatteryVoltage;
-  }
-
-  private static boolean isCanConnected(){
-    return DeviceFinder.Find().size() == Constants.kCanDeviceCount;
   }
   // configures button bindings to controller
   private void configureButtonBindings() {

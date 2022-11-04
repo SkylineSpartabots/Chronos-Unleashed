@@ -1,10 +1,7 @@
 package frc.robot.commands;
 
-import javax.lang.model.element.ModuleElement;
 
-import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.factories.AutonomousCommandFactory;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -17,18 +14,12 @@ public class DiagnosticTestCommand extends CommandBase{
     private ShooterSubsystem m_shooterSubsystem;
     //private static PowerDistribution m_pd = new PowerDistribution(1, PowerDistribution.ModuleType.kRev);
 
-    private final double expectedPeakDriveVelocity = 0;
-    private final double expectedPeakIndexerVelocity = 0;
-    private final double expectedPeakIntakeVelocity = 0;
-    private final double expectedPeakShooterVelocity = 0;
-
     private double actualPeakDriveVelocity = 0;
     private double actualPeakIndexerVelocity = 0;
     private double actualPeakIntakeVelocity = 0;
     private double actualPeakShooterVelocity = 0;
 
     private final Timer m_timer = new Timer();
-    private final double testingTime = 3;
 
     public DiagnosticTestCommand(){
         m_drivetrainSubsystem = DrivetrainSubsystem.getInstance();

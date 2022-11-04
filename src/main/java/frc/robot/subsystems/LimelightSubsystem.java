@@ -1,7 +1,6 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.*;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -9,7 +8,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class LimelightSubsystem extends SubsystemBase {
     private static LimelightSubsystem instance = null;
     private NetworkTable nt;
-    private boolean driverMode = false;
 
     public static LimelightSubsystem getInstance(){
         if(instance == null){

@@ -1,10 +1,8 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.lib.util.Controller;
@@ -64,19 +62,6 @@ public class TeleopDriveCommand extends CommandBase {
             rotFilter.calculate(rot), m_drivetrainSubsystem.getGyroscopeRotation()));
         /*m_drivetrainSubsystem.drive(new ChassisSpeeds(driveXFilter.calculate(xSpeed), driveYFilter.calculate(ySpeed), 
         rotFilter.calculate(rot)));*/
-    }
-
-    private static double calculateTurnAngle(double xValue, double yValue, double currentRotation) {
-        if(modifyAxis(xValue) == 0 && modifyAxis(yValue) == 0) {
-            return currentRotation;
-        } else {
-            double calculatedAngle = Math.atan2(yValue, xValue);
-            if(Math.abs(calculatedAngle-currentRotation) < Math.toRadians(6)) {
-                return currentRotation;
-            } else {
-                return calculatedAngle;
-            }
-        }
     } 
 
     public static double applyDeadband(double value, double deadband) {

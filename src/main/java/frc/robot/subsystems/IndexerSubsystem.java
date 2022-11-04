@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import java.time.Period;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -14,9 +13,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.lib.drivers.LazyTalonFX;
 import frc.lib.drivers.TalonFXFactory;
 import frc.robot.Constants;
-import frc.robot.RobotContainer;
 import frc.robot.Constants.Ports;
-import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
