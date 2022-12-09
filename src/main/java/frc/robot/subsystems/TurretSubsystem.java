@@ -3,7 +3,9 @@ package frc.robot.subsystems;
 import com.revrobotics.*;
 import com.revrobotics.CANSparkMax.ControlType;
 
-public class TurretSubsystem {
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+public class TurretSubsystem extends SubsystemBase {
     private static TurretSubsystem instance;
 
     public static TurretSubsystem getInstance() {
@@ -20,9 +22,9 @@ public class TurretSubsystem {
     
 
     private TurretSubsystem() {
-        mTurretMotor = new CANSparkMax(62, CANSparkMaxLowLevel.MotorType.kBrushless); // change this later
-        mTurretMotorPID = mTurretMotor.getPIDController();
+        mTurretMotor = new CANSparkMax(60, CANSparkMaxLowLevel.MotorType.kBrushless); // change this later
         mTurretMotor.restoreFactoryDefaults();
+        mTurretMotorPID = mTurretMotor.getPIDController();
         mTurretMotorPID.setP(0.1);
         mTurretMotorPID.setI(1e-4);
         mTurretMotorPID.setD(0);
@@ -39,5 +41,10 @@ public class TurretSubsystem {
         return setpoint;
     }
 
+    @Override
+    public void periodic() {
+        // TODO Auto-generated method stub
+        super.periodic();
+    }
 
 }

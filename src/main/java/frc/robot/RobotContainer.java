@@ -18,6 +18,8 @@ import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.LimelightSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.TurretSubsystem;
+
 import static frc.robot.Constants.*;
 import frc.robot.commands.SetSubsystemCommand.*;
 
@@ -62,6 +64,7 @@ public class RobotContainer {
   private ShooterSubsystem m_shooterSubsystem;
   private ClimbSubsystem m_climbSubsystem;
   private PivotSubsystem m_pivotSubsystem;
+  private TurretSubsystem m_turretSubsystem;
   
   /*private static PowerDistribution powerModule = new PowerDistribution(1, ModuleType.kRev);
 
@@ -78,6 +81,7 @@ public class RobotContainer {
     m_shooterSubsystem = ShooterSubsystem.getInstance();
     m_climbSubsystem = ClimbSubsystem.getInstance();
     m_pivotSubsystem = PivotSubsystem.getInstance();
+    m_turretSubsystem = TurretSubsystem.getInstance();
 
     // Set the scheduler to log Shuffleboard events for command initialize,
     // interrupt, finish

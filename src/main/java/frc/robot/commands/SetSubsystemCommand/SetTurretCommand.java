@@ -8,6 +8,7 @@ public class SetTurretCommand extends CommandBase {
     boolean increase;
     public void initialize() {
         m_turret = TurretSubsystem.getInstance();
+        addRequirements(m_turret);
     }     
 
     public SetTurretCommand(boolean increase) {
