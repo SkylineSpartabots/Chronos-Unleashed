@@ -13,10 +13,12 @@ public class SetTurretCommand extends CommandBase {
         this.increase = increase;
     }
     
+    @Override
     public void initialize() {
         m_turret.setPosition(m_turret.getPosition() + (increase ? 0.1 : -0.1));
     }     
 
+    @Override
     public boolean isFinished() {
         return true;
     }
