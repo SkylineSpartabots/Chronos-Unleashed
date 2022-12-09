@@ -6,18 +6,16 @@ import frc.robot.subsystems.TurretSubsystem;
 public class SetTurretCommand extends CommandBase {
     TurretSubsystem m_turret;
     boolean increase;
-    public void initialize() {
+    
+    public SetTurretCommand(boolean increase) {
         m_turret = TurretSubsystem.getInstance();
         addRequirements(m_turret);
-    }     
-
-    public SetTurretCommand(boolean increase) {
         this.increase = increase;
     }
-
-    public void execute() {
+    
+    public void initialize() {
         m_turret.setPosition(m_turret.getPosition() + (increase ? 0.1 : -0.1));
-    }
+    }     
 
     public boolean isFinished() {
         return true;
