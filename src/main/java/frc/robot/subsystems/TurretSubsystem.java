@@ -6,7 +6,7 @@ import com.revrobotics.CANSparkMax.ControlType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class TurretSubsystem extends SubsystemBase {
-    private static TurretSubsystem instance;
+    private static TurretSubsystem instance = null;
 
     public static TurretSubsystem getInstance() {
         if (instance == null) {
@@ -44,6 +44,7 @@ public class TurretSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         // TODO Auto-generated method stub
+        
         super.periodic();
     }
 

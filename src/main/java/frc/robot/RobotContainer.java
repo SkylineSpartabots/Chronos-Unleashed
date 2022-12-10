@@ -81,7 +81,7 @@ public class RobotContainer {
     m_shooterSubsystem = ShooterSubsystem.getInstance();
     m_climbSubsystem = ClimbSubsystem.getInstance();
     m_pivotSubsystem = PivotSubsystem.getInstance();
-    m_turretSubsystem = TurretSubsystem.getInstance();
+    // m_turretSubsystem = TurretSubsystem.getInstance();
 
     // Set the scheduler to log Shuffleboard events for command initialize,
     // interrupt, finish

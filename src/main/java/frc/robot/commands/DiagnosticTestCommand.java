@@ -16,7 +16,7 @@ public class DiagnosticTestCommand extends CommandBase{
     private IndexerSubsystem m_indexerSubsystem;
     private ShooterSubsystem m_shooterSubsystem;
     //private static PowerDistribution m_pd = new PowerDistribution(1, PowerDistribution.ModuleType.kRev);
-
+    
     private final double expectedPeakDriveVelocity = 0;
     private final double expectedPeakIndexerVelocity = 0;
     private final double expectedPeakIntakeVelocity = 0;

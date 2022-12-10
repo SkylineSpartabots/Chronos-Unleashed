@@ -9,13 +9,17 @@ public class SetTurretCommand extends CommandBase {
    
     public SetTurretCommand(boolean increase) {
         m_turret = TurretSubsystem.getInstance();
-        addRequirements(m_turret);
+        // addRequirements(m_turret);
         this.increase = increase;
     }
 
     public void initialize() {
-        m_turret.setPosition(m_turret.getPosition() + (increase ? 0.1 : -0.1));
+        m_turret.setPosition(m_turret.getPosition() + (increase ? 0.5 : -0.5));
     }     
+
+    public void execute() {
+        
+    }
 
     public boolean isFinished() {
         return true;
