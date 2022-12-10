@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import com.revrobotics.*;
 import com.revrobotics.CANSparkMax.ControlType;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -20,6 +21,10 @@ public class TurretSubsystem extends SubsystemBase {
     private RelativeEncoder mEncoder;
     private double setpoint;
     
+    // complete 360 is from -9.5 to 28
+    // -8 to 26.5 bounds
+    // -8 is 90 degrees counterclockwise
+    // 26.5 270 degrees clockwise
 
     private TurretSubsystem() {
         mTurretMotor = new CANSparkMax(60, CANSparkMaxLowLevel.MotorType.kBrushless); // change this later
@@ -29,7 +34,7 @@ public class TurretSubsystem extends SubsystemBase {
         mTurretMotorPID.setI(1e-4);
         mTurretMotorPID.setD(0);
         mEncoder = mTurretMotor.getEncoder();
-        setpoint = 0;
+        setpoint = mEncoder.getPosition();
     }    
 
     public void setPosition(double pos) {
@@ -43,9 +48,8 @@ public class TurretSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        // TODO Auto-generated method stub
-        
-        super.periodic();
+        SmartDashboard.putNumber("setpoint", setpoint);
+        SmartDashboard.putNumber("position", mEncoder.getPosition());
     }
 
 }
