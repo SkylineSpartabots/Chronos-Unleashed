@@ -115,6 +115,16 @@ public class DrivetrainSubsystem extends SubsystemBase {
         return angle;
     }
 
+    public static double turretNormalize(double deg) {
+        double angle = deg % 360;
+        if(angle > 90) {
+            angle = -270 + (Math.abs(angle) - 90);
+        } else if (angle < -270) {
+            angle = 90 - (Math.abs(angle) - 270);
+        }
+        return angle;
+    }
+
     public Field2d getField() {
         return m_field;
     }

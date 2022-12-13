@@ -46,6 +46,18 @@ public class TurretSubsystem extends SubsystemBase {
         return setpoint;
     }
 
+    // counter clockwise +90
+    // clockwise -270
+    public double getAngle() {
+        double angle = 0;
+        if (Math.copySign(1, setpoint) < 0) {
+            angle = (setpoint/-9.5) * 90;
+		} else if (Math.copySign(1, setpoint) > 0) {
+            angle = (setpoint/28) * -270;
+		}
+        return angle;
+    }
+
     @Override
     public void periodic() {
         SmartDashboard.putNumber("setpoint", setpoint);
