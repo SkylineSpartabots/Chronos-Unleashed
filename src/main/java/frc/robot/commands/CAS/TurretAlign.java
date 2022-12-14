@@ -39,6 +39,7 @@ public class TurretAlign extends CommandBase {
 	@Override
 	public void execute() {
 		m_turret.setPosition(setpoint);
+		m_turret.setAngle(targetAngle);
 	}
 
 	@Override

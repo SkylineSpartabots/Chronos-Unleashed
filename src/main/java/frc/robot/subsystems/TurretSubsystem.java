@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.lang.annotation.Target;
+
 import com.revrobotics.*;
 import com.revrobotics.CANSparkMax.ControlType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -20,6 +22,7 @@ public class TurretSubsystem extends SubsystemBase {
     private SparkMaxPIDController mTurretMotorPID;
     private RelativeEncoder mEncoder;
     private double setpoint;
+    private static double targetAngle;
     
     // complete 360 is from -9.5 to 28
     // -8 to 26.5 bounds
@@ -38,12 +41,16 @@ public class TurretSubsystem extends SubsystemBase {
     }    
 
     public void setPosition(double pos) {
-        mTurretMotorPID.setReference(pos, ControlType.kPosition);
+        // mTurretMotorPID.setReference(pos, ControlType.kPosition);
         setpoint = pos;
     }
 
     public double getPosition() {
         return setpoint;
+    }
+
+    public void setAngle(double angle) {
+        targetAngle = angle;
     }
 
     // counter clockwise +90
@@ -62,6 +69,7 @@ public class TurretSubsystem extends SubsystemBase {
     public void periodic() {
         SmartDashboard.putNumber("setpoint", setpoint);
         SmartDashboard.putNumber("position", mEncoder.getPosition());
+        SmartDashboard.putNumber("target angle", targetAngle);
     }
 
 }
