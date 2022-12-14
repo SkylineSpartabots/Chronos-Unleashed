@@ -1,13 +1,8 @@
 package frc.robot.subsystems;
 
-import java.lang.annotation.Target;
-
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.revrobotics.*;
-import com.revrobotics.CANSparkMax.ControlType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.MecanumControllerCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.drivers.LazyTalonFX;
 import frc.lib.drivers.TalonFXFactory;
@@ -25,13 +20,8 @@ public class TurretSubsystem extends SubsystemBase {
 
     private final LazyTalonFX mTurretMotor;  
     private double setpoint;
-    private static double targetAngle;
+    private double targetAngle;
     
-    // complete 360 is from -9.5 to 28
-    // -8 to 26.5 bounds
-    // -8 is 90 degrees counterclockwise
-    // 26.5 270 degrees clockwise
-
     private TurretSubsystem() {
         mTurretMotor = TalonFXFactory.createDefaultFalcon("Turret Motor", 0);
         mTurretMotor.configVoltageCompSaturation(12.0, Constants.kTimeOutMs);
@@ -40,20 +30,30 @@ public class TurretSubsystem extends SubsystemBase {
     }    
 
     public void setPosition(double pos) {
+        mTurretMotor.configMotionAcceleration(10000); // accel limit for motion profile, test value
+        mTurretMotor.configMotionCruiseVelocity(10000); // velo limit for motion profile, test value
         mTurretMotor.set(ControlMode.MotionMagic, pos);
         setpoint = pos;
     }
-
-    public void resetPosition() {
-        mEncoder.setPosition(0);
-    }
-
-    public double getPosition() {
+    
+    public double getSetpoint() {
         return setpoint;
     }
+    
+    public double getPosition() {
+        return mTurretMotor.getSelectedSensorPosition();
+    }
+    
+    public void resetPosition() {
+        mTurretMotor.setSelectedSensorPosition(0);
+    }
 
-    public void setAngle(double angle) {
+    public void setTargetAngle(double angle) {
         targetAngle = angle;
+    }
+
+    public double getTargetAngle() {
+        return targetAngle;
     }
 
     // counter clockwise +90
@@ -61,19 +61,19 @@ public class TurretSubsystem extends SubsystemBase {
     public double getAngle() {
         double angle = 0;
         if (Math.copySign(1, setpoint) < 0) {
-            angle = (setpoint/-9.5) * 90;
+            // depends on bounds for falcon
 		} else if (Math.copySign(1, setpoint) > 0) {
-            angle = (setpoint/28) * -270;
+            // depends on bounds for falcon
 		}
         return angle;
     }
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("setpoint", setpoint);
-        SmartDashboard.putNumber("position", mEncoder.getPosition());
-        SmartDashboard.putNumber("target angle", targetAngle);
-        SmartDashboard.putNumber("actual angle", getAngle());
+        SmartDashboard.putNumber("turret setpoint", getSetpoint());
+        SmartDashboard.putNumber("turret position", getPosition());
+        SmartDashboard.putNumber("turret angle", getAngle());
+        SmartDashboard.putNumber("turret target angle", getTargetAngle());
     }
 
 }

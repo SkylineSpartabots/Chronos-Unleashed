@@ -25,9 +25,9 @@ public class TurretAlign extends CommandBase {
 		// targetAngle = Math.toRadians(DrivetrainSubsystem.findAngle(m_drivetrainSubsystem.getPose(), m_targetPosition.getX(), m_targetPosition.getY(), 180));
 		// targetAngle = DrivetrainSubsystem.turretNormalize(targetAngle);
 		// if(Math.copySign(1, targetAngle) > 0) {
-		// 	setpoint = (targetAngle/90) * -9.5;
+		// 	setpoint = (targetAngle/90) * -9.5; // depends on bounds for falcon
 		// } else if (Math.copySign(1, targetAngle) < 0) {
-		// 	setpoint = (targetAngle/-270) * 28;
+		// 	setpoint = (targetAngle/-270) * 28; // depends on bounds for falcon
 		// }
 		// if (setpoint > 26.5) {
 		// 	setpoint = 26.5;
@@ -40,7 +40,7 @@ public class TurretAlign extends CommandBase {
 	@Override
 	public void execute() {
 		m_turret.setPosition(setpoint);
-		m_turret.setAngle(targetAngle);
+		m_turret.setTargetAngle(targetAngle);
 	}
 
 	@Override
