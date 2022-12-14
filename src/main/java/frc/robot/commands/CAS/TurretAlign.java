@@ -21,19 +21,20 @@ public class TurretAlign extends CommandBase {
 	
 	@Override
 	public void initialize() {
-		m_targetPosition = new Translation2d(Constants.targetHudPosition.getX(), Constants.targetHudPosition.getY());
-		targetAngle = Math.toRadians(DrivetrainSubsystem.findAngle(m_drivetrainSubsystem.getPose(), m_targetPosition.getX(), m_targetPosition.getY(), 180));
-		targetAngle = DrivetrainSubsystem.turretNormalize(targetAngle);
-		if(Math.copySign(1, targetAngle) > 0) {
-			setpoint = (targetAngle/90) * -9.5;
-		} else if (Math.copySign(1, targetAngle) < 0) {
-			setpoint = (targetAngle/-270) * 28;
-		}
-		if (setpoint > 26.5) {
-			setpoint = 26.5;
-		} else if (setpoint < -8) {
-			setpoint = -8;
-		}
+		// m_targetPosition = new Translation2d(Constants.targetHudPosition.getX(), Constants.targetHudPosition.getY());
+		// targetAngle = Math.toRadians(DrivetrainSubsystem.findAngle(m_drivetrainSubsystem.getPose(), m_targetPosition.getX(), m_targetPosition.getY(), 180));
+		// targetAngle = DrivetrainSubsystem.turretNormalize(targetAngle);
+		// if(Math.copySign(1, targetAngle) > 0) {
+		// 	setpoint = (targetAngle/90) * -9.5;
+		// } else if (Math.copySign(1, targetAngle) < 0) {
+		// 	setpoint = (targetAngle/-270) * 28;
+		// }
+		// if (setpoint > 26.5) {
+		// 	setpoint = 26.5;
+		// } else if (setpoint < -8) {
+		// 	setpoint = -8;
+		// }
+		setpoint = 0; 
 	}
 
 	@Override

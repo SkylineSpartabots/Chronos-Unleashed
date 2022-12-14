@@ -5,7 +5,7 @@ import java.lang.annotation.Target;
 import com.revrobotics.*;
 import com.revrobotics.CANSparkMax.ControlType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
+import edu.wpi.first.wpilibj2.command.MecanumControllerCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class TurretSubsystem extends SubsystemBase {
@@ -30,19 +30,23 @@ public class TurretSubsystem extends SubsystemBase {
     // 26.5 270 degrees clockwise
 
     private TurretSubsystem() {
-        mTurretMotor = new CANSparkMax(60, CANSparkMaxLowLevel.MotorType.kBrushless); // change this later
+        mTurretMotor = new CANSparkMax(60, CANSparkMax.MotorType.kBrushless); // change this later
         mTurretMotor.restoreFactoryDefaults();
         mTurretMotorPID = mTurretMotor.getPIDController();
         mTurretMotorPID.setP(0.1);
-        mTurretMotorPID.setI(1e-4);
+        mTurretMotorPID.setI(3e-4);
         mTurretMotorPID.setD(0);
-        mEncoder = mTurretMotor.getEncoder();
+        mEncoder = mTurretMotor.getEncoder(); // specify type of encoder
         setpoint = mEncoder.getPosition();
     }    
 
     public void setPosition(double pos) {
-        mTurretMotorPID.setReference(pos, ControlType.kPosition);
+        mTurretMotorPID.setReference(pos, CANSparkMax.ControlType.kPosition);
         setpoint = pos;
+    }
+
+    public void resetPosition() {
+        mEncoder.setPosition(0);
     }
 
     public double getPosition() {

@@ -152,6 +152,7 @@ public class RobotContainer {
     dpadUp.whileActiveOnce(new SetTurretCommand(true));
     dpadDown.whileActiveOnce(new SetTurretCommand(false));
     dpadRight.whileActiveOnce(new TurretAlign());
+    // dpadLeft.whileActiveOnce(new InstantCommand(() -> m_turretSubsystem.resetPosition()));
 
     m_controller.getStartButton().whenPressed(m_drivetrainSubsystem::resetOdometry);// resets to 0 -> for testing only
     m_controller.getBackButton().whenPressed(m_drivetrainSubsystem::resetOdometry);// resets to 0 -> for testing only
