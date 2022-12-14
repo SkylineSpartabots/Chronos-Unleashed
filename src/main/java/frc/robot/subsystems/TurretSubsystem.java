@@ -2,11 +2,16 @@ package frc.robot.subsystems;
 
 import java.lang.annotation.Target;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.revrobotics.*;
 import com.revrobotics.CANSparkMax.ControlType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.MecanumControllerCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.drivers.LazyTalonFX;
+import frc.lib.drivers.TalonFXFactory;
+import frc.robot.Constants;
 
 public class TurretSubsystem extends SubsystemBase {
     private static TurretSubsystem instance = null;
@@ -18,9 +23,7 @@ public class TurretSubsystem extends SubsystemBase {
         return instance;
     }
 
-    private CANSparkMax mTurretMotor;
-    private SparkMaxPIDController mTurretMotorPID;
-    private RelativeEncoder mEncoder;
+    private final LazyTalonFX mTurretMotor;  
     private double setpoint;
     private static double targetAngle;
     
@@ -30,18 +33,14 @@ public class TurretSubsystem extends SubsystemBase {
     // 26.5 270 degrees clockwise
 
     private TurretSubsystem() {
-        mTurretMotor = new CANSparkMax(60, CANSparkMax.MotorType.kBrushless); // change this later
-        mTurretMotor.restoreFactoryDefaults();
-        mTurretMotorPID = mTurretMotor.getPIDController();
-        mTurretMotorPID.setP(0.1);
-        mTurretMotorPID.setI(3e-4);
-        mTurretMotorPID.setD(0);
-        mEncoder = mTurretMotor.getEncoder(); // specify type of encoder
-        setpoint = mEncoder.getPosition();
+        mTurretMotor = TalonFXFactory.createDefaultFalcon("Turret Motor", 0);
+        mTurretMotor.configVoltageCompSaturation(12.0, Constants.kTimeOutMs);
+        mTurretMotor.enableVoltageCompensation(true);
+        mTurretMotor.setNeutralMode(NeutralMode.Brake);
     }    
 
     public void setPosition(double pos) {
-        mTurretMotorPID.setReference(pos, CANSparkMax.ControlType.kPosition);
+        mTurretMotor.set(ControlMode.MotionMagic, pos);
         setpoint = pos;
     }
 
