@@ -41,7 +41,7 @@ public class TurretSubsystem extends SubsystemBase {
     }    
 
     public void setPosition(double pos) {
-        // mTurretMotorPID.setReference(pos, ControlType.kPosition);
+        mTurretMotorPID.setReference(pos, ControlType.kPosition);
         setpoint = pos;
     }
 
@@ -70,6 +70,7 @@ public class TurretSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("setpoint", setpoint);
         SmartDashboard.putNumber("position", mEncoder.getPosition());
         SmartDashboard.putNumber("target angle", targetAngle);
+        SmartDashboard.putNumber("actual angle", getAngle());
     }
 
 }
