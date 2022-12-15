@@ -23,7 +23,7 @@ public class TurretSubsystem extends SubsystemBase {
     private double targetAngle;
     
     private TurretSubsystem() {
-        mTurretMotor = TalonFXFactory.createDefaultFalcon("Turret Motor", 0);
+        mTurretMotor = TalonFXFactory.createDefaultFalcon("Turret Motor", 45);
         mTurretMotor.configVoltageCompSaturation(12.0, Constants.kTimeOutMs);
         mTurretMotor.enableVoltageCompensation(true);
         mTurretMotor.setNeutralMode(NeutralMode.Brake);
