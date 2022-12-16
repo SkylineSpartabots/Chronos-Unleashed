@@ -94,4 +94,6 @@ public class PivotSubsystem extends SubsystemBase {
     public void periodic(){
         SmartDashboard.putNumber("Pivot Position", m_pivotMotor.getSelectedSensorPosition());
     }
+
+
 }

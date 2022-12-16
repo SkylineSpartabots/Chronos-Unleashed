@@ -17,7 +17,6 @@ import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.LimelightSubsystem;
-import frc.robot.subsystems.PhotonCameraSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
@@ -67,7 +66,6 @@ public class RobotContainer {
   private ClimbSubsystem m_climbSubsystem;
   private PivotSubsystem m_pivotSubsystem;
   private TurretSubsystem m_turretSubsystem;
-  private PhotonCameraSubsystem m_PhotonCameraSubsystem;
   
   /*private static PowerDistribution powerModule = new PowerDistribution(1, ModuleType.kRev);
 
