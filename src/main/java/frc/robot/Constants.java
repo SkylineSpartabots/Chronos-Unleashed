@@ -104,22 +104,22 @@ public final class Constants {
         public static final int FRONT_LEFT_DRIVE = 2;
         public static final int FRONT_LEFT_STEER = 1;
         public static final int FRONT_LEFT_STEER_ENCODER = 9;
-        public static final double FRONT_LEFT_OFFSET = -Math.toRadians(81.3812255859375);
+        public static final double FRONT_LEFT_OFFSET = -Math.toRadians(301.376953125);
 
         public static final int FRONT_RIGHT_DRIVE = 8;
         public static final int FRONT_RIGHT_STEER = 7;
         public static final int FRONT_RIGHT_STEER_ENCODER = 12;
-        public static final double FRONT_RIGHT_OFFSET = -Math.toRadians(303.48358154296875);
+        public static final double FRONT_RIGHT_OFFSET = -Math.toRadians(65.390625);
 
         public static final int BACK_LEFT_DRIVE = 4;
         public static final int BACK_LEFT_STEER = 3;
         public static final int BACK_LEFT_STEER_ENCODER = 10;
-        public static final double BACK_LEFT_OFFSET = -Math.toRadians(349.26910400390625);
+        public static final double BACK_LEFT_OFFSET = -Math.toRadians(324.66796875);
 
         public static final int BACK_RIGHT_DRIVE = 6;
         public static final int BACK_RIGHT_STEER = 5;
         public static final int BACK_RIGHT_STEER_ENCODER = 11;
-        public static final double BACK_RIGHT_OFFSET = -Math.toRadians(156.5277099609375);
+        public static final double BACK_RIGHT_OFFSET = -Math.toRadians(357.890625);
 
         public static final int MASTER_SHOOTER_MOTOR = 21;
         public static final int FOLLOW_SHOOTER_MOTOR = 22;
