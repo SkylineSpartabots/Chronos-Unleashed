@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.sensors.CANCoder;
 import com.kauailabs.navx.frc.AHRS;
 import com.swervedrivespecialties.swervelib.Mk4ModuleConfiguration;
 import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper;
@@ -208,6 +209,12 @@ public class DrivetrainSubsystem extends SubsystemBase {
         applyDrive();
         SmartDashboard.putNumber("Rotation", getGyroscopeRotation().getDegrees());
         SmartDashboard.putBoolean("IsCalibrating", m_navx.isCalibrating());
+
+        SmartDashboard.putNumber("FrontLeft", new CANCoder(9).getAbsolutePosition());
+        SmartDashboard.putNumber("BackLeft", new CANCoder(10).getAbsolutePosition());
+        SmartDashboard.putNumber("BackRight", new CANCoder(11).getAbsolutePosition());
+        SmartDashboard.putNumber("FrontRight", new CANCoder(12).getAbsolutePosition());
+
 
         /*SmartDashboard.putNumber("FLSteer", RobotContainer.getPDP().getCurrent(4));
         SmartDashboard.putNumber("FLDrive", RobotContainer.getPDP().getCurrent(6));
