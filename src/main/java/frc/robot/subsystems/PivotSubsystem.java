@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 
 
+import java.util.function.BooleanSupplier;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -28,6 +30,9 @@ public class PivotSubsystem extends SubsystemBase {
     }
 
     private final LazyTalonFX m_pivotMotor;  
+    private boolean intakeToggle = false;
+    public BooleanSupplier intakeState = () -> intakeToggle;
+
 
     PIDController shooterController;
     private PivotSubsystem() {
@@ -65,11 +70,13 @@ public class PivotSubsystem extends SubsystemBase {
         m_pivotMotor.configMotionAcceleration(10000);
         m_pivotMotor.configMotionCruiseVelocity(10000);
         moveToPosition(0);
+        intakeToggle = false;
     }
     public void deployIntake(){
         m_pivotMotor.configMotionAcceleration(7000);
         m_pivotMotor.configMotionCruiseVelocity(4000);
         moveToPosition(34000);
+        intakeToggle = true;
     }
 
     public void moveToPosition(double target){
@@ -82,10 +89,15 @@ public class PivotSubsystem extends SubsystemBase {
     public void resetIntakeUp(){
         m_pivotMotor.setSelectedSensorPosition(0);
     }
+<<<<<<< HEAD
     
+=======
+>>>>>>> turretV2
 
     @Override
     public void periodic(){
         SmartDashboard.putNumber("Pivot Position", m_pivotMotor.getSelectedSensorPosition());
     }
+
+
 }

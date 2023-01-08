@@ -10,6 +10,7 @@ import frc.robot.commands.CAS.AimShoot;
 import frc.robot.commands.CAS.EjectBall;
 import frc.robot.commands.CAS.MemeShoot;
 import frc.robot.commands.CAS.RobotOff;
+import frc.robot.commands.CAS.TurretAlign;
 import frc.robot.commands.SetSubsystemCommand.*;
 import frc.robot.factories.AutonomousCommandFactory;
 import frc.robot.subsystems.ClimbSubsystem;
@@ -18,16 +19,29 @@ import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.LimelightSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.TurretSubsystem;
+
 import static frc.robot.Constants.*;
+import frc.robot.commands.SetSubsystemCommand.*;
+
+import java.util.function.BooleanSupplier;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -56,6 +70,7 @@ public class RobotContainer {
   private ShooterSubsystem m_shooterSubsystem;
   private ClimbSubsystem m_climbSubsystem;
   private PivotSubsystem m_pivotSubsystem;
+  private TurretSubsystem m_turretSubsystem;
   
   /*private static PowerDistribution powerModule = new PowerDistribution(1, ModuleType.kRev);
 
@@ -72,6 +87,7 @@ public class RobotContainer {
     m_shooterSubsystem = ShooterSubsystem.getInstance();
     m_climbSubsystem = ClimbSubsystem.getInstance();
     m_pivotSubsystem = PivotSubsystem.getInstance();
+    // m_turretSubsystem = TurretSubsystem.getInstance();
 
     // Set the scheduler to log Shuffleboard events for command initialize,
     // interrupt, finish
@@ -120,23 +136,36 @@ public class RobotContainer {
     Trigger dpadDown = new Trigger(() -> {return m_controller.getDpadDown();});
     Trigger dpadLeft = new Trigger(() -> {return m_controller.getDpadLeft();});
     Trigger dpadRight = new Trigger(() -> {return m_controller.getDpadRight();});
+
+    PIDController xController = new PIDController(5.0, 0, 0);
+    PIDController yController = new PIDController(5.0, 0, 0);
+    PIDController thetaController = new PIDController(2.0, 0, 0);
+    thetaController.enableContinuousInput(-Math.PI, Math.PI);
+    PathPlannerTrajectory examplePath = PathPlanner.loadPath("New Path", new PathConstraints(1, 0.1));
+    PPSwerveControllerCommand swe = new PPSwerveControllerCommand(examplePath, m_drivetrainSubsystem.poseSupplier, xController, yController, thetaController, m_drivetrainSubsystem.chassisConsumer, m_drivetrainSubsystem);
+    dpadLeft.whenActive(swe);
   
     //dpad up and dpad right controls left and right climb. press both to move at the same time
-    dpadUp.whenActive(new InstantCommand(() -> ClimbSubsystem.getInstance().leftClimbPower(climbUp)))
-      .whenInactive(new InstantCommand(() -> ClimbSubsystem.getInstance().leftClimbPower(0)));
-    dpadRight.whenActive(new InstantCommand(() -> ClimbSubsystem.getInstance().rightClimbPower(climbUp)))
-      .whenInactive(new InstantCommand(() -> ClimbSubsystem.getInstance().rightClimbPower(0)));
-    dpadUpRight.whenActive(new InstantCommand(() -> ClimbSubsystem.getInstance().leftClimbPower(climbUp)))
-      .whenActive(new InstantCommand(() -> ClimbSubsystem.getInstance().rightClimbPower(climbUp)))
-      .whenInactive(new InstantCommand(() -> ClimbSubsystem.getInstance().leftClimbPower(0)))
-      .whenInactive(new InstantCommand(() -> ClimbSubsystem.getInstance().rightClimbPower(0)));   
+    // dpadUp.whenActive(new InstantCommand(() -> ClimbSubsystem.getInstance().leftClimbPower(climbUp)))
+    //   .whenInactive(new InstantCommand(() -> ClimbSubsystem.getInstance().leftClimbPower(0)));
+    // dpadRight.whenActive(new InstantCommand(() -> ClimbSubsystem.getInstance().rightClimbPower(climbUp)))
+    //   .whenInactive(new InstantCommand(() -> ClimbSubsystem.getInstance().rightClimbPower(0)));
+    // dpadUpRight.whenActive(new InstantCommand(() -> ClimbSubsystem.getInstance().leftClimbPower(climbUp)))
+    //   .whenActive(new InstantCommand(() -> ClimbSubsystem.getInstance().rightClimbPower(climbUp)))
+    //   .whenInactive(new InstantCommand(() -> ClimbSubsystem.getInstance().leftClimbPower(0)))
+    //   .whenInactive(new InstantCommand(() -> ClimbSubsystem.getInstance().rightClimbPower(0)));   
 
-    dpadDown.whenActive(new InstantCommand(() -> ClimbSubsystem.getInstance().leftClimbPower(climbDown)))
-      .whenActive(new InstantCommand(() -> ClimbSubsystem.getInstance().rightClimbPower(climbDown)))
-      .whenInactive(new InstantCommand(() -> ClimbSubsystem.getInstance().leftClimbPower(0)))
-      .whenInactive(new InstantCommand(() -> ClimbSubsystem.getInstance().rightClimbPower(0)));   
-    dpadLeft.whenActive(new InstantCommand(() -> ClimbSubsystem.getInstance().pivotPower(pivotDown)))
-      .whenInactive(new InstantCommand(() -> ClimbSubsystem.getInstance().pivotPower(0)));
+    // dpadDown.whenActive(new InstantCommand(() -> ClimbSubsystem.getInstance().leftClimbPower(climbDown)))
+    //   .whenActive(new InstantCommand(() -> ClimbSubsystem.getInstance().rightClimbPower(climbDown)))
+    //   .whenInactive(new InstantCommand(() -> ClimbSubsystem.getInstance().leftClimbPower(0)))
+    //   .whenInactive(new InstantCommand(() -> ClimbSubsystem.getInstance().rightClimbPower(0)));   
+    // dpadLeft.whenActive(new InstantCommand(() -> ClimbSubsystem.getInstance().pivotPower(pivotDown)))
+    //   .whenInactive(new InstantCommand(() -> ClimbSubsystem.getInstance().pivotPower(0)));
+
+    dpadUp.whileActiveOnce(new SetTurretCommand(true));
+    dpadDown.whileActiveOnce(new SetTurretCommand(false));
+    dpadRight.whileActiveOnce(new TurretAlign());
+    dpadLeft.whileActiveOnce(new InstantCommand(() -> m_turretSubsystem.resetPosition()));
 
     m_controller.getStartButton().whenPressed(m_drivetrainSubsystem::resetOdometry);// resets to 0 -> for testing only
     m_controller.getBackButton().whenPressed(m_drivetrainSubsystem::resetOdometry);// resets to 0 -> for testing only
@@ -220,12 +249,15 @@ public class RobotContainer {
       .whenInactive(new InstantCommand(() -> ClimbSubsystem.getInstance().rightClimbPower(0)));
 
     
-    //m_controller2.getXButton().whenHeld(new SetIntakeCommand(intakeOn)).whenReleased(new SetIntakeCommand(0.0));
-    m_controller2.getBButton().whenHeld(new SetIntakeCommand(0)).whenReleased(new InstantCommand(() -> IndexerSubsystem.getInstance().automaticIntaking()));
-   m_controller2.getAButton().whenActive(new InstantCommand(() -> PivotSubsystem.getInstance().deployIntake()))
-    .whenActive(new InstantCommand(() -> IndexerSubsystem.getInstance().automaticIntaking()))
-    //.whenInactive(new SetIntakeCommand(0))  
-    .whenInactive(new InstantCommand(() -> PivotSubsystem.getInstance().retractIntake()));
+    m_controller2.getXButton().whenHeld(new SetIntakeCommand(intakeOn,false)).whenReleased(new SetIntakeCommand(0.0, false));
+    m_controller2.getBButton().whenHeld(new SetIntakeCommand(intakeReverse,false)).whenReleased(new SetIntakeCommand(0.0, false));
+   // m_controller2.getAButton().whenActive(new RobotIdle());
+   m_controller2.getAButton().whenActive(new InstantCommand(() -> PivotSubsystem.getInstance().moveToPosition(34000)))
+    .whenActive(new SetIntakeCommand(intakeOn, true))
+    .whenActive(new SetIndexerCommand(0, true))
+    .whenInactive(new SetIntakeCommand(0, false))  
+    .whenInactive(new SetIndexerCommand(0, false))
+    .whenInactive(new InstantCommand(() -> PivotSubsystem.getInstance().moveToPosition(0)));
     m_controller2.getYButton().whenActive(new RobotOff());    
     m_controller2.getStartButton().whenPressed(m_drivetrainSubsystem::resetOdometry);
     m_controller2.getBackButton().whenPressed(m_drivetrainSubsystem::resetOdometry);

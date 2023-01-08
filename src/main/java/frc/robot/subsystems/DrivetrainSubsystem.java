@@ -29,6 +29,9 @@ import frc.robot.commands.TeleopDriveCommand;
 import static frc.robot.Constants.DriveConstants;
 import static frc.robot.Constants.Ports;
 
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
 
 public class DrivetrainSubsystem extends SubsystemBase {
     private static DrivetrainSubsystem m_instance = null;
@@ -53,6 +56,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
     private Field2d m_field = new Field2d();
     private Field2d m_hub = new Field2d();
+    public Supplier<Pose2d> poseSupplier = () -> getPose();
+    public Consumer<ChassisSpeeds> chassisConsumer = a -> {drive(a); applyDrive();};
+
     
     public static DrivetrainSubsystem getInstance() {
       if (m_instance == null) {
@@ -111,6 +117,16 @@ public class DrivetrainSubsystem extends SubsystemBase {
             angle = 180 - (Math.abs(angle) - 180);
         } else if (angle > 180) {
             angle = -180 + (Math.abs(angle) - 180);
+        }
+        return angle;
+    }
+
+    public static double turretNormalize(double deg) {
+        double angle = deg % 360;
+        if(angle > 90) {
+            angle = -270 + (Math.abs(angle) - 90);
+        } else if (angle < -270) {
+            angle = 90 - (Math.abs(angle) - 270);
         }
         return angle;
     }

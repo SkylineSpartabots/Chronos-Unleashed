@@ -116,6 +116,12 @@ public class AimShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
     public void end(boolean interruptable){  
         isIndexerOn = false;
         if(hasRobertShotBall){
+<<<<<<< HEAD
+=======
+            IndexerSubsystem.getInstance().setIndexerPercentPower(Constants.indexerUp, true);
+            IndexerSubsystem.numberOfBalls = 0;
+            // IndexerSubsystem.getInstance().setIntakePercentPower(Constants.intakeOn, true);
+>>>>>>> turretV2
             ShooterSubsystem.getInstance().setShooterVelocity(Constants.shooterIdle);
             IndexerSubsystem.getInstance().setIndexerPercentPower(0);
             //IndexerSubsystem.getInstance().setIntakePercentPower(0);
@@ -123,5 +129,30 @@ public class AimShoot extends TeleopDriveCommand{ //REPLACABLE BY AIM SEQUENCE
         hasRobertShotBall = false;
     }
 
+<<<<<<< HEAD
+=======
+    private int calculateShooterSpeed(double distance){
+
+        double shooterSlope = 1099;
+        double shooterIntercept = 6900.0;
+  
+        double minVelocity = 8500;
+        double maxVelocity = 14000;
+  
+        
+        double targetShooterVelocity = shooterSlope * distance + shooterIntercept;
+        shooterWithinBounds = true;
+        if(targetShooterVelocity > maxVelocity) {
+          targetShooterVelocity = maxVelocity;
+          shooterWithinBounds = false;
+        }
+        else if(targetShooterVelocity < minVelocity){
+          targetShooterVelocity = minVelocity;
+          shooterWithinBounds = false;
+        }
+          
+        return (int)targetShooterVelocity;
+      }
+>>>>>>> turretV2
 
 }
