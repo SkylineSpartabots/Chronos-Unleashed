@@ -27,7 +27,12 @@ import frc.robot.commands.SetSubsystemCommand.*;
 import java.util.function.BooleanSupplier;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.RobotController;
@@ -131,6 +136,14 @@ public class RobotContainer {
     Trigger dpadDown = new Trigger(() -> {return m_controller.getDpadDown();});
     Trigger dpadLeft = new Trigger(() -> {return m_controller.getDpadLeft();});
     Trigger dpadRight = new Trigger(() -> {return m_controller.getDpadRight();});
+
+    PIDController xController = new PIDController(5.0, 0, 0);
+    PIDController yController = new PIDController(5.0, 0, 0);
+    PIDController thetaController = new PIDController(2.0, 0, 0);
+    thetaController.enableContinuousInput(-Math.PI, Math.PI);
+    PathPlannerTrajectory examplePath = PathPlanner.loadPath("New Path", new PathConstraints(1, 0.1));
+    PPSwerveControllerCommand swe = new PPSwerveControllerCommand(examplePath, m_drivetrainSubsystem.poseSupplier, xController, yController, thetaController, m_drivetrainSubsystem.chassisConsumer, m_drivetrainSubsystem);
+    dpadLeft.whenActive(swe);
   
     //dpad up and dpad right controls left and right climb. press both to move at the same time
     // dpadUp.whenActive(new InstantCommand(() -> ClimbSubsystem.getInstance().leftClimbPower(climbUp)))
