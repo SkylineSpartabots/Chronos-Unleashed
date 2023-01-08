@@ -27,6 +27,11 @@ import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.PathPlannerTrajectory;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+
 /**
  * This class is where the bulk of the robot should be declared. Since
  * Command-based is a
@@ -88,11 +93,23 @@ public class RobotContainer {
   private static boolean isCanConnected(){
     return DeviceFinder.Find().size() == Constants.kCanDeviceCount;
   }
+  
+
   // configures button bindings to controller
   private void configureButtonBindings() {
+    Trigger dpadUp = new Trigger(() -> {return m_controller.getDpadUp();});
+    Trigger dpadUpRight = new Trigger(() -> {return m_controller.getDpadUpRight();});
+    Trigger dpadDown = new Trigger(() -> {return m_controller.getDpadDown();});
+    Trigger dpadLeft = new Trigger(() -> {return m_controller.getDpadLeft();});
+    Trigger dpadRight = new Trigger(() -> {return m_controller.getDpadRight();});
+
+    PathPlannerTrajectory path = PathPlanner.loadPath("2 arcs", new PathConstraints(4, 3));
+    dpadLeft.whenActive(DrivetrainSubsystem.getInstance().followTrajectoryCommand(path, false));
+
     final double triggerDeadzone = 0.2;
-    m_controller.getStartButton().whenPressed(m_drivetrainSubsystem::resetOdometry);
-    m_controller.getBackButton().whenPressed(m_drivetrainSubsystem::resetOdometry);
+    m_controller.getStartButton().whenPressed(new InstantCommand(m_drivetrainSubsystem::resetOdometry));
+    m_controller.getBackButton().whenPressed(new InstantCommand(m_drivetrainSubsystem::resetOdometry));
+    
   }
 
   public void onRobotDisabled() {

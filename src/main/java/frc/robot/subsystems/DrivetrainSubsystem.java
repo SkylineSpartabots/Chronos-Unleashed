@@ -2,9 +2,13 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.sensors.CANCoder;
 import com.kauailabs.navx.frc.AHRS;
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 import com.swervedrivespecialties.swervelib.Mk4ModuleConfiguration;
 import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SwerveModule;
+
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -22,18 +26,26 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.commands.TeleopDriveCommand;
 
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+
 import static frc.robot.Constants.DriveConstants;
 import static frc.robot.Constants.Ports;
+
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 
 public class DrivetrainSubsystem extends SubsystemBase {
     private static DrivetrainSubsystem m_instance = null;
     private static double expectedVelocity;
+
     // FIXME Measure the drivetrain's maximum velocity or calculate the theoretical.
     //  The formula for calculating the theoretical maximum velocity is:
     //   <Motor free speed RPM> / 60 * <Drive reduction> * <Wheel diameter meters> * pi
@@ -44,7 +56,13 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private final SimpleMotorFeedforward m_feedforward;
     
     private final AHRS m_navx = new AHRS(SPI.Port.kMXP, (byte) 200); // NavX connected over MXP
-    
+
+    Consumer<ChassisSpeeds> consume = a -> {
+        drive(a);
+        applyDrive();
+    };
+
+    Supplier<Pose2d> supply = () -> getPose();
     // These are our modules. We initialize them in the constructor.
     private final SwerveModule m_frontLeftModule;
     private final SwerveModule m_frontRightModule;
@@ -275,6 +293,29 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
       double absolute = Math.toDegrees(Math.atan2(deltaY, deltaX));
       return normalize(absolute + offsetDeg);
-  }
+  
+    }
 
+ public Command followTrajectoryCommand(PathPlannerTrajectory traj, boolean isFirstPath) {
+    PIDController xController = new PIDController(0.0, 0, 0.0);
+    PIDController yController = new PIDController(0.0, 0, 0.0);
+    PIDController thetaController = new PIDController(0.0, 0, 0.0);
+    return new SequentialCommandGroup(
+            new InstantCommand(() -> {
+            // Reset odometry for the first path you run during auto
+            if(isFirstPath){
+                this.resetOdometryFromPosition(traj.getInitialHolonomicPose());
+            }
+            }),
+            new PPSwerveControllerCommand(
+                traj, 
+                this.supply,
+                xController,
+                yController,
+                thetaController,
+                this.consume
+            )
+        );
+    }   
 }
+
