@@ -166,11 +166,12 @@ public class RobotContainer {
     //leftTriggerAxis.whenInactive(new SequentialCommandGroup(new WaitCommand(0.6), new RobotIdle()));
     //leftTriggerAxis.whileActiveOnce(new EjectBall());
     
-   leftTriggerAxis.whenActive(new InstantCommand(() -> PivotSubsystem.getInstance().deployIntake()))
-   .whenActive(new InstantCommand(() -> IndexerSubsystem.getInstance().automaticIntaking()))
-   .whenInactive(new SetIntakeCommand(0))  
-   .whenInactive(new InstantCommand(() -> PivotSubsystem.getInstance().retractIntake()));
-    rightTriggerAxis.whileActiveOnce(new AimShoot());
+    //commented out for outreach use
+  //  leftTriggerAxis.whenActive(new InstantCommand(() -> PivotSubsystem.getInstance().deployIntake())) 
+  //  .whenActive(new InstantCommand(() -> IndexerSubsystem.getInstance().automaticIntaking()))
+  //  .whenInactive(new SetIntakeCommand(0))  
+  //  .whenInactive(new InstantCommand(() -> PivotSubsystem.getInstance().retractIntake()));
+  //   rightTriggerAxis.whileActiveOnce(new AimShoot());
 
 
     //SECOND CONTROLLER

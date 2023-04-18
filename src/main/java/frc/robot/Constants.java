@@ -101,6 +101,8 @@ public final class Constants {
     }
 
     public static final class Ports{
+        public static final int NEO_INDEXER = 0;
+
         public static final int FRONT_LEFT_DRIVE = 2;
         public static final int FRONT_LEFT_STEER = 1;
         public static final int FRONT_LEFT_STEER_ENCODER = 9;

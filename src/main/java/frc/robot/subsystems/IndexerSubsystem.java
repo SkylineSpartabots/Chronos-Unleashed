@@ -5,8 +5,10 @@ import java.time.Period;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrame;
+import com.revrobotics.CANSparkMax;
 import com.revrobotics.ColorMatch;
 import com.revrobotics.ColorSensorV3;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -25,7 +27,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class IndexerSubsystem extends SubsystemBase{
-    private final LazyTalonFX m_IndexerMotor;
+    private final CANSparkMax m_IndexerMotor;
     
     private static final I2C.Port onboardI2C = I2C.Port.kOnboard;
     private static ColorSensorV3 m_intakeSensor;
@@ -40,13 +42,15 @@ public class IndexerSubsystem extends SubsystemBase{
     }
     
     public IndexerSubsystem() {
-        m_IndexerMotor = TalonFXFactory.createDefaultFalcon("Indexer Motor", Ports.INDEXER_MOTOR);//creates motor
-        m_IndexerMotor.configVoltageCompSaturation(12.0, Constants.kTimeOutMs);
-        m_IndexerMotor.enableVoltageCompensation(true);        
-        m_IndexerMotor.setNeutralMode(NeutralMode.Brake);
-        m_IndexerMotor.config_kP(0, 0.4);
-        m_IndexerMotor.config_kI(0, 0);
-        m_IndexerMotor.config_kD(0, 0);
+        m_IndexerMotor = new CANSparkMax(Constants.Ports.NEO_INDEXER, MotorType.kBrushless);
+        
+        // m_IndexerMotor = TalonFXFactory.createDefaultFalcon("Indexer Motor", Ports.INDEXER_MOTOR);//creates motor
+        // m_IndexerMotor.configVoltageCompSaturation(12.0, Constants.kTimeOutMs);
+        // m_IndexerMotor.enableVoltageCompensation(true);        
+        // m_IndexerMotor.setNeutralMode(NeutralMode.Brake);
+        // m_IndexerMotor.config_kP(0, 0.4);
+        // m_IndexerMotor.config_kI(0, 0);
+        // m_IndexerMotor.config_kD(0, 0);
 
         m_IntakeMotor = TalonFXFactory.createDefaultFalcon("Intake Motor", Ports.INTAKE_MOTOR);//creates motor
         m_IntakeMotor.configVoltageCompSaturation(12.0, Constants.kTimeOutMs);
@@ -70,10 +74,16 @@ public class IndexerSubsystem extends SubsystemBase{
     public void setIntakePercentPower(double power) {
         m_IntakeMotor.set(ControlMode.PercentOutput, power);        
     }
+
+    private double neoSpeed = 1000;
     public void setIndexerPercentPower(double power){
         if(Math.abs(power)<0.001 && DriverStation.isTeleop()) automaticIndexing = true;
         else automaticIndexing = false;
-        m_IndexerMotor.set(ControlMode.PercentOutput, power);
+        if(power == 0){
+            m_IndexerMotor.set(0);
+        } else {
+            m_IndexerMotor.set(neoSpeed);
+        }
         ballCount=0;
     }
 
@@ -87,7 +97,7 @@ public class IndexerSubsystem extends SubsystemBase{
     private final int ejectAmount = upAmount * 5;
     public void moveUpIndexer(int amount){
         //m_IntakeMotor.set(ControlMode.PercentOutput, Constants.intakeOn); 
-        m_IndexerMotor.set(ControlMode.Position, m_IndexerMotor.getSelectedSensorPosition() + amount);
+        // m_IndexerMotor.setPositi(ControlMode.Position, m_IndexerMotor + amount);
     }
 
     private int ballCount = 0;
@@ -96,17 +106,17 @@ public class IndexerSubsystem extends SubsystemBase{
     private boolean automaticIndexing = true;
     @Override
     public void periodic() {
-        if(ready && automaticIndexing && ballCount <=2&& isIntakeBallLoaded()){
-            ready = false;
-            ballCount++;
-            new SequentialCommandGroup(
-                new WaitCommand(0.2),
-                new InstantCommand(() -> ballIn())
-                ).schedule(); 
-        }
+        // if(ready && automaticIndexing && ballCount <=2&& isIntakeBallLoaded()){ not using for outreach + neos
+        //     ready = false;
+        //     ballCount++;
+        //     new SequentialCommandGroup(
+        //         new WaitCommand(0.2),
+        //         new InstantCommand(() -> ballIn())
+        //         ).schedule(); 
+        // }
 
         SmartDashboard.putNumber("Ball Count", ballCount);
-        SmartDashboard.putNumber("indexer position", m_IndexerMotor.getSelectedSensorPosition());
+        SmartDashboard.putNumber("indexer position", m_IndexerMotor.getEncoder().getPosition());
 
         SmartDashboard.putNumber("intake proximity", m_intakeSensor.getProximity());
         //SmartDashboard.putBoolean("intake loaded", isIntakeBallLoaded());
@@ -120,7 +130,7 @@ public class IndexerSubsystem extends SubsystemBase{
         //SmartDashboard.putNumber("indexer speed", m_IndexerMotor.getSelectedSensorVelocity());
         //SmartDashboard.putNumber("indexer Voltage", m_IndexerMotor.getMotorOutputVoltage());
         //SmartDashboard.putNumber("indexer Output Current", m_IndexerMotor.getStatorCurrent());
-        SmartDashboard.putNumber("indexer Input Current", m_IndexerMotor.getSupplyCurrent());
+        SmartDashboard.putNumber("indexer Input Current", m_IndexerMotor.getAppliedOutput());
         SmartDashboard.putBoolean("Color correct", colorRight());
         SmartDashboard.putString("Alliance Color", DriverStation.getAlliance().toString());
         //SmartDashboard.putNumber("Indexer current from PDP", RobotContainer.getPDP().getCurrent(16));
@@ -188,27 +198,27 @@ public class IndexerSubsystem extends SubsystemBase{
 
     private void setMultipleStatuFramePeriod(){
         m_IntakeMotor.setStatusFramePeriod(StatusFrame.Status_1_General, 255);
-        m_IndexerMotor.setStatusFramePeriod(StatusFrame.Status_1_General, 255);
+        // m_IndexerMotor.setStatusFramePeriod(StatusFrame.Status_1_General, 255);
         
-        m_IndexerMotor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 255);//if rev, 4500
-        m_IntakeMotor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 255);
-        m_IndexerMotor.setStatusFramePeriod(StatusFrame.Status_4_AinTempVbat, 253);//4750
-        m_IntakeMotor.setStatusFramePeriod(StatusFrame.Status_4_AinTempVbat, 253);
-        m_IndexerMotor.setStatusFramePeriod(StatusFrame.Status_6_Misc, 251);//5000
-        m_IntakeMotor.setStatusFramePeriod(StatusFrame.Status_6_Misc, 251);
-        m_IndexerMotor.setStatusFramePeriod(StatusFrame.Status_7_CommStatus, 249);//5250
-        m_IntakeMotor.setStatusFramePeriod(StatusFrame.Status_7_CommStatus, 249);
-        m_IndexerMotor.setStatusFramePeriod(StatusFrame.Status_10_MotionMagic, 247);//5500
-        m_IntakeMotor.setStatusFramePeriod(StatusFrame.Status_10_MotionMagic, 247);
-        m_IndexerMotor.setStatusFramePeriod(StatusFrame.Status_12_Feedback1, 245);//5750
-        m_IntakeMotor.setStatusFramePeriod(StatusFrame.Status_12_Feedback1, 245);
-        m_IndexerMotor.setStatusFramePeriod(StatusFrame.Status_13_Base_PIDF0, 243);//5850
-        m_IntakeMotor.setStatusFramePeriod(StatusFrame.Status_13_Base_PIDF0, 243);
-        m_IndexerMotor.setStatusFramePeriod(StatusFrame.Status_14_Turn_PIDF1, 241);//5950
-        m_IntakeMotor.setStatusFramePeriod(StatusFrame.Status_14_Turn_PIDF1, 241);
-        m_IndexerMotor.setStatusFramePeriod(StatusFrame.Status_15_FirmwareApiStatus, 239);//6100
-        m_IntakeMotor.setStatusFramePeriod(StatusFrame.Status_15_FirmwareApiStatus, 239);
-        m_IndexerMotor.setStatusFramePeriod(StatusFrame.Status_17_Targets1, 237);//6250
+        // m_IndexerMotor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 255);//if rev, 4500
+        // m_IntakeMotor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 255);
+        // m_IndexerMotor.setStatusFramePeriod(StatusFrame.Status_4_AinTempVbat, 253);//4750
+        // m_IntakeMotor.setStatusFramePeriod(StatusFrame.Status_4_AinTempVbat, 253);
+        // m_IndexerMotor.setStatusFramePeriod(StatusFrame.Status_6_Misc, 251);//5000
+        // m_IntakeMotor.setStatusFramePeriod(StatusFrame.Status_6_Misc, 251);
+        // m_IndexerMotor.setStatusFramePeriod(StatusFrame.Status_7_CommStatus, 249);//5250
+        // m_IntakeMotor.setStatusFramePeriod(StatusFrame.Status_7_CommStatus, 249);
+        // m_IndexerMotor.setStatusFramePeriod(StatusFrame.Status_10_MotionMagic, 247);//5500
+        // m_IntakeMotor.setStatusFramePeriod(StatusFrame.Status_10_MotionMagic, 247);
+        // m_IndexerMotor.setStatusFramePeriod(StatusFrame.Status_12_Feedback1, 245);//5750
+        // m_IntakeMotor.setStatusFramePeriod(StatusFrame.Status_12_Feedback1, 245);
+        // m_IndexerMotor.setStatusFramePeriod(StatusFrame.Status_13_Base_PIDF0, 243);//5850
+        // m_IntakeMotor.setStatusFramePeriod(StatusFrame.Status_13_Base_PIDF0, 243);
+        // m_IndexerMotor.setStatusFramePeriod(StatusFrame.Status_14_Turn_PIDF1, 241);//5950
+        // m_IntakeMotor.setStatusFramePeriod(StatusFrame.Status_14_Turn_PIDF1, 241);
+        // m_IndexerMotor.setStatusFramePeriod(StatusFrame.Status_15_FirmwareApiStatus, 239);//6100
+        // m_IntakeMotor.setStatusFramePeriod(StatusFrame.Status_15_FirmwareApiStatus, 239);
+        // m_IndexerMotor.setStatusFramePeriod(StatusFrame.Status_17_Targets1, 237);//6250
         m_IntakeMotor.setStatusFramePeriod(StatusFrame.Status_17_Targets1, 237);
     }
 
