@@ -208,6 +208,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
         applyDrive();
         SmartDashboard.putNumber("Rotation", getGyroscopeRotation().getDegrees());
         SmartDashboard.putBoolean("IsCalibrating", m_navx.isCalibrating());
+        SmartDashboard.putNumber("front left angle", m_frontLeftModule.getSteerAngle());
+        SmartDashboard.putNumber("front right angle", m_frontRightModule.getSteerAngle());
+        SmartDashboard.putNumber("back left angle", m_backLeftModule.getSteerAngle());
+        SmartDashboard.putNumber("back right angle", m_backRightModule.getSteerAngle());
 
         /*SmartDashboard.putNumber("FLSteer", RobotContainer.getPDP().getCurrent(4));
         SmartDashboard.putNumber("FLDrive", RobotContainer.getPDP().getCurrent(6));
