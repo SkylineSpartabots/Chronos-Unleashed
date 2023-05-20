@@ -133,7 +133,7 @@ public class Swerve extends SubsystemBase {
     }
 
     public Rotation2d getYaw() {
-        return Rotation2d.fromDegrees(normalize(m_navx.getAngle()));
+        return Rotation2d.fromDegrees(normalize(-m_navx.getAngle()));
     }
 
     // public double getPitch() {
@@ -185,11 +185,11 @@ public class Swerve extends SubsystemBase {
         SmartDashboard.putBoolean("is OTF running", pathInProgress());
 
         // information about individual swerve modules, uncomment for debugging
-        /* for (SwerveModule mod : mSwerveMods) {
+        for (SwerveModule mod : mSwerveMods) {
              SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Cancoder", mod.getCanCoder().getDegrees());
              SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Integrated", mod.getPosition().angle.getDegrees());
              SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Velocity", mod.getState().speedMetersPerSecond);
-        } */
+        } 
 
     }
 

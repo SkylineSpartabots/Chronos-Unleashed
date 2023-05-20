@@ -68,11 +68,11 @@ public class RobotContainer {
     s_Swerve.setDefaultCommand(
             new TeleopSwerve(
                     s_Swerve,
-                    () -> -driver.getRawAxis(translationAxis),
-                    () -> -driver.getRawAxis(strafeAxis),
-                    () -> -driver.getRawAxis(rotationAxis)));
+                    () -> -driver.getRawAxis(translationAxis) / 2.75,
+                    () -> -driver.getRawAxis(strafeAxis) / 2.75,
+                    () -> -driver.getRawAxis(rotationAxis) / 2.75));
 
-    // Set the scheduler to log Shuffleboard events for command initialize,
+    // Set the scheduler to log Shuffleboard events for command inditialize,
     // interrupt, finish
     /*CommandScheduler.getInstance().onCommandInitialize(command -> Shuffleboard.addEventMarker(
         "Command initialized", command.getName(), EventImportance.kNormal));

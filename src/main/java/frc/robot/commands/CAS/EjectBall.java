@@ -41,7 +41,7 @@ public class EjectBall extends CommandBase{ //REPLACABLE BY AIM SEQUENCE
     public void initialize(){        
         m_timer.reset();
         m_timer.start();
-        m_shooter.setShooterVelocity(5000);
+        m_shooter.setShooterVelocity(1000);
         m_indexer.setIndexerPercentPower(Constants.indexerUp);
     }
 /*
