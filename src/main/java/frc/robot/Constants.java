@@ -30,10 +30,10 @@ public final class Constants {
         public static final double shooterIdle = 8000;
         public static final double shooterEjection = 8000;
 
-        public static final double indexerUp = 0.70;
+        public static final double indexerUp = 0.80;
         public static final double indexerDown = -0.5;
 
-        public static final double intakeOn = 0.75;
+        public static final double intakeOn = 0.9;
         public static final double intakeReverse = -0.5;
 
         public static final double waitBetweenShots = 0.25;

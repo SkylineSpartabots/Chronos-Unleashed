@@ -90,37 +90,25 @@ public class IndexerSubsystem extends SubsystemBase {
     }
 
     public void automaticIntaking() {
-        m_IntakeMotor.set(Math.abs(Constants.intakeOn * IntakeMotorSpeed));
+        m_IntakeMotor.set(Constants.intakeOn);
         automaticIndexing = true;
         ready = true;
     }
 
-    private double IntakeMotorSpeed = 1000;
-
     public void setIntakePercentPower(double power) {
-        if (power == 0) {
-            m_IntakeMotor.set(0);
-        } else {
-            m_IntakeMotor.set(IntakeMotorSpeed);
-        }
+        m_IntakeMotor.set(power);
     }
 
     public void setIntakeDeploymentState(boolean state) {
         m_Solenoid.set(state);
     }
 
-    private double neoSpeed = 1000;
-
     public void setIndexerPercentPower(double power) {
         if (Math.abs(power) < 0.001 && DriverStation.isTeleop())
             automaticIndexing = true;
         else
             automaticIndexing = false;
-        if (power == 0) {
-            m_IndexerMotor.set(0);
-        } else {
-            m_IndexerMotor.set(neoSpeed);
-        }
+        m_IndexerMotor.set(power);
         ballCount = 0;
     }
 
