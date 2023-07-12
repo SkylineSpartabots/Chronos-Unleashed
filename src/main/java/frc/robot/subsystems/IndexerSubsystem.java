@@ -89,16 +89,20 @@ public class IndexerSubsystem extends SubsystemBase {
         setMultipleStatuFramePeriod();
     }
 
-    private double IntakeMotorSpeed = 1000;
-
     public void automaticIntaking() {
         m_IntakeMotor.set(Math.abs(Constants.intakeOn * IntakeMotorSpeed));
         automaticIndexing = true;
         ready = true;
     }
 
+    private double IntakeMotorSpeed = 1000;
+
     public void setIntakePercentPower(double power) {
-        m_IntakeMotor.set(power * IntakeMotorSpeed);
+        if (power == 0) {
+            m_IntakeMotor.set(0);
+        } else {
+            m_IntakeMotor.set(IntakeMotorSpeed);
+        }
     }
 
     public void setIntakeDeploymentState(boolean state) {
