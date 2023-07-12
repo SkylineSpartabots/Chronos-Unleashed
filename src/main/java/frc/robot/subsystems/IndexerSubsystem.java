@@ -51,6 +51,7 @@ public class IndexerSubsystem extends SubsystemBase {
     public IndexerSubsystem() {
         m_IndexerMotor = new CANSparkMax(Constants.Ports.NEO_INDEXER, MotorType.kBrushless);
 
+        // !Old indexer with Falcon 500 Motor
         // m_IndexerMotor = TalonFXFactory.createDefaultFalcon("Indexer Motor",
         // Ports.INDEXER_MOTOR);//creates motor
         // m_IndexerMotor.configVoltageCompSaturation(12.0, Constants.kTimeOutMs);
@@ -244,7 +245,7 @@ public class IndexerSubsystem extends SubsystemBase {
     // manual overrides for both
 
     private void setMultipleStatuFramePeriod() {
-        m_IntakeMotor.setStatusFramePeriod(StatusFrame.Status_1_General, 255);
+        // m_IntakeMotor.setStatusFramePeriod(StatusFrame.Status_1_General, 255);
         // m_IndexerMotor.setStatusFramePeriod(StatusFrame.Status_1_General, 255);
 
         // m_IndexerMotor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 255);//if
@@ -276,7 +277,7 @@ public class IndexerSubsystem extends SubsystemBase {
         // 239);
         // m_IndexerMotor.setStatusFramePeriod(StatusFrame.Status_17_Targets1,
         // 237);//6250
-        m_IntakeMotor.setStatusFramePeriod(StatusFrame.Status_17_Targets1, 237);
+        // m_IntakeMotor.setStatusFramePeriod(StatusFrame.Status_17_Targets1, 237);
     }
 
 }

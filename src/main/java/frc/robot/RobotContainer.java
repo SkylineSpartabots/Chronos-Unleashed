@@ -182,6 +182,13 @@ public class RobotContainer {
     // .onFalse(new InstantCommand(() ->
     // ClimbSubsystem.getInstance().pivotPower(0)));
 
+    // Joysticks Drive
+    // X Spin Indexer and Intake
+    // B Eject Indexer and Intake
+    // A Shoot
+    // Y Turn Robot Off
+    // Right Bumper Pneumatic Deploy Intake
+
     driverStart.onTrue(new InstantCommand(() -> s_Swerve.resetOdometry(new Pose2d())));// resets to 0 -> for testing
                                                                                        // only
     driverBack.onTrue(new InstantCommand(() -> s_Swerve.resetOdometry(new Pose2d())));// resets to 0 -> for testing only
@@ -318,10 +325,4 @@ public class RobotContainer {
     IndexerSubsystem.getInstance().setIndexerPercentPower(0.0);
     ShooterSubsystem.getInstance().setShooterVelocity(0);
   }
-
-  // right trigger shoot
-  // left trigger intake deploy and intake, release, fold back
-  // left bumper eject
-  // right bumper shooter while moving
-
 }
