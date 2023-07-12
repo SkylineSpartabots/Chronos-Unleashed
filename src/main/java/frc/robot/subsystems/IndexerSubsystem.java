@@ -22,8 +22,11 @@ import frc.robot.RobotContainer;
 import frc.robot.Constants.Ports;
 import frc.robot.commands.SetSubsystemCommand.SetShooterCommand;
 import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -33,6 +36,8 @@ public class IndexerSubsystem extends SubsystemBase {
     private static final I2C.Port onboardI2C = I2C.Port.kOnboard;
     private static ColorSensorV3 m_intakeSensor;
     private final CANSparkMax m_IntakeMotor;
+    private final Solenoid m_Solenoid;
+    private final Compressor m_Compressor;
 
     private static IndexerSubsystem instance = null;
 
@@ -66,6 +71,15 @@ public class IndexerSubsystem extends SubsystemBase {
         m_IntakeMotor = new CANSparkMax(Constants.Ports.INTAKE_MOTOR, MotorType.kBrushless);
         m_IntakeMotor.restoreFactoryDefaults();
 
+        // !Chronos Upgraded 4 Bar Pneuamtic
+        m_Solenoid = new Solenoid(
+                Constants.Ports.PNEUMATIC_HUB,
+                PneumaticsModuleType.REVPH,
+                Constants.Ports.INTAKE_SOLENOID_CHANNEL);
+
+        m_Compressor = new Compressor(Constants.Ports.PNEUMATIC_HUB, PneumaticsModuleType.REVPH);
+        m_Compressor.enableDigital();
+
         m_intakeSensor = new ColorSensorV3(onboardI2C);
 
         m_colorMatcherIntake.addColorMatch(Constants.kColorSensorBlueIntake);
@@ -84,6 +98,10 @@ public class IndexerSubsystem extends SubsystemBase {
 
     public void setIntakePercentPower(double power) {
         m_IntakeMotor.set(power * IntakeMotorSpeed);
+    }
+
+    public void setIntakeDeploymentState(boolean state) {
+        m_Solenoid.set(state);
     }
 
     private double neoSpeed = 1000;
