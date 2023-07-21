@@ -96,7 +96,7 @@ public class IndexerSubsystem extends SubsystemBase {
     }
 
     public void setIntakePercentPower(double power) {
-        m_IntakeMotor.set(power);
+        m_IntakeMotor.set(power*-1);
     }
 
     public void setIntakeDeploymentState(boolean state) {
