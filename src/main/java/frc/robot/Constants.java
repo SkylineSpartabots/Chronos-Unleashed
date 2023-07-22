@@ -152,6 +152,8 @@ public final class Constants {
 
         public static final class SwerveConstants {
 
+                public static final double swervePower = .80;
+
                 // public static final int pigeonID = 15;
 
                 public static final COTSFalconSwerveConstants chosenModule = COTSFalconSwerveConstants
