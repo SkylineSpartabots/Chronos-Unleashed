@@ -152,7 +152,7 @@ public final class Constants {
 
         public static final class SwerveConstants {
 
-                public static final double swervePower = .80;
+                public static final double swervePower = .250;
 
                 // public static final int pigeonID = 15;
 
