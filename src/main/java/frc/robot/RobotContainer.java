@@ -6,13 +6,13 @@ package frc.robot;
 import frc.lib.util.Controller;
 import frc.lib.util.DeviceFinder;
 import frc.robot.commands.*;
-import frc.robot.commands.CAS.EjectBall;
+// import frc.robot.commands.CAS.EjectBall;
 // import frc.robot.commands.CAS.MemeShoot;
 import frc.robot.commands.CAS.RobotOff;
 import frc.robot.commands.SetSubsystemCommand.*;
 import frc.robot.subsystems.Swerve;
-import frc.robot.subsystems.IndexerSubsystem;
-import frc.robot.subsystems.ShooterSubsystem;
+// import frc.robot.subsystems.IndexerSubsystem;
+// import frc.robot.subsystems.ShooterSubsystem;
 import static frc.robot.Constants.*;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -48,8 +48,8 @@ public class RobotContainer {
 
   // The robot's subsystems and commands are defined here...
   private Swerve s_Swerve;
-  private IndexerSubsystem m_indexerSubsystem;
-  private ShooterSubsystem m_shooterSubsystem;
+  // private IndexerSubsystem m_indexerSubsystem;
+  // private ShooterSubsystem m_shooterSubsystem;
 
   /*
    * private static PowerDistribution powerModule = new PowerDistribution(1,
@@ -64,8 +64,8 @@ public class RobotContainer {
    */
   public RobotContainer() {
     s_Swerve = Swerve.getInstance();
-    m_indexerSubsystem = IndexerSubsystem.getInstance();
-    m_shooterSubsystem = ShooterSubsystem.getInstance();
+    // m_indexerSubsystem = IndexerSubsystem.getInstance();
+    // m_shooterSubsystem = ShooterSubsystem.getInstance();
     s_Swerve.zeroGyro();
     // sets the teleop swerve command as default command with the input from driver
     // joysticks
@@ -189,22 +189,22 @@ public class RobotContainer {
     // Y Turn Robot Off
     // Right Bumper Pneumatic Deploy Intake
 
-    driverStart.onTrue(new InstantCommand(() -> s_Swerve.resetOdometry(new Pose2d())));// resets to 0 -> for testing
-                                                                                       // only
-    driverBack.onTrue(new InstantCommand(() -> s_Swerve.resetOdometry(new Pose2d())));// resets to 0 -> for testing only
-    driverX.onTrue(new SetIntakeIndexerCommand(intakeOn, indexerUp));// right bumper hold
-    driverX.onFalse(new SetIntakeIndexerCommand(0, 0));// right bumper release
-    driverB.onTrue(new SetIntakeIndexerCommand(intakeReverse, indexerDown));// right bumper hold
-    driverB.onFalse(new SetIntakeIndexerCommand(0, 0));// right bumper release
-    driverRightBumper.onTrue(new SetIntakeDeploymentState(true));
-    driverRightBumper.onFalse(new SetIntakeDeploymentState(false));
+    // driverStart.onTrue(new InstantCommand(() -> s_Swerve.resetOdometry(new Pose2d())));// resets to 0 -> for testing
+    //                                                                                    // only
+    // driverBack.onTrue(new InstantCommand(() -> s_Swerve.resetOdometry(new Pose2d())));// resets to 0 -> for testing only
+    // driverX.onTrue(new SetIntakeIndexerCommand(intakeOn, indexerUp));// right bumper hold
+    // driverX.onFalse(new SetIntakeIndexerCommand(0, 0));// right bumper release
+    // driverB.onTrue(new SetIntakeIndexerCommand(intakeReverse, indexerDown));// right bumper hold
+    // driverB.onFalse(new SetIntakeIndexerCommand(0, 0));// right bumper release
+    // driverRightBumper.onTrue(new SetIntakeDeploymentState(true));
+    // driverRightBumper.onFalse(new SetIntakeDeploymentState(false));
 
     // driver.getAButton().onTrue(new InstantCommand(() ->
     // IndexerSubsystem.getInstance().automaticIntaking()));
-    driverA.onTrue(new InstantCommand(() -> ShooterSubsystem.getInstance().setShooterVelocity(shooterIdle)));
-    driverY.onTrue(new RobotOff());
+    // driverA.onTrue(new InstantCommand(() -> ShooterSubsystem.getInstance().setShooterVelocity(shooterIdle)));
+    // driverY.onTrue(new RobotOff());
 
-    driverLeftBumper.onTrue(new EjectBall());
+    // driverLeftBumper.onTrue(new EjectBall());
 
     // driver.getLeftBumper().whenHeld(new SetIntakeCommand(intakeReverse, false));
     // driver.getLeftBumper().whenReleased(new SetIntakeCommand(intakeOn, true));
@@ -214,12 +214,12 @@ public class RobotContainer {
     // driver.getRightStickButton().whenHeld(new ShootByLimelight(false));
     // driverLeftBumper.onTrue(new AimShoot());
 
-    Trigger leftTriggerAxis = new Trigger(() -> {
-      return driver.getLeftTriggerAxis() > triggerDeadzone;
-    });
-    Trigger rightTriggerAxis = new Trigger(() -> {
-      return driver.getRightTriggerAxis() > triggerDeadzone;
-    });
+    // Trigger leftTriggerAxis = new Trigger(() -> {
+    //   return driver.getLeftTriggerAxis() > triggerDeadzone;
+    // });
+    // Trigger rightTriggerAxis = new Trigger(() -> {
+    //   return driver.getRightTriggerAxis() > triggerDeadzone;
+    // });
 
     // leftTriggerAxis.whileActiveOnce(new ShootByLimelight(true));
     // leftTriggerAxis.whileActiveOnce(new AimShoot());
@@ -321,8 +321,8 @@ public class RobotContainer {
 
   public void onRobotDisabled() {
     // called when robot is disabled. Set all subsytems to 0
-    IndexerSubsystem.getInstance().setIntakePercentPower(0.0);
-    IndexerSubsystem.getInstance().setIndexerPercentPower(0.0);
-    ShooterSubsystem.getInstance().setShooterVelocity(0);
+    // IndexerSubsystem.getInstance().setIntakePercentPower(0.0);
+    // IndexerSubsystem.getInstance().setIndexerPercentPower(0.0);
+    // ShooterSubsystem.getInstance().setShooterVelocity(0);
   }
 }
